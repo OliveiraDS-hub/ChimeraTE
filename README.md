@@ -1,6 +1,4 @@
 # ChimeraTE
-
-
 ## Install
 ### Dependencies
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml)

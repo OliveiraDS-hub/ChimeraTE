@@ -18,10 +18,11 @@
   In order to identify chimeric reads between TEs and gene transcripts, the alignments are converted to bed format with bedtools (QUINLAN; HALL, 2010). Then, the TE alignment output is used to create a list with all read IDs that have the mate 1 aligned against TEs, and another list with all read IDs from the mate 2. The same lists are created by using the gene alignment. All mate 1 IDs that have aligned against TEs are searched in the list of mate 2 gene IDs, which are composed by fragments that one mate has aligned against a TE and the other one against a gene transcript. In cases in which the transcript described in the reference genome does not have the TE insertion within, it will be supported only by singleton reads. Nonetheless, those cases in which the reference transcript is already described as a chimera, the chimeric reads supporting it may either come from singleton reads or concordant reads. Taking into account that the alignments are performed with end-to-end method, differentially from module 1, in the module 2 there is identification of split-reads between TEs and genes.
   
  ![Figura 1 - ChimeraTE module 1](https://i.imgur.com/YdOef5I.png)
-### Input data:
+### Inputs:
 
   1. Stranded paired-end RNA-seq
   2. Reference transcripts (.fasta)
+  - In order to run ChimeraTE correctly, this fasta file **must** have a specific ID pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance: 
   3. Reference TE insertions (.fasta)
 
 

@@ -67,3 +67,7 @@ ChimeraTE - Usage commandline
         
         # min fpkm
  ````
+ 
+ ### Example
+ 
+ 

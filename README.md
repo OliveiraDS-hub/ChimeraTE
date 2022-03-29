@@ -38,4 +38,26 @@
 
   We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
   
-## Module 2
+### Usage
+>bash chimeraTE_mdl1.sh --help
+>ChimeraTE - Usage commandline
+>
+>        Required arguments:
+>
+>        -1 | --mate1    	paired-end R1
+>
+>        -2 | --mate2    	paired-end R2
+>
+>        -g | --gene     	gene sequences .fa
+>
+>        -t | --te       	TE sequences .fa
+>
+>        -p | --project  	project name
+>
+>	-s | --strandness	Select rf-stranded if your reads are reverse->forward; or fr-stranded if they are forward->reverse
+>
+>        Optional arguments:
+>
+>	-c | --cutoff   	Minimum chimeric pairs
+
+

@@ -20,10 +20,18 @@
  ![Figura 1 - ChimeraTE module 1](https://i.imgur.com/YdOef5I.png)
 ### Inputs:
 
-  1. Stranded paired-end RNA-seq
-  2. Reference transcripts (.fasta)
-  - In order to run ChimeraTE correctly, this fasta file **must** have a specific ID pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance: 
-  3. Reference TE insertions (.fasta)
+  #### 1. Stranded paired-end RNA-seq
+  #### 2. Reference transcripts (.fasta)
+  - In order to run ChimeraTE correctly, this fasta file **must** have a specific ID pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance, in _D. melanogaster_, the gene FBgn0263977 has two sequences:
+  Tim17b-RA_FBgn0263977
+  Tim17b-RB_FBgn0263977
+  
+  Note that the isoform ID "Tim17b-RA and Tim17b-RB" are separated from gene name by "_" and the gene nanme/ID is repeated. 
+  This is not a usual ID format and thefore we have the script _isoform_IDs.sh_ to transform the IDs from native NCBI format to the ChimeraTE format (see details in Manual). This script may be used if you are using a genome annotation from NCBI.
+
+  In addition, we provide here the corrected IDs for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
+
+  #### 3. Reference TE insertions (.fasta)
 
 
 

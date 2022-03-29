@@ -3,11 +3,11 @@
 
 ## Install
 ### Dependencies
-Bowtie2
-seqtk
-samtools
-bedtools
-express
+- Bowtie2
+- seqtk
+- samtools
+- bedtools
+- express
 
 ## Module 1
 

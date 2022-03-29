@@ -10,6 +10,6 @@
 - [express](https://pachterlab.github.io/eXpress/overview.html#)
 
 ## Module 1
-
+  ChimeraTE module was developed to detect polymorphic chimeric transcripts (TE-gene chimeras) without analysis based on loci-specific TE insertions. The method may be able to detect chimeras derived from polymorphic TE insertions between RNA-seq samples. 
 
 ## Module 2

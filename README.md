@@ -21,6 +21,7 @@
 ### Inputs:
 
   #### 1. Stranded paired-end RNA-seq
+  - It's strongly recommended to use ChimeraTE with RNA-seq replicates.
   #### 2. Reference transcripts (.fasta)
   - In order to run ChimeraTE correctly, this fasta file **must** have a specific header pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance, in _D. melanogaster_, the gene FBgn0263977 has two sequences:
   Tim17b-RA_FBgn0263977
@@ -39,25 +40,32 @@
   We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
   
 ### Usage
->bash chimeraTE_mdl1.sh --help
->ChimeraTE - Usage commandline
->
->        Required arguments:
->
->        -1 | --mate1    	paired-end R1
->
->        -2 | --mate2    	paired-end R2
->
->        -g | --gene     	gene sequences .fa
->
->        -t | --te       	TE sequences .fa
->
->        -p | --project  	project name
->
->	-s | --strandness	Select rf-stranded if your reads are reverse->forward; or fr-stranded if they are forward->reverse
->
->        Optional arguments:
->
->	-c | --cutoff   	Minimum chimeric pairs
+````
+bash chimeraTE_mdl1.sh --help
+````
 
+````
+ChimeraTE - Usage commandline
 
+   Required arguments:
+
+        -1 | --mate1    	paired-end R1 (multiple replicates must be comma-separated)
+
+        -2 | --mate2    	paired-end R2 (multiple replicates must be comma-separated)
+
+        -g | --gene     	gene sequences .fa
+
+        -t | --te       	TE sequences .fa
+
+        -p | --project  	project name
+  
+        -s | --strandness	Select rf-stranded if your reads are reverse->forward; or fr-stranded if they are forward->reverse
+
+   Optional arguments:
+
+	      -c | --cutoff   	Minimum chimeric pairs
+        
+        # threads
+        
+        # min fpkm
+ ````

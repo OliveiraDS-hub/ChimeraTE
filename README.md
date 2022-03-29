@@ -36,4 +36,6 @@
   - This .fasta file must have only TE insertions. Be sure that they do not contains any Satellites or Low complexity repeats.
   - The .fasta file with the reference TE insertions **must** have only the TE family in the headers. For instance, if _D. melanogaster_ genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1".
 
+  We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
+  
 ## Module 2

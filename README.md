@@ -39,37 +39,82 @@ conda activate chimeraTE
 
   We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
   
-### Usage
+### Util scripts
+
+#### RepeatMasker masking the genome (proper .gtf to use as mode1 input)
+````
+bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human>] [--out <output_file>] [options]
+
+#Mandatory arguments:
+
+  --genome    file with genome (.fasta)
+
+  --ref_TEs   "species" database used by RepeatMasker (flies, human, mouse, arabidopsis...)
+
+  --out       output file
+
+#Optional arguments:
+
+  --threads   Number of threads, (default: 6)
+
+  --dist      Distance in nt between LTR and Internal regions, as well as fragments from the
+              same TE family that will be merged, (default: 50)
+````
+  
+#### RepeatMasker .out file to fasta (proper fasta to use as mode2 input)
+````
+bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_file>
+  #Mandatory arguments:
+
+  --genome    file with genome (.fasta)
+  --rm   file from RepeatMasker (.out)
+  --out   output with TE insertions (.fasta)
+````
+
+#### RepeatMasker .out file to fasta (proper fasta to use as mode2 input)
+
+  
+### Usage mode1
 ````
 bash chimeraTE_mdl1.sh --help
 ````
 
 ````
-ChimeraTE - Usage commandline
+USAGE:
 
-   Required arguments:
+-One-replicate:
 
-        -1 | --mate1    	paired-end R1 (multiple replicates must be comma-separated)
+ChimTE-mode1.sh [--mate1 <mate1.fastq.gz>] [--mate2 <mate2.fastq.gz>] [--genome <genome.fasta>] [--te <TE_insertions.gtf or TE_insertions.bed>] [--gene <gene_annotation.gtf>] [--project <project_name>]
 
-        -2 | --mate2    	paired-end R2 (multiple replicates must be comma-separated)
+#Mandatory arguments:
 
-        -g | --gene     	gene sequences .fa
+   --mate1	paired-end R1
 
-        -t | --te       	TE sequences .fa
+   --mate2	paired-end R2
 
-        -p | --project  	project name
-  
-        -s | --strandness	Select rf-stranded if your reads are reverse->forward; or fr-stranded if they are forward->reverse
+   --genome	genome sequence .fa
 
-   Optional arguments:
+   --te	GTF file with TE coordinates
 
-	      -c | --cutoff   	Minimum chimeric pairs
-        
-        # threads
-        
-        # min fpkm
+   --gene	GTF file with genes coordinates
+
+   --project	project name
+
+#Optional arguments:
+
+   --window	Upstream and downstream window size (default = 3000)
+
+   --overlap  Minimum overlap between chimeric reads and TE insertions
+
+   --utr 	It must be used if your gene annotation (-a | --gene) has UTR regions (default = off)
+
+   --fpkm   Minimum fpkm to consider a gene as expressed (default = 1)
+
+   --threads  Number of threads (default:6)
  ````
  
- ### Example
- 
+Explain the pipeline here
+
+### Usage mode2
+
  

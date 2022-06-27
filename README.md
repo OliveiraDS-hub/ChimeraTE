@@ -41,7 +41,7 @@ conda activate chimeraTE
   
 ### Util scripts
 
-#### RepeatMasker masking the genome (proper .gtf to use as mode1 input)
+#### Masking the genome with RepeatMasker (output: proper .gtf to use as mode1 input)
 ````
 bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human>] [--out <output_file>] [options]
 
@@ -61,7 +61,7 @@ bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human>] [--o
               same TE family that will be merged, (default: 50)
 ````
   
-#### RepeatMasker .out file to fasta (proper fasta to use as mode2 input)
+#### .out file from RepeatMasker to fasta (output: proper fasta to use as mode2 input)
 ````
 bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_file>
   #Mandatory arguments:

@@ -85,29 +85,29 @@ ChimTE-mode1.sh [--mate1 <mate1.fastq.gz>] [--mate2 <mate2.fastq.gz>] [--genome 
 
 #Mandatory arguments:
 
-   --mate1	paired-end R1
+   --mate1			mate 1 from paired-end reads
 
-   --mate2	paired-end R2
+   --mate2			mate 2 from paired-end reads
 
-   --genome	genome sequence .fa
+   --genome			genome sequence .fa
 
-   --te	GTF file with TE coordinates
+   --te				GTF file with TE coordinates
 
-   --gene	GTF file with genes coordinates
+   --gene			GTF file with genes coordinates
 
-   --project	project name
+   --project			project name
 
 #Optional arguments:
 
-   --window	Upstream and downstream window size (default = 3000)
+   --window			Upstream and downstream window size (default = 3000)
 
-   --overlap  Minimum overlap between chimeric reads and TE insertions
+   --overlap  			Minimum overlap between chimeric reads and TE insertions
 
-   --utr 	It must be used if your gene annotation (-a | --gene) has UTR regions (default = off)
+   --utr 			It must be used if your gene annotation (-a | --gene) has UTR regions (default = off)
 
-   --fpkm   Minimum fpkm to consider a gene as expressed (default = 1)
+   --fpkm   			Minimum fpkm to consider a gene as expressed (default = 1)
 
-   --threads  Number of threads (default:6)
+   --threads			Number of threads (default:6)
  ````
  
 Explain the pipeline here
@@ -132,23 +132,23 @@ ChimTE-mode2.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>] 
 
 #Mandatory arguments:
 
-  --mate1 mate 1 from paired-end reads
+  --mate1 			mate 1 from paired-end reads
 
-  --mate2 mate 2 from paired-end reads
+  --mate2 			mate 2 from paired-end reads
 
-  --te  TE insertions (fasta)
+  --te				TE insertions (.fasta)
 
-  --transcripts transcripts (fasta)
+  --transcripts			transcripts (.fasta)
 
-  --stranded  Select "rf-stranded" if your reads are reverse->forward; or "fr-stranded" if they are forward->reverse
+  --stranded			Select "rf-stranded" if your reads are reverse->forward; or "fr-stranded" if they are forward->reverse
 
-  --project project name
+  --project			project name
 
 #Optional arguments:
 
-  --cutoff Minimum chimeric reads as support (default: 2)
+  --cutoff			Minimum chimeric reads as support (default: 2)
 
-  --threads Number of threads, (default: 6)
+  --threads			Number of threads, (default: 6)
 ````
 
 ### Usage mode3
@@ -188,7 +188,7 @@ ChimTE-transcripts.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq
 
     --threads               	Number of threads, (default: 6)
 
-    --ram                   	RAM memory (default: 8 Gbytes)
+    --ram			RAM memory (default: 8 Gbytes)
 
     --TE_length                 Minimum TE length to keep it from RepeatMasker output (default: 80bp)
 

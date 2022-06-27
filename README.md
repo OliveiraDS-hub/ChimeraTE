@@ -1,11 +1,21 @@
 # ChimeraTE
 ## Install
+The installation may be easily done with conda, with chimeraTE.yml file:
+````
+#create chimeraTE environment with all dependencies
+conda env create -f chimeraTE.yml
+
+#activate the new environment
+conda activate chimeraTE
+````
 ### Dependencies
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml)
 - [seqtk](https://github.com/lh3/seqtk)
 - [samtools](http://www.htslib.org/download/)
 - [bedtools](https://github.com/arq5x/bedtools2/releases)
 - [express](https://pachterlab.github.io/eXpress/overview.html#)
+- [RSEM](https://github.com/deweylab/RSEM)
+- [Trinity](https://github.com/trinityrnaseq/trinityrnaseq)
 
 ### Inputs:
 

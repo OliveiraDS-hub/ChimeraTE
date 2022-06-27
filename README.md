@@ -70,13 +70,10 @@ bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out
   --rm   file from RepeatMasker (.out)
   --out   output with TE insertions (.fasta)
 ````
-
-#### RepeatMasker .out file to fasta (proper fasta to use as mode2 input)
-
   
 ### Usage mode1
 ````
-bash chimeraTE_mdl1.sh --help
+bash ChimeraTE_mode1.sh --help
 ````
 
 ````
@@ -117,4 +114,89 @@ Explain the pipeline here
 
 ### Usage mode2
 
- 
+````
+bash ChimeraTE_mode2.sh --help
+````
+
+````
+USAGE:
+
+-One-replicate:
+
+ChimTE-mode2.sh [--mate1 <mate1.fastq.gz>] [--mate2 <mate2.fastq.gz>] [--te <TE_insertions.fa>] [--transcripts <transcripts.fa>] [--stranded <rf-stranded or fr-stranded>] [--project <project_name>] [options]
+
+-Multi-replicates:
+
+ChimTE-mode2.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>] [--mate2 <mate2_replicate1.fastq.gz,mate2_replicate2.fastq.gz>] [--te <TE_insertions.fa>] [--transcripts <transcripts.fa>] [--stranded <rf-stranded or fr-stranded>] [--project <project_name>] [options]
+
+
+#Mandatory arguments:
+
+  --mate1 mate 1 from paired-end reads
+
+  --mate2 mate 2 from paired-end reads
+
+  --te  TE insertions (fasta)
+
+  --transcripts transcripts (fasta)
+
+  --stranded  Select "rf-stranded" if your reads are reverse->forward; or "fr-stranded" if they are forward->reverse
+
+  --project project name
+
+#Optional arguments:
+
+  --cutoff Minimum chimeric reads as support (default: 2)
+
+  --threads Number of threads, (default: 6)
+````
+
+### Usage mode3
+
+````
+bash ChimeraTE_mode3.sh --help
+````
+
+````
+USAGE:
+
+-One-replicate:
+
+ChimTE-transcripts.sh [--mate1 <mate1.fastq.gz>] [--mate2 <mate2.fastq.gz>] [--stranded <RF or FR>] [--transcripts <transcripts.fa>] [--ref_TEs <taxonomy or library_TEs.fa>] [options]
+
+-Multi-replicates:
+
+ChimTE-transcripts.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>] [--mate2 <mate2_replicate1.fastq.gz,mate2_replicate2.fastq.gz>] [--stranded <RF or FR>] [--transcripts <transcripts.fa>] [--ref_TEs <taxonomy or library_TEs.fa>] [options]
+
+
+#Mandatory arguments:
+
+    --mate1			mate 1 from paired-end reads
+
+    --mate2			mate 2 from paired-end reads
+
+    --stranded		  	indicates the order of the stranded RNA-seq (RF - reverse/forward; FR - forward/reverse)
+
+    --transcripts		fasta file with reference transcripts
+
+    --ref_TEs			"species" database used by RepeatMasker (flies, human, mouse, arabidopsis);
+				or a built TE library in fasta format
+
+#Optional arguments:
+
+    --output		  	Output directory
+
+    --threads               	Number of threads, (default: 6)
+
+    --ram                   	RAM memory (default: 8 Gbytes)
+
+    --TE_length                 Minimum TE length to keep it from RepeatMasker output (default: 80bp)
+
+    --min_length          	Minimum length with homology between de novo assembled transcripts and reference transcripts (default: 80%)
+
+    --overlap              	Minmum overlap (0.1 to 1) between read length and TE insertion (default: 0.5)
+
+    --min_TPM             	Minimum TPM expression (default: 1)
+
+    -h, --help                  Show this help message and exit
+````

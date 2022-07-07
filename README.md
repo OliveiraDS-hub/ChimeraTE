@@ -71,7 +71,7 @@ bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out
   --out   output with TE insertions (.fasta)
 ````
   
-### Usage mode1
+### ChimeraTE genome-guided (mode1)
 ````
 bash ChimeraTE_mode1.sh --help
 ````
@@ -112,7 +112,7 @@ ChimTE-mode1.sh [--mate1 <mate1.fastq.gz>] [--mate2 <mate2.fastq.gz>] [--genome 
  
 Explain the pipeline here
 
-### Usage mode2
+### ChimeraTE de novo approach (mode2)
 
 ````
 bash ChimeraTE_mode2.sh --help
@@ -151,7 +151,7 @@ ChimTE-mode2.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>] 
   --threads			Number of threads, (default: 6)
 ````
 
-### Usage mode3
+### ChimeraTE transcriptome-guided (mode3)
 
 ````
 bash ChimeraTE_mode3.sh --help

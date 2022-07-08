@@ -16,28 +16,6 @@ conda activate chimeraTE
 - [express](https://pachterlab.github.io/eXpress/overview.html#)
 - [RSEM](https://github.com/deweylab/RSEM)
 - [Trinity](https://github.com/trinityrnaseq/trinityrnaseq)
-
-### Inputs:
-
-  #### 1. Stranded paired-end RNA-seq
-  - It's strongly recommended to use ChimeraTE with RNA-seq replicates.
-  
-  #### 2. Reference transcripts (.fasta)
-  - In order to run ChimeraTE correctly, this fasta file **must** have a specific header pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance, in _D. melanogaster_, the gene FBgn0263977 has two transcripts:
-  Tim17b-RA_FBgn0263977
-  Tim17b-RB_FBgn0263977
-  
-  Note that headers "Tim17b-RA" and "Tim17b-RB" have isoform ID separated from gene name by "_". 
-  This is not a usual ID format, thefore we have developed auxiliary scripts (scripts/aux/) to convert native IDs the script _transcripts_IDs_NCBI.sh_ to transform the IDs from native NCBI format to the ChimeraTE format (see details in Manual). This script may be used if you are using a genome annotation from NCBI.
-
-  In addition, we provide here the corrected IDs for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
-
-  #### 3. Reference TE insertions (.fasta)
-
-  - This .fasta file must have only TE insertions. Be sure that they do not contains any Satellites or Low complexity repeats.
-  - The .fasta file with the reference TE insertions **must** have only the TE family in the headers. For instance, if _D. melanogaster_ genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1".
-
-  We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
   
 ### Util scripts
 
@@ -114,6 +92,31 @@ Explain the pipeline here
 
 ### ChimeraTE de novo approach (mode2)
 
+This mode is going to perform two alignment with stranded RNA-seq reads: (1) against transcripts; (2) against TE insertions. From these alignments, all reads supporting chimeric transcripts (chimeric reads) will be computed. These reads are thise ones that have different singleton mates from the same read pairs splitted between transcripts and TEs, or those that have concordant alignment in one of the alignments, but singleton aligned reads in the other.
+
+
+In order to run this mode, despite the format of the input files are simple fastas, the sequence IDs must be in a specific pattern. 
+### Inputs:
+
+  #### 1. Stranded paired-end RNA-seq
+  - It's strongly recommended to use ChimeraTE with RNA-seq replicates.
+  
+  #### 2. Reference transcripts (.fasta)
+  - In order to run ChimeraTE correctly, this fasta file **must** have a specific header pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance, in _D. melanogaster_, the gene FBgn0263977 has two transcripts:
+  Tim17b-RA_FBgn0263977
+  Tim17b-RB_FBgn0263977
+  
+  Note that headers "Tim17b-RA" and "Tim17b-RB" have isoform ID separated from gene name by "_". 
+  This is not a usual ID format, thefore we have developed auxiliary scripts (scripts/aux/) to convert native IDs the script _transcripts_IDs_NCBI.sh_ to transform the IDs from native NCBI format to the ChimeraTE format (see details in Manual). This script may be used if you are using a genome annotation from NCBI.
+
+  In addition, we provide here the corrected IDs for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
+
+  #### 3. Reference TE insertions (.fasta)
+
+  - This .fasta file must have only TE insertions. Be sure that they do not contains any Satellites or Low complexity repeats.
+  - The .fasta file with the reference TE insertions **must** have only the TE family in the headers. For instance, if _D. melanogaster_ genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1".
+
+  We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
 ````
 bash ChimeraTE_mode2.sh --help
 ````

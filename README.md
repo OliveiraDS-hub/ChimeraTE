@@ -7,6 +7,13 @@ conda env create -f chimeraTE.yml
 
 #activate the new environment
 conda activate chimeraTE
+
+#Download repository from github
+git clone ....
+
+#Give write permissions
+chmod a+x $CHIMERATE_PATH/scripts/*
+
 ````
 ### Dependencies
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml)

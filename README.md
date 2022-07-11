@@ -1,4 +1,9 @@
 # ChimeraTE
+## Bianca:
+````
+bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq --mate2 example_data/mode1/sample1_R2.fq,example_data/mode1/sample2_R2.fq --genome genome.fasta --te tes_RM_final.gtf --gene gene-all-r6.43.gtf --project sampling-mode1 --threads 6 --utr
+````
+
 ## Install
 The installation may be easily done with conda, with chimeraTE.yml file:
 ````

@@ -32,6 +32,8 @@ chmod a+x $CHIMERATE_PATH/scripts/*
 ### ChimeraTE
 ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two usage modes: (mode1): It's able to detect chimeric transcripts based upon exons and TE copies positions in the genome sequence; (mode2): It's able to detect chimeric transcripts regardless the genomic position, allowing the detection of chimeras from TEs that are not present in the referece genome, but with less sensivity.
 
+#### Prepare your data!
+In order to run ChimeraTE correctly, it's required a few specific patterns to the files: 
 ### Util scripts
 
 #### Masking the genome with RepeatMasker (output: proper .gtf to use as mode1 input)

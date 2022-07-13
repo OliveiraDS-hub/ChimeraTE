@@ -257,30 +257,30 @@ while IFS= read -r SAMP; do
 	mkdir "$PROJECT"/"$sample" "$PROJECT"/indexes/ "$PROJECT"/"$sample"/alignment "$PROJECT"/"$sample"/chimeric_reads/ "$PROJECT"/"$sample"/plot "$PROJECT"/"$sample"/tmp_dir 2>/dev/null
   fi
 
-	export ALN="$PROJECT"/"$sample"/alignment
-	export READS="$PROJECT"/"$sample"/chimeric_reads
+  export ALN="$PROJECT"/"$sample"/alignment
+  export READS="$PROJECT"/"$sample"/chimeric_reads
 
-	#echo -e "\nRunning part1.sh - Gene and TE alignments $sample"
-	#./scripts/mode2/part1-mode2.sh
+  echo -e "\nRunning part1.sh - Gene and TE alignments $sample"
+  ./scripts/mode2/part1-mode2.sh
 
-	#echo -e "\nRunning part2.sh - Identifying all chimeric read pairs $sample_names"
-	#./scripts/mode2/part2-mode2.sh
+  echo -e "\nRunning part2.sh - Identifying all chimeric read pairs $sample_names"
+  ./scripts/mode2/part2-mode2.sh
 
-  #echo -e "\nRunning expression.sh - calculating expression level of chimeric transcripts $sample_names"
-  #./scripts/mode2/expression-mode2.sh
+  echo -e "\nRunning expression.sh - calculating expression level of chimeric transcripts $sample_names"
+  ./scripts/mode2/expression-mode2.sh
 
   if [[ -f "$PROJECT"/"$sample"/"$sample"_output-final.ct ]]; then
     cp "$PROJECT"/"$sample"/"$sample"_output-final.ct "$PROJECT"/tmp
   fi
 
-  #if [ ! -z $ASSEMBLY ]; then
-  #  mkdir "$PROJECT"/"$sample"/trinity_out; TRINITY_OUT="$PROJECT/$sample/trinity_out"
-  #  ./scripts/mode2/assembly.sh
-  #  ./scripts/mode2/assembled-chimeras.sh; else
-  #  echo "--assembly option is OFF"
-  #fi
+  if [ ! -z $ASSEMBLY ]; then
+    mkdir "$PROJECT"/"$sample"/trinity_out; TRINITY_OUT="$PROJECT/$sample/trinity_out"
+    ./scripts/mode2/assembly.sh
+    ./scripts/mode2/assembled-chimeras.sh; else
+    echo "--assembly option is OFF"
+  fi
 done < "$PROJECT"/tmp/samples.lst
 fi
 
-#echo -e "\nRunning replicability.sh - Checking for chimeras found in more than 1 RNA-seq replicate"
-#./scripts/mode2/replicability-mode2.sh
+echo -e "\nRunning replicability.sh - Checking for chimeras found in more than 1 RNA-seq replicate"
+./scripts/mode2/replicability-mode2.sh

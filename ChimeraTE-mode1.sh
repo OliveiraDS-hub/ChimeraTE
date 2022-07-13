@@ -58,9 +58,8 @@ COV="2"
 REP="2"
 DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-bash ./scripts/mode1/header.sh
-
 if [ "$#" -eq 0 ]; then echo -e "\n${RED}ERROR${NC}: No parameters provided! Exiting..." && usage >&2; exit 1; fi
+bash ./scripts/mode1/header.sh
 
 while [[ $# -gt 0 ]]; do
 	case $1 in

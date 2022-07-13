@@ -34,6 +34,9 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
 
 #### Prepare your data!
 In order to run ChimeraTE correctly, it's required a few specific patterns to the files: 
+
+TABLE WITH FILES
+
 ### Util scripts
 
 #### Masking the genome with RepeatMasker (output: proper .gtf to use as mode1 input)

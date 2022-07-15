@@ -70,9 +70,7 @@ bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out
 ````
   
 ### ChimeraTE genome-guided (mode1)
-````
-bash ChimeraTE_mode1.sh --help
-````
+---
 
 ````
 USAGE:

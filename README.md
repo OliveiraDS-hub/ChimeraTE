@@ -59,7 +59,7 @@ In order to run ChimeraTE, the following files are required according to the run
 
 Stranded paired-end libraries, genome fasta file and gene annotation are common files that can be found in databases for many species. However, TE annotation may be not easy to find publicly available to non-reference species/strains. 
 
-Then, you can use our *masking.sh* util script to mask any genome with RepeatMasker. 
+Then, you can use our *masking.sh* util script to mask any genome with RepeatMasker and One Code to Find Them All. 
 
 | Parameter | Description |
 | -------- | -------- |

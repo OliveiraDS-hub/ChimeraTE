@@ -12,10 +12,10 @@ It has been tested only in Linux machines, Ubuntu 18.04 and 20.04.
 ## Install
 The installation may be easily done with conda. If you don't have conda installed in your machine, please follow [this tutorial](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html).
 
-Once you have installed conda, all softwares required to run ChimeraTE can be easily installed in a new conda environment by using the chimeraTE.yml file:
+Once you have installed conda, all dependencies to run ChimeraTE can be easily installed in a new conda environment by using the chimeraTE.yml file:
 ````
 #Download repository from github
-git clone blabla
+git clone https://github.com/oliveirads-bioinfo/ChimeraTE.git
 
 #Go to ChimeraTE's folder
 cd $FOLDER/ChimeraTE
@@ -31,6 +31,9 @@ chmod a+x $FOLDER/ChimeraTE/scripts/*
 
 ````
 ### Dependencies
+
+If you don't want to install ChimeraTE with conda, you can install manually the following dependencies:
+
 - [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml)
 - [seqtk](https://github.com/lh3/seqtk)
 - [samtools](http://www.htslib.org/download/)
@@ -40,8 +43,7 @@ chmod a+x $FOLDER/ChimeraTE/scripts/*
 - [Trinity](https://github.com/trinityrnaseq/trinityrnaseq)
   
 
-
-#### Prepare your data!
+## Prepare your data!
 In order to run ChimeraTE correctly, it's required a few specific patterns to the files: 
 
 TABLE WITH FILES

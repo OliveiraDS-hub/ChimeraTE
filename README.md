@@ -1,19 +1,33 @@
 # ChimeraTE
 
+### ChimeraTE
+ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two usage Modes:
+
+Mode 1 chimeric transcripts detection based upon exons and TE copies positions in the genome sequence; 
+
+Mode 2 chimeric transcripts detection regardless the genomic position, allowing the detection of chimeras from TEs that are not present in the referece genome, but with less sensivity.
+
+It has been tested only in Linux machines, Ubuntu 18.04 and 20.04.
+
 ## Install
-The installation may be easily done with conda, by using the chimeraTE.yml file:
+The installation may be easily done with conda. If you don't have conda installed in your machine, please follow [this tutorial](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html).
+
+Once you have installed conda, all softwares required to run ChimeraTE can be easily installed in a new conda environment by using the chimeraTE.yml file:
 ````
+#Download repository from github
+git clone blabla
+
+#Go to ChimeraTE's folder
+cd $FOLDER/ChimeraTE
+
 #create chimeraTE environment with all dependencies
 conda env create -f chimeraTE.yml
 
 #activate the new environment
 conda activate chimeraTE
 
-#Download repository from github
-git clone ....
-
 #Give write permissions
-chmod a+x $CHIMERATE_PATH/scripts/*
+chmod a+x $FOLDER/ChimeraTE/scripts/*
 
 ````
 ### Dependencies
@@ -25,8 +39,7 @@ chmod a+x $CHIMERATE_PATH/scripts/*
 - [RSEM](https://github.com/deweylab/RSEM)
 - [Trinity](https://github.com/trinityrnaseq/trinityrnaseq)
   
-### ChimeraTE
-ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two usage modes: (mode1): It's able to detect chimeric transcripts based upon exons and TE copies positions in the genome sequence; (mode2): It's able to detect chimeric transcripts regardless the genomic position, allowing the detection of chimeras from TEs that are not present in the referece genome, but with less sensivity.
+
 
 #### Prepare your data!
 In order to run ChimeraTE correctly, it's required a few specific patterns to the files: 

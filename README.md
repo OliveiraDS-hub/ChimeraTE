@@ -42,47 +42,20 @@ If you don't want to install ChimeraTE with conda, you can install manually the 
 - [RSEM](https://github.com/deweylab/RSEM)
 - [Trinity](https://github.com/trinityrnaseq/trinityrnaseq)
   
-
-## Prepare your data!
-In order to run ChimeraTE correctly, it's required a few specific patterns to the files: 
+## Required data
+In order to run ChimeraTE, the following files are required according to the running Mode: 
 
 | Data | Mode 1 | Mode 2 | Mode 2 - assembly |
 | -------- | -------- | -------- | -------- |
+| Stranded paired-end RNA-seq - Fastq files     | X    |   X   |    X   |
 | Assembled genome - Fasta file with chromosomes/scaffolds/contigs sequences     | X    |      |       |
 | Gene annotation -  GTF file with gene annotations (UTRs,exons,CDS)     | X     |       |       |
 | TE annotation -  GTF file with TE insertions     | X     |       |       |
 | Reference transcripts - Fasta file with reference transcripts     |      |   X    |    X   |
 | Reference TEs - Fasta file with reference TE insertions    |      |   X    |    X   |
-| Reference TEs - Fasta file with reference TE insertions    |      |   X    |    X   |
+| TEs consensuses - Fasta file with reference TE consensuses    |      |       |    X   |
 
-
-
-
-
-
-
-**Mode 1 data**
-| Data | Mode 1 | Mode 2 | Mode 2 - assembly |
-| -------- | -------- | -------- | -------- |
-| Assembled genome (.fa)     | Fasta file with chromosomes/scaffolds/contigs sequences     |
-| Gene annotation (.gtf)     | GTF file with gene annotations (UTRs,exons,CDS)     |
-| TE annotation (.gtf)     | GTF file with TE insertions     |
-
-
-
-
-
-
-
-
-
-
-**Mode 2 data**
-| Data | Mode 2 | Mode 2 - assembly |
-| -------- | -------- | -------- |
-| Assembled genome (.fa)     | Fasta file with chromosomes/scaffolds/contigs sequences     |  GTF file with TE insertions     |
-| Gene annotation (.gtf)     | GTF file with gene annotations (UTRs,exons,CDS)     |  GTF file with TE insertions     |
-| TE annotation (.gtf)     | GTF file with TE insertions     |  GTF file with TE insertions     |
+## Prepare your data!
 
 ### Util scripts
 

@@ -95,43 +95,10 @@ bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out
 ### ChimeraTE genome-guided (mode1)
 ---
 
-````
-USAGE:
 
--One-replicate:
-
-ChimTE-mode1.sh [--mate1 <mate1.fastq.gz>] [--mate2 <mate2.fastq.gz>] [--genome <genome.fasta>] [--te <TE_insertions.gtf or TE_insertions.bed>] [--gene <gene_annotation.gtf>] [--project <project_name>]
-
-#Mandatory arguments:
-
-   --mate1			mate 1 from paired-end reads
-
-   --mate2			mate 2 from paired-end reads
-
-   --genome			genome sequence .fa
-
-   --te				GTF file with TE coordinates
-
-   --gene			GTF file with genes coordinates
-
-   --project			project name
-
-#Optional arguments:
-
-   --window			Upstream and downstream window size (default = 3000)
-
-   --overlap  			Minimum overlap between chimeric reads and TE insertions
-
-   --utr 			It must be used if your gene annotation (-a | --gene) has UTR regions (default = off)
-
-   --fpkm   			Minimum fpkm to consider a gene as expressed (default = 1)
-
-   --threads			Number of threads (default:6)
- ````
  
-Explain the pipeline here
 
-### ChimeraTE de novo approach (mode2)
+### ChimeraTE genome-blinded (mode2)
 
 This mode is going to perform two alignment with stranded RNA-seq reads: (1) against transcripts; (2) against TE insertions. From these alignments, all reads supporting chimeric transcripts (chimeric reads) will be computed. These reads are thise ones that have different singleton mates from the same read pairs splitted between transcripts and TEs, or those that have concordant alignment in one of the alignments, but singleton aligned reads in the other.
 
@@ -162,38 +129,7 @@ In order to run this mode, despite the format of the input files are simple fast
 bash ChimeraTE_mode2.sh --help
 ````
 
-````
-USAGE:
 
--One-replicate:
-
-ChimTE-mode2.sh [--mate1 <mate1.fastq.gz>] [--mate2 <mate2.fastq.gz>] [--te <TE_insertions.fa>] [--transcripts <transcripts.fa>] [--stranded <rf-stranded or fr-stranded>] [--project <project_name>] [options]
-
--Multi-replicates:
-
-ChimTE-mode2.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>] [--mate2 <mate2_replicate1.fastq.gz,mate2_replicate2.fastq.gz>] [--te <TE_insertions.fa>] [--transcripts <transcripts.fa>] [--stranded <rf-stranded or fr-stranded>] [--project <project_name>] [options]
-
-
-#Mandatory arguments:
-
-  --mate1 			mate 1 from paired-end reads
-
-  --mate2 			mate 2 from paired-end reads
-
-  --te				TE insertions (.fasta)
-
-  --transcripts			transcripts (.fasta)
-
-  --stranded			Select "rf-stranded" if your reads are reverse->forward; or "fr-stranded" if they are forward->reverse
-
-  --project			project name
-
-#Optional arguments:
-
-  --cutoff			Minimum chimeric reads as support (default: 2)
-
-  --threads			Number of threads, (default: 6)
-````
 
 ## License
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.

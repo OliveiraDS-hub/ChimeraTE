@@ -1,6 +1,5 @@
-# ChimeraTE
+# The pipeline
 
-### ChimeraTE
 ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two usage Modes:
 
 Mode 1 chimeric transcripts detection based upon exons and TE copies positions in the genome sequence; 

@@ -82,9 +82,63 @@ bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out
 ````
   
 ### ChimeraTE genome-guided (mode1)
+#### USAGE
+````
+ChimTE-mode1.sh   [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>]
+                  [--mate2 <mate2_replicate1.fastq.gz,mate2_replicate2.fastq.gz>]
+                  [--genome <genome.fasta>]
+                  [--te <TE_insertions.gtf>]
+                  [--gene <gene_annotation.gtf>]
+                  [--project <project_name>]
+
+#Mandatory arguments:
+
+   --mate1                 FASTQ paired-end R1
+
+   --mate2                 FASTQ paired-end R2
+
+   --genome                FASTA genome sequence
+
+   --te                    GTF/GFF with TE coordinates
+
+   --gene                  GTF/GFF with genes coordinates
+
+   --project               project name (it's the name of the directory that will be created inside projects/)
+
+#Optional arguments:
+
+   --window                Upstream and downstream window size (default = 3000)
+
+   --overlap               Minimum overlap between chimeric reads and TE insertions (default = 0.5 -50%-)
+
+   --utr                   It must be used if your gene annotation (-a | --gene) has UTR regions (default = off)
+
+   --fpkm                  Minimum fpkm to consider a gene as expressed (default = 1)
+
+   --coverage              Minimum coverage for chimeric transcripts detection (default = 2)
+
+   --replicate	           Minimum recurrency of chimeric transcripts between RNA-seq replicates (default = 2)
+
+   --threads               Number of threads (default = 6)
+````
+| **Parameter** | **Description** |
+| -------- | -------- |
+| --mate1 [required]    |  FASTQ paired-end R1 |
+| --mate2 [required]    |  FASTQ paired-end R2 |
+| --genome [required]    |  FASTA genome sequence |
+| --te [required]   |  GTF/GFF with TE coordinates |
+| --gene [required]    |  GTF/GFF with genes coordinates |
+| --project [required]    |  project name (it's the name of the directory that will be created inside projects/) |
+| --window [optional]    |  Upstream and downstream window size (default = 3000) |
+| --overlap     |  Minimum overlap between chimeric reads and TE insertions (default = 0.5 -50%-) |
+| --utr     |  It must be used if your gene annotation (-a | --gene) has UTR regions (default = off) |
+| --fpkm     |  Minimum fpkm to consider a gene as expressed (default = 1) |
+| --coverage     |  Minimum coverage for chimeric transcripts detection (default = 2) |
+| --replicate     |  Minimum recurrency of chimeric transcripts between RNA-seq replicates (default = 2) |
+| --threads     |  Number of threads (default = 6) |
+
+
 ---
-
-
  
 
 ### ChimeraTE genome-blinded (mode2)

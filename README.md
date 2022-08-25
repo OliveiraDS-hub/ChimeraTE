@@ -29,18 +29,7 @@ conda activate chimeraTE
 chmod a+x $FOLDER/ChimeraTE/scripts/*
 
 ````
-### Dependencies
 
-If you don't want to install ChimeraTE with conda, you can install manually the following dependencies:
-
-- [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml)
-- [seqtk](https://github.com/lh3/seqtk)
-- [samtools](http://www.htslib.org/download/)
-- [bedtools](https://github.com/arq5x/bedtools2/releases)
-- [express](https://pachterlab.github.io/eXpress/overview.html#)
-- [RSEM](https://github.com/deweylab/RSEM)
-- [Trinity](https://github.com/trinityrnaseq/trinityrnaseq)
-  
 ## Required data
 In order to run ChimeraTE, the following files are required according to the running Mode: 
 
@@ -129,7 +118,17 @@ In order to run this mode, despite the format of the input files are simple fast
 bash ChimeraTE_mode2.sh --help
 ````
 
+## Dependencies
 
+If you don't want to install ChimeraTE with conda, you can install manually the following dependencies:
+
+- [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml)
+- [seqtk](https://github.com/lh3/seqtk)
+- [samtools](http://www.htslib.org/download/)
+- [bedtools](https://github.com/arq5x/bedtools2/releases)
+- [express](https://pachterlab.github.io/eXpress/overview.html#)
+- [RSEM](https://github.com/deweylab/RSEM)
+- [Trinity](https://github.com/trinityrnaseq/trinityrnaseq)
 
 ## License
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.

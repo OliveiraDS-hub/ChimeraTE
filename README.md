@@ -8,7 +8,21 @@ Mode 2 chimeric transcripts detection regardless the genomic position, allowing 
 
 It has been tested in Linux machines, Ubuntu 18.04 and 20.04.
 
-## Install
+1. [Install](#installation)
+2. [Required data](#req_data)
+3. [ChimeraTE Mode 1](#mode1)
+    1. [Usage](#usage)
+    2. [Preparing your data](#prep_data)
+    3. [Example data](#example_m1)
+    4. [Output](#out_m1)
+4. [ChimeraTE Mode 2](#text)
+    1. [Usage](#usage_m2)
+    2. [Preparing your data](#prep_data_m2)
+    3. [Example data](#example_m2)
+    4. [Output](#out_m2)
+
+
+## Install <a name="installation"></a>
 The installation may be easily done with conda. If you don't have conda installed in your machine, please follow [this tutorial](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html).
 
 Once you have installed conda, all dependencies to run ChimeraTE can be easily installed in a new conda environment by using the chimeraTE.yml file:
@@ -30,7 +44,7 @@ chmod a+x $FOLDER/ChimeraTE/scripts/*
 
 ````
 
-## Required data
+## Required data <a name="req_data"></a>
 In order to run ChimeraTE, the following files are required according to the running Mode: 
 
 | Data | Mode 1 | Mode 2 | Mode 2 - assembly |
@@ -43,35 +57,7 @@ In order to run ChimeraTE, the following files are required according to the run
 | Reference TEs - Fasta file with reference TE insertions    |      |   X    |    X   |
 | TE consensuses - Fasta file with reference TE consensuses    |      |       |    X   |
 
-## Prepare your data for Mode 1!
 
-Stranded paired-end libraries, genome fasta file and gene annotation are common files that can be found in databases for many species. However, TE annotation may be not easy to find publicly available to non-reference species/strains. 
-
-Then, you can use our *masking.sh* util script to mask any genome with RepeatMasker and One Code to Find Them All. 
-
-| Parameter | Description |
-| -------- | -------- |
-| --genome     |  Fasta file with chromosomes/scaffolds/contigs sequences |
-| --ref_TEs     |  Fasta file with TE consensuses <br />OR<br /> RepeatMasker Dfam reference (i.e.:flies,arabidopsis,human)|
-| --out     |  output file (gtf format) |
-| --threads     |  Number of threads to run RepeatMasker (default: 6) |
-| --dist     | Distance in nt between LTR and Internal regions, as well as <br />fragments from the same TE family that will be merged, (default: 50)  |
-
-````
-bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human>] [--out <output_file>] [options]
-````
-
-This script will provide you a gtf file with TE annotation to run ChimeraTE Mode 1.
-
-
-
-from RepeatMasker is usually given in .out format. Because ChimeraTE Mode 1 requires a gtf file with TE annotation, you can convert .out file from RepeatMasker to .gtf with 
-
-
-
-
-
-#### .out file from RepeatMasker to fasta (output: proper fasta to use as mode2 input)
 ````
 bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_file>
   #Mandatory arguments:
@@ -81,8 +67,13 @@ bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out
   --out   output with TE insertions (.fasta)
 ````
   
-### ChimeraTE genome-guided (mode1)
-#### USAGE
+## ChimeraTE genome-guided (mode1) <a name="mode1"></a>
+````
+$FOLDER/ChimeraTE/
+bash ChimeraTE-mode1.sh --help
+````
+
+### USAGE <a name="usage"></a>
 ````
 ChimTE-mode1.sh   [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>]
                   [--mate2 <mate2_replicate1.fastq.gz,mate2_replicate2.fastq.gz>]
@@ -93,9 +84,9 @@ ChimTE-mode1.sh   [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>
 
 #Mandatory arguments:
 
-   --mate1                 FASTQ paired-end R1
+   --mate1                 FASTQ paired-end R1 (replicates separated by ",")
 
-   --mate2                 FASTQ paired-end R2
+   --mate2                 FASTQ paired-end R2 (replicates separated by ",")
 
    --genome                FASTA genome sequence
 
@@ -121,23 +112,31 @@ ChimTE-mode1.sh   [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>
 
    --threads               Number of threads (default = 6)
 ````
-| **Parameter** | **Description** |
+
+### Prepare your data for Mode 1! <a name="prep_data"></a>
+
+Stranded paired-end libraries, genome fasta file and gene annotation are common files that can be found in databases for many species. However, TE annotation may be not easy to find publicly available to non-reference species/strains. 
+
+Then, you can use our *masking.sh* util script to mask any genome with RepeatMasker and One Code to Find Them All. 
+
+| Parameter | Description |
 | -------- | -------- |
-| --mate1 [required]    |  FASTQ paired-end R1 |
-| --mate2 [required]    |  FASTQ paired-end R2 |
-| --genome [required]    |  FASTA genome sequence |
-| --te [required]   |  GTF/GFF with TE coordinates |
-| --gene [required]    |  GTF/GFF with genes coordinates |
-| --project [required]    |  project name (it's the name of the directory that will be created inside projects/) |
-| --window [optional]    |  Upstream and downstream window size (default = 3000) |
-| --overlap     |  Minimum overlap between chimeric reads and TE insertions (default = 0.5 -50%-) |
-| --utr     |  It must be used if your gene annotation (-a | --gene) has UTR regions (default = off) |
-| --fpkm     |  Minimum fpkm to consider a gene as expressed (default = 1) |
-| --coverage     |  Minimum coverage for chimeric transcripts detection (default = 2) |
-| --replicate     |  Minimum recurrency of chimeric transcripts between RNA-seq replicates (default = 2) |
-| --threads     |  Number of threads (default = 6) |
+| --genome     |  Fasta file with chromosomes/scaffolds/contigs sequences |
+| --ref_TEs     |  Fasta file with TE consensuses <br />OR<br /> RepeatMasker Dfam reference (i.e.:flies,arabidopsis,human)|
+| --out     |  output file (gtf format) |
+| --threads     |  Number of threads to run RepeatMasker (default: 6) |
+| --dist     | Distance in nt between LTR and Internal regions, as well as <br />fragments from the same TE family that will be merged, (default: 50)  |
+
+````
+bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human>] [--out <output_file>] [options]
+````
+
+This script will provide you a gtf file with TE annotation to run ChimeraTE Mode 1.
 
 
+from RepeatMasker is usually given in .out format. Because ChimeraTE Mode 1 requires a gtf file with TE annotation, you can convert .out file from RepeatMasker to .gtf with 
+
+#### .out file from RepeatMasker to fasta (output: proper fasta to use as mode2 input)
 ---
  
 

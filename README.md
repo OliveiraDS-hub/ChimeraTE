@@ -47,7 +47,7 @@ chmod a+x $FOLDER/ChimeraTE/scripts/*
 ## Required data <a name="req_data"></a>
 In order to run ChimeraTE, the following files are required according to the running Mode: 
 
-| Data | Mode 1 | Mode 2 | Mode 2 - assembly |
+| Data | Mode 1 | Mode 2 | Mode 2 --assembly |
 | -------- | -------- | -------- | -------- |
 | Stranded paired-end RNA-seq - Fastq files     | X    |   X   |    X   |
 | Assembled genome - Fasta file with chromosomes/scaffolds/contigs sequences     | X    |      |       |
@@ -127,7 +127,7 @@ from RepeatMasker is usually given in .out format. Because ChimeraTE Mode 1 requ
 
 ---
  
-## Example Data Mode 1 <a name="example_m1"></a>
+### Example Data Mode 1 <a name="example_m1"></a>
 After installation, you can run ChimeraTE with the example data from the sampled RNA-seq from *D. melanogaster* used in our paper.
 
 ````
@@ -143,6 +143,9 @@ bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mo
                         --project sampling-mode1 \
                         --utr
 ````
+
+### Output Mode 2 <a name="out_m1"></a>
+blabla
 
 ## ChimeraTE genome-blinded (mode2) <a name="mode2"></a>
 
@@ -202,46 +205,36 @@ ChimTE-mode2.sh [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replicat
                 --min_length          Minimum identity between de novo assembled transcripts and reference transcripts (default = 80%)
 ````
 
-## Prepare your data to Mode 2 <a name="prep_data_m2"></a>
+### Prepare your data to Mode 2 <a name="prep_data_m2"></a>
 
-
-
-
-
-
-
-
-
-
-In order to run this mode, despite the format of the input files are simple fastas, the sequence IDs must be in a specific pattern. 
-### Inputs:
-
-  #### 1. Stranded paired-end RNA-seq
-  - It's strongly recommended to use ChimeraTE with RNA-seq replicates.
+Despite the format of the input files are simple fastas, the sequence IDs must be in a specific pattern. 
   
-  #### 2. Reference transcripts (.fasta)
-  - In order to run ChimeraTE correctly, this fasta file **must** have a specific header pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance, in _D. melanogaster_, the gene FBgn0263977 has two transcripts:
-  Tim17b-RA_FBgn0263977
-  Tim17b-RB_FBgn0263977
-  
-  Note that headers "Tim17b-RA" and "Tim17b-RB" have isoform ID separated from gene name by "_". 
-  This is not a usual ID format, thefore we have developed auxiliary scripts (scripts/aux/) to convert native IDs the script _transcripts_IDs_NCBI.sh_ to transform the IDs from native NCBI format to the ChimeraTE format (see details in Manual). This script may be used if you are using a genome annotation from NCBI.
+#### 1. Reference transcripts (.fasta)
+  - In order to run ChimeraTE correctly, this fasta file **must** have a specific header pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance, in _D. melanogaster_, the gene FBgn0263977 has two transcripts:<br />Tim17b-RA_FBgn0263977<br />Tim17b-RB_FBgn0263977
+  - Note that headers "Tim17b-RA" and "Tim17b-RB" have isoform ID separated from gene name by "_".  This is not a usual ID format, thefore we have developed auxiliary scripts ($FOLDER/ChimeraTE/util/) to convert native ID formats to ChimeraTE format. 
+    - *transcripts_IDs_NCBI.sh* native IDs from NCBI to the ChimeraTE format
+    - *transcripts_IDs_ensembl.sh* native IDs from ENSEMBL to the ChimeraTE format
+    - *transcripts_IDs_UCSC.sh* native IDs from UCSC to the ChimeraTE format
 
-  In addition, we provide here the corrected IDs for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
+````
+cd $FOLDER/ChimeraTE/usage
+bash transcripts_IDs_[NCBI-ensembl-UCSC].sh --help
+````
+| Parameter | Description |
+| -------- | -------- |
+| --genome     |  Fasta file with chromosomes/scaffolds/contigs sequences |
 
-  #### 3. Reference TE insertions (.fasta)
-  The TE .fasta file used by Mode 2 must have only TE insertions. Be sure that they do not contains any Satellites or Low complexity repeats.
-In addition, the reference TE insertions **must** have only the TE family in the headers. For instance, if _D. melanogaster_ genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1".
+We provide here the corrected IDs for *D. melanogaster*, human (hg38), mouse and *A. thaliana*. 
 
-We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
+#### 2. Reference TE insertions (.fasta)
+- The TE (.fasta) file used by Mode 2 must have only TE insertions. Be sure that they do not contains any Satellites or Tandem repeats.
+In addition, the reference TE insertions **must** have only the TE family in the headers. For instance, if *D. melanogaster* genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1". If you have the .out file from RepeatMasker, you can generate the fasta file with the proper headers to run ChimeraTE Mode 2 with *rmout2fasta.sh* util script ($FOLDER/ChimeraTE/util/)
 
-If you have the .out file from RepeatMasker, you can generate the fasta file with the proper headers to run ChimeraTE Mode 2 with *rmout2fasta.sh* util script
-
-### Conversion of .out table from RepeatMasker to .fasta file to use with ChimeraTE - Mode 2
 ````
 cd $FOLDER/ChimeraTE/usage
 bash util/rmout2fasta.sh --help 
-
+````
+````
 rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_file>]
   #Mandatory arguments:
 
@@ -249,10 +242,23 @@ rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_f
   --rm   file from RepeatMasker (.out)
   --out   output with TE insertions (.fasta)
 ````
+We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
 
 ### Example data Mode 2 <a name="example_m2"></a>
-  blabla
-  
+````
+cd $FOLDER/ChimeraTE/example_data/mode1
+gunzip *
+cd ../../
+
+bash ChimeraTE-mode2.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq \
+                        --mate2 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq \
+                        --te data/data_sampling-MODE2/dmel-all-chromosome-r6.43_RM_final.fasta \
+                        --transcripts data/data_sampling-MODE2/dmel-all-transcripts-clean.fa \
+                        --stranded rf-stranded \
+                        --project sampling-mode2 \
+                        --assembly \
+                        --ref_TEs util/bergman_cons.fa \
+````
 ### Output Mode 2 <a name="out_m2"></a>
 blabla
 

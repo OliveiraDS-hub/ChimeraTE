@@ -105,10 +105,14 @@ ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replic
 
 ### Prepare your data for Mode 1! <a name="prep_data"></a>
 
-Stranded paired-end libraries, genome fasta file and gene annotation are common files that can be found in databases for many species. However, TE annotation may be not easy to find publicly available to non-reference species/strains. 
+Stranded paired-end libraries, genome fasta file and gene annotation are common files that can be found in databases for many species. However, TE annotation may not be found publicly available to non-reference species/strains. 
 
-Then, you can use our *masking.sh* util script to mask any genome with RepeatMasker and One Code to Find Them All. 
+Then, if you don't have TE annotation for your assembled genome, you can use our *masking.sh* util script to mask it with RepeatMasker and One Code to Find Them All.
+The genome is masked with TE consensus available in Dfam 3.6, by providing the lineage with ````--ref_TEs```` or a fasta file with a TE consensus library.
 
+````
+bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human OR TE_library.fa>] [--out <output_file>] [options]
+````
 | Parameter | Description |
 | -------- | -------- |
 | --genome     |  Fasta file with chromosomes/scaffolds/contigs sequences |
@@ -117,13 +121,7 @@ Then, you can use our *masking.sh* util script to mask any genome with RepeatMas
 | --threads     |  Number of threads to run RepeatMasker (default: 6) |
 | --dist     | Distance in nt between LTR and Internal regions, as well as <br />fragments from the same TE family that will be merged, (default: 50)  |
 
-````
-bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human>] [--out <output_file>] [options]
-````
 This script will provide you a gtf file with TE annotation to run ChimeraTE Mode 1.
-
-
-from RepeatMasker is usually given in .out format. Because ChimeraTE Mode 1 requires a gtf file with TE annotation, you can convert .out file from RepeatMasker to .gtf with 
 
 ---
  
@@ -144,7 +142,7 @@ bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mo
                         --utr
 ````
 
-### Output Mode 2 <a name="out_m1"></a>
+### Output Mode 1 <a name="out_m1"></a>
 blabla
 
 ## ChimeraTE genome-blinded (mode2) <a name="mode2"></a>

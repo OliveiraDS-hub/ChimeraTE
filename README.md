@@ -225,27 +225,32 @@ Despite the format of the input files are simple fastas, the sequence IDs must b
 #### 1. Reference transcripts (.fasta)
   - In order to run ChimeraTE correctly, this fasta file **must** have a specific header pattern. All IDs must be composed firstly by the isoform ID, followed by the gene name. For instance, in _D. melanogaster_, the gene FBgn0263977 has two transcripts:<br />Tim17b-RA_FBgn0263977<br />Tim17b-RB_FBgn0263977
   - Note that headers "Tim17b-RA" and "Tim17b-RB" have isoform ID separated from gene name by "_".  This is not a usual ID format, thefore we have developed auxiliary scripts ($FOLDER/ChimeraTE/util/) to convert native ID formats to ChimeraTE format. 
-    - *transcripts_IDs_NCBI.sh* native IDs from NCBI to the ChimeraTE format
-    - *transcripts_IDs_ensembl.sh* native IDs from ENSEMBL to the ChimeraTE format
-    - *transcripts_IDs_UCSC.sh* native IDs from UCSC to the ChimeraTE format
-    - *transcripts_IDs_FLYBASE.sh* native IDs from FLYBASE to the ChimeraTE format
+    - *transcripts_IDs_NCBI.sh*     (native IDs from NCBI to the ChimeraTE format)
+    - *transcripts_IDs_ensembl.sh*  (native IDs from ENSEMBL to the ChimeraTE format)
+    - *transcripts_IDs_FLYBASE.sh*  (native IDs from FLYBASE to the ChimeraTE format)
 
 ````
-cd $FOLDER/ChimeraTE/usage
-bash transcripts_IDs_[NCBI-ensembl-UCSC].sh --help
+cd $FOLDER/ChimeraTE/util
+bash transcripts_IDs_[NCBI-ENSEMBL-FLYBASE].sh --help
 ````
-| Parameter | Description |
-| -------- | -------- |
-| --genome     |  Fasta file with chromosomes/scaffolds/contigs sequences |
+````
+Conversion of [NCBI-ENSEMBL-FLYBASE] native transcript IDs to the ChimeraTE Mode 2 format
 
+#Mandatory arguments:
+
+  --transcripts     transcripts downloaded from [NCBI-ENSEMBL-FLYBASE] (.fasta)
+
+  --out   output file name (.fasta)
+````
 We provide here the corrected IDs for *D. melanogaster*, human (hg38), mouse and *A. thaliana*. 
 
 #### 2. Reference TE insertions (.fasta)
 - The TE (.fasta) file used by Mode 2 must have only TE insertions. Be sure that they do not contains any Satellites or Tandem repeats.
-In addition, the reference TE insertions **must** have only the TE family in the headers. For instance, if *D. melanogaster* genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1". If you have the .out file from RepeatMasker, you can generate the fasta file with the proper headers to run ChimeraTE Mode 2 with *rmout2fasta.sh* util script ($FOLDER/ChimeraTE/util/)
+In addition, the reference TE insertions **must** have only the TE family in the headers. For instance, if *D. melanogaster* genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1". If you have the .out file from RepeatMasker, you can generate the fasta file with the proper headers to run ChimeraTE Mode 2 with *rmout2fasta.sh* util script.
+    - *rmout2fasta.sh*      (RepeatMasker .out file to .fasta file with ChimeraTE Mode 2 IDs)
 
 ````
-cd $FOLDER/ChimeraTE/usage
+cd $FOLDER/ChimeraTE/util
 bash util/rmout2fasta.sh --help 
 ````
 ````

@@ -21,6 +21,7 @@ It has been tested in Linux machines, Ubuntu 18.04 and 20.04.
     3. [Example data](#example_m2)
     4. [Output](#out_m2)
 
+---
 
 ## Install <a name="installation"></a>
 The installation may be easily done with conda. If you don't have conda installed in your machine, please follow [this tutorial](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html).
@@ -43,6 +44,7 @@ conda activate chimeraTE
 chmod a+x $FOLDER/ChimeraTE/scripts/*
 
 ````
+---
 
 ## Required data <a name="req_data"></a>
 In order to run ChimeraTE, the following files are required according to the running Mode: 
@@ -56,7 +58,9 @@ In order to run ChimeraTE, the following files are required according to the run
 | Reference transcripts - Fasta file with reference transcripts     |      |   X    |    X   |
 | Reference TEs - Fasta file with reference TE insertions    |      |   X    |    X   |
 | TE consensuses - Fasta file with reference TE consensuses    |      |       |    X   |
-  
+
+---
+
 ## ChimeraTE genome-guided (mode1) <a name="mode1"></a>
 ````
 cd $FOLDER/ChimeraTE/
@@ -102,6 +106,7 @@ ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replic
 
    --threads               Number of threads (default = 6)
 ````
+---
 
 ### Prepare your data for Mode 1! <a name="prep_data"></a>
 
@@ -146,9 +151,12 @@ bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mo
                         --project sampling-mode1 \
                         --utr
 ````
+---
 
 ### Output Mode 1 <a name="out_m1"></a>
 blabla
+
+---
 
 ## ChimeraTE genome-blinded (mode2) <a name="mode2"></a>
 
@@ -208,6 +216,8 @@ ChimTE-mode2.sh [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replicat
                 --min_length          Minimum identity between de novo assembled transcripts and reference transcripts (default = 80%)
 ````
 
+---
+
 ### Prepare your data to Mode 2 <a name="prep_data_m2"></a>
 
 Despite the format of the input files are simple fastas, the sequence IDs must be in a specific pattern. 
@@ -247,6 +257,8 @@ rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_f
 ````
 We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
 
+---
+
 ### Example data Mode 2 <a name="example_m2"></a>
 ````
 cd $FOLDER/ChimeraTE/example_data/mode1
@@ -262,8 +274,12 @@ bash ChimeraTE-mode2.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mo
                         --assembly \
                         --ref_TEs util/bergman_cons.fa \
 ````
+---
+
 ### Output Mode 2 <a name="out_m2"></a>
 blabla
+
+---
 
 ## License
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.

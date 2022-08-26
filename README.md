@@ -204,25 +204,7 @@ ChimTE-mode2.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>]
 
 ## Prepare your data to Mode 2 <a name="prep_data_m2"></a>
 
-The TE .fasta file used by Mode 2 must have only TE insertions. Be sure that they do not contains any Satellites or Low complexity repeats.
-In addition, the reference TE insertions **must** have only the TE family in the headers. For instance, if _D. melanogaster_ genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1".
 
-We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
-
-If you have the .out file from RepeatMasker, you can generate the fasta file with the proper headers to run ChimeraTE Mode 2 with *rmout2fasta.sh* util script
-
-### Conversion of .out table from RepeatMasker to .fasta file to use with ChimeraTE - Mode 2
-````
-cd $FOLDER/ChimeraTE/usage
-bash util/rmout2fasta.sh --help 
-
-rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_file>]
-  #Mandatory arguments:
-
-  --genome    file with genome (.fasta)
-  --rm   file from RepeatMasker (.out)
-  --out   output with TE insertions (.fasta)
-````
 
 
 
@@ -248,25 +230,31 @@ In order to run this mode, despite the format of the input files are simple fast
   In addition, we provide here the corrected IDs for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
 
   #### 3. Reference TE insertions (.fasta)
-  
-  
-  
-  
-  
-  
-  
-  
-## Dependencies
+  The TE .fasta file used by Mode 2 must have only TE insertions. Be sure that they do not contains any Satellites or Low complexity repeats.
+In addition, the reference TE insertions **must** have only the TE family in the headers. For instance, if _D. melanogaster_ genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1".
 
-If you don't want to install ChimeraTE with conda, you can install manually the following dependencies:
+We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
 
-- [Bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml)
-- [seqtk](https://github.com/lh3/seqtk)
-- [samtools](http://www.htslib.org/download/)
-- [bedtools](https://github.com/arq5x/bedtools2/releases)
-- [express](https://pachterlab.github.io/eXpress/overview.html#)
-- [RSEM](https://github.com/deweylab/RSEM)
-- [Trinity](https://github.com/trinityrnaseq/trinityrnaseq)
+If you have the .out file from RepeatMasker, you can generate the fasta file with the proper headers to run ChimeraTE Mode 2 with *rmout2fasta.sh* util script
+
+### Conversion of .out table from RepeatMasker to .fasta file to use with ChimeraTE - Mode 2
+````
+cd $FOLDER/ChimeraTE/usage
+bash util/rmout2fasta.sh --help 
+
+rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_file>]
+  #Mandatory arguments:
+
+  --genome    file with genome (.fasta)
+  --rm   file from RepeatMasker (.out)
+  --out   output with TE insertions (.fasta)
+````
+
+### Example data Mode 2 <a name="example_m2"></a>
+  blabla
+  
+### Output Mode 2 <a name="out_m2"></a>
+blabla
 
 ## License
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.

@@ -65,8 +65,8 @@ bash ChimeraTE-mode1.sh --help
 
 ### USAGE <a name="usage"></a>
 ````
-ChimTE-mode1.sh   [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>]
-                  [--mate2 <mate2_replicate1.fastq.gz,mate2_replicate2.fastq.gz>]
+ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replicate3_R1.fastq>]
+                  [--mate2 <replicate1_R2.fastq.gz,replicate2_R2.fastq.gz,replicate3_R2.fastq>]
                   [--genome <genome.fasta>]
                   [--te <TE_insertions.gtf>]
                   [--gene <gene_annotation.gtf>]
@@ -156,8 +156,8 @@ bash ChimeraTE_mode2.sh --help
 
 ### USAGE <a name="usage_m2"></a>
 ````
-ChimTE-mode2.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>] 
-                [--mate2 <mate2_replicate1.fastq.gz,mate2_replicate2.fastq.gz>] 
+ChimTE-mode2.sh [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replicate3_R1.fastq>]
+                [--mate2 <replicate1_R2.fastq.gz,replicate2_R2.fastq.gz,replicate3_R2.fastq>] 
                 [--te <TE_insertions.fa>] 
                 [--transcripts <transcripts.fa>] 
                 [--stranded <rf-stranded or fr-stranded>] 
@@ -165,9 +165,9 @@ ChimTE-mode2.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>]
 
 #Mandatory arguments:
 
-  --mate1                 mate 1 from paired-end reads
+  --mate1                 FASTQ paired-end R1 (replicates separated by ",")
 
-  --mate2                 mate 2 from paired-end reads
+  --mate2                 FASTQ paired-end R2 (replicates separated by ",")
 
   --te                    TE insertions (fasta)
 

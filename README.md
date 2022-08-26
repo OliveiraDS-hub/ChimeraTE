@@ -56,16 +56,6 @@ In order to run ChimeraTE, the following files are required according to the run
 | Reference transcripts - Fasta file with reference transcripts     |      |   X    |    X   |
 | Reference TEs - Fasta file with reference TE insertions    |      |   X    |    X   |
 | TE consensuses - Fasta file with reference TE consensuses    |      |       |    X   |
-
-
-````
-bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_file>
-  #Mandatory arguments:
-
-  --genome    file with genome (.fasta)
-  --rm   file from RepeatMasker (.out)
-  --out   output with TE insertions (.fasta)
-````
   
 ## ChimeraTE genome-guided (mode1) <a name="mode1"></a>
 ````
@@ -130,13 +120,11 @@ Then, you can use our *masking.sh* util script to mask any genome with RepeatMas
 ````
 bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human>] [--out <output_file>] [options]
 ````
-
 This script will provide you a gtf file with TE annotation to run ChimeraTE Mode 1.
 
 
 from RepeatMasker is usually given in .out format. Because ChimeraTE Mode 1 requires a gtf file with TE annotation, you can convert .out file from RepeatMasker to .gtf with 
 
-#### .out file from RepeatMasker to fasta (output: proper fasta to use as mode2 input)
 ---
  
 ## Example Data Mode 1 <a name="example_m1"></a>
@@ -160,6 +148,88 @@ bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mo
 
 This mode is going to perform two alignment with stranded RNA-seq reads: (1) against transcripts; (2) against TE insertions. From these alignments, all reads supporting chimeric transcripts (chimeric reads) will be computed. These reads are thise ones that have different singleton mates from the same read pairs splitted between transcripts and TEs, or those that have concordant alignment in one of the alignments, but singleton aligned reads in the other.
 
+  
+````
+cd $FOLDER/ChimeraTE/
+bash ChimeraTE_mode2.sh --help
+````
+
+### USAGE <a name="usage_m2"></a>
+````
+ChimTE-mode2.sh [--mate1 <mate1_replicate1.fastq.gz,mate1_replicate2.fastq.gz>] 
+                [--mate2 <mate2_replicate1.fastq.gz,mate2_replicate2.fastq.gz>] 
+                [--te <TE_insertions.fa>] 
+                [--transcripts <transcripts.fa>] 
+                [--stranded <rf-stranded or fr-stranded>] 
+                [--project <project_name>]
+
+#Mandatory arguments:
+
+  --mate1                 mate 1 from paired-end reads
+
+  --mate2                 mate 2 from paired-end reads
+
+  --te                    TE insertions (fasta)
+
+  --transcripts           transcripts (fasta)
+
+  --stranded              Select "rf-stranded" if your reads are reverse->forward; or "fr-stranded" if they are forward->reverse
+
+  --project               project name
+
+#Optional arguments:
+
+  --fpkm                  Minimum FPKM expression (default = 1)
+
+  --coverage              Minimum chimeric reads as support (default = 2)
+
+  --replicate	          Minimum recurrency of chimeric transcripts between RNA-seq replicates (default = 2)
+
+  --threads               Number of threads, (default = 6)
+
+  --assembly              Perform transcripts assembly -HIGH time consuming- (default = deactivated)
+       |
+       |
+       -------> Mandatory if --assembly is activated:
+       |        --ref_TEs             "species" database used by RepeatMasker (flies, human, mouse, arabidopsis);
+       |                              or a built TE library in fasta format
+       |
+       |
+       -------> Optional if --assembly is activated:
+                --ram                 RAM memory (default: 8 Gbytes)
+                --overlap             Minmum overlap (0.1 to 1) between read length and TE insertion (default = 0.5)
+                --TE_length           Minimum TE length to keep it from RepeatMasker output (default = 80bp)
+                --min_length          Minimum identity between de novo assembled transcripts and reference transcripts (default = 80%)
+````
+
+## Prepare your data to Mode 2 <a name="prep_data_m2"></a>
+
+The TE .fasta file used by Mode 2 must have only TE insertions. Be sure that they do not contains any Satellites or Low complexity repeats.
+In addition, the reference TE insertions **must** have only the TE family in the headers. For instance, if _D. melanogaster_ genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1".
+
+We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
+
+If you have the .out file from RepeatMasker, you can generate the fasta file with the proper headers to run ChimeraTE Mode 2 with *rmout2fasta.sh* util script
+
+### Conversion of .out table from RepeatMasker to .fasta file to use with ChimeraTE - Mode 2
+````
+cd $FOLDER/ChimeraTE/usage
+bash util/rmout2fasta.sh --help 
+
+rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_file>]
+  #Mandatory arguments:
+
+  --genome    file with genome (.fasta)
+  --rm   file from RepeatMasker (.out)
+  --out   output with TE insertions (.fasta)
+````
+
+
+
+
+
+
+
 
 In order to run this mode, despite the format of the input files are simple fastas, the sequence IDs must be in a specific pattern. 
 ### Inputs:
@@ -178,15 +248,14 @@ In order to run this mode, despite the format of the input files are simple fast
   In addition, we provide here the corrected IDs for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
 
   #### 3. Reference TE insertions (.fasta)
-
-  - This .fasta file must have only TE insertions. Be sure that they do not contains any Satellites or Low complexity repeats.
-  - The .fasta file with the reference TE insertions **must** have only the TE family in the headers. For instance, if _D. melanogaster_ genome has ~4.000 DNAREP-1 TE insertions, all of them must have the header as ">DNAREP-1".
-
-  We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
-````
-bash ChimeraTE_mode2.sh --help
-````
-
+  
+  
+  
+  
+  
+  
+  
+  
 ## Dependencies
 
 If you don't want to install ChimeraTE with conda, you can install manually the following dependencies:

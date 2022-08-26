@@ -62,6 +62,7 @@ In order to run ChimeraTE, the following files are required according to the run
 ---
 
 ## ChimeraTE genome-guided (mode1) <a name="mode1"></a>
+
 ````
 cd $FOLDER/ChimeraTE/
 bash ChimeraTE-mode1.sh --help
@@ -111,24 +112,31 @@ ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replic
 ### Prepare your data for Mode 1! <a name="prep_data"></a>
 
 Stranded paired-end libraries, genome fasta file and gene annotation are common files that can be found in databases for many species. However, TE annotation may not be found publicly available to non-reference species/strains. 
-
-Then, if you don't have TE annotation for your assembled genome, you can use our *masking.sh* util script to mask it with RepeatMasker and One Code to Find Them All.
-The genome is masked with TE consensus available in Dfam 3.6, by providing the lineage with ````--ref_TEs```` or a fasta file with a TE consensus library.
+   - If you don't have TE annotation for your assembled genome, you can use the util script *masking.sh*.The genome is masked with TE consensus available in Dfam 3.6, by providing the lineage with ````--ref_TEs```` or a fasta file with a TE consensus library. This script will provide you a gtf file with TE annotation to run ChimeraTE Mode 1.
 
 ````
-bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human OR TE_library.fa>] [--out <output_file>] [options]
+cd $FOLDER/ChimeraTE/util
+bash masking.sh --help
 ````
-| Parameter | Description |
-| -------- | -------- |
-| --genome     |  Fasta file with chromosomes/scaffolds/contigs sequences |
-| --ref_TEs     |  Fasta file with TE consensuses <br />OR<br /> RepeatMasker Dfam reference (i.e.:flies,arabidopsis,human)|
-| --out     |  output file (gtf format) |
-| --threads     |  Number of threads to run RepeatMasker (default: 6) |
-| --dist     | Distance in nt between LTR and Internal regions, as well as <br />fragments from the same TE family that will be merged, (default: 50)  |
+````
+#Mandatory arguments:
 
-This script will provide you a gtf file with TE annotation to run ChimeraTE Mode 1.
+  --genome    file with genome (.fasta)
 
-If you already have a .out file from RepeatMasker, you can convert it to .gtf with:
+  --ref_TEs   species database used by RepeatMasker ("flies", "human", "mouse", "arabidopsis"...);
+  	      or a file with your custom TE library (.fasta)
+
+#Optional arguments:
+
+  --out       output directory (if not provided, the output will be created in the current folder)
+
+  --threads   Number of threads, (default = 6)
+
+  --dist      Distance in nt between LTR and Internal regions, as well as fragments from the
+              same TE family that will be merged by One Code to Find them all, (default = 50)
+````
+
+   - If you already have a .out file from RepeatMasker, you can convert it to .gtf with:
 ````
 tail -n +4 RMfile.out | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;print $5,"RepeatMasker","similarity",$6,$7,$2,$9,".",$10}' > RMfile.gtf
 ````
@@ -161,7 +169,6 @@ blabla
 ## ChimeraTE genome-blinded (mode2) <a name="mode2"></a>
 
 This mode is going to perform two alignment with stranded RNA-seq reads: (1) against transcripts; (2) against TE insertions. From these alignments, all reads supporting chimeric transcripts (chimeric reads) will be computed. These reads are thise ones that have different singleton mates from the same read pairs splitted between transcripts and TEs, or those that have concordant alignment in one of the alignments, but singleton aligned reads in the other.
-
   
 ````
 cd $FOLDER/ChimeraTE/

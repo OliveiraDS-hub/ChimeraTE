@@ -228,6 +228,7 @@ Despite the format of the input files are simple fastas, the sequence IDs must b
     - *transcripts_IDs_NCBI.sh* native IDs from NCBI to the ChimeraTE format
     - *transcripts_IDs_ensembl.sh* native IDs from ENSEMBL to the ChimeraTE format
     - *transcripts_IDs_UCSC.sh* native IDs from UCSC to the ChimeraTE format
+    - *transcripts_IDs_FLYBASE.sh* native IDs from FLYBASE to the ChimeraTE format
 
 ````
 cd $FOLDER/ChimeraTE/usage

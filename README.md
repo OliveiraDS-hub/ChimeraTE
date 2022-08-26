@@ -15,7 +15,7 @@ It has been tested in Linux machines, Ubuntu 18.04 and 20.04.
     2. [Preparing your data](#prep_data)
     3. [Example data](#example_m1)
     4. [Output](#out_m1)
-4. [ChimeraTE Mode 2](#text)
+4. [ChimeraTE Mode 2](#mode2)
     1. [Usage](#usage_m2)
     2. [Preparing your data](#prep_data_m2)
     3. [Example data](#example_m2)
@@ -69,7 +69,7 @@ bash util/rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out
   
 ## ChimeraTE genome-guided (mode1) <a name="mode1"></a>
 ````
-$FOLDER/ChimeraTE/
+cd $FOLDER/ChimeraTE/
 bash ChimeraTE-mode1.sh --help
 ````
 
@@ -139,8 +139,24 @@ from RepeatMasker is usually given in .out format. Because ChimeraTE Mode 1 requ
 #### .out file from RepeatMasker to fasta (output: proper fasta to use as mode2 input)
 ---
  
+## Example Data Mode 1 <a name="example_m1"></a>
+After installation, you can run ChimeraTE with the example data from the sampled RNA-seq from *D. melanogaster* used in our paper.
 
-### ChimeraTE genome-blinded (mode2)
+````
+cd $FOLDER/ChimeraTE/example_data/mode1
+gunzip *
+cd ../../
+
+bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq \
+                        --mate2 example_data/mode1/sample1_R2.fq,example_data/mode1/sample2_R2.fq \
+                        --genome example_data/mode1/dmel-all-chromosome-r6.46.fasta \
+                        --te example_data/mode1/dmel-all-chromosome-r6.46_RM_final.gtf \
+                        --gene example_data/mode1/dmel-all-r6.46.gtf \
+                        --project sampling-mode1 \
+                        --utr
+````
+
+## ChimeraTE genome-blinded (mode2) <a name="mode2"></a>
 
 This mode is going to perform two alignment with stranded RNA-seq reads: (1) against transcripts; (2) against TE insertions. From these alignments, all reads supporting chimeric transcripts (chimeric reads) will be computed. These reads are thise ones that have different singleton mates from the same read pairs splitted between transcripts and TEs, or those that have concordant alignment in one of the alignments, but singleton aligned reads in the other.
 

@@ -123,6 +123,11 @@ bash util/masking.sh [--genome <genome.fa>] [--ref_TEs <flies/mouse/human OR TE_
 
 This script will provide you a gtf file with TE annotation to run ChimeraTE Mode 1.
 
+If you already have a .out file from RepeatMasker, you can convert it to .gtf with:
+````
+tail -n +4 RMfile.out | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;print $5,"RepeatMasker","similarity",$6,$7,$2,$9,".",$10}' > RMfile.gtf
+````
+
 ---
  
 ### Example Data Mode 1 <a name="example_m1"></a>

@@ -1,6 +1,6 @@
 # The pipeline
 
-ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two usage Modes:
+ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two running Modes:
 
 Mode 1 chimeric transcripts detection based upon exons and TE copies positions in the genome sequence; 
 
@@ -62,12 +62,11 @@ In order to run ChimeraTE, the following files are required according to the run
 ---
 
 ## ChimeraTE genome-guided (mode1) <a name="mode1"></a>
-
+In the Mode 1, chimeric transcripts will be detected considering the genomic location of TE insertions and exons. Chimeras from this Mode can be classified as TE-initiated upstream, TE-initiated 5’UTR, TE-exonized, TE-terminated 3’UTR and TE-terminated downstream. In addition, results from Mode 1 can be visualized in genome browsers, which allows a manual curation of chimeric transcripts in the reference genome. Mode 1 does not detect chimeric transcripts derived from TE insertions absent from the reference genome that is provided. 
 ````
 cd $FOLDER/ChimeraTE/
 bash ChimeraTE-mode1.sh --help
 ````
-
 ### USAGE <a name="usage"></a>
 ````
 ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replicate3_R1.fastq>]
@@ -89,7 +88,7 @@ ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replic
 
    --gene                  GTF/GFF with genes coordinates
 
-   --project               project name (it's the name of the directory that will be created inside projects/)
+   --project               project name (it's the name of the directory that will be created inside projects/ -spaces are not allowed-)
 
 #Optional arguments:
 
@@ -138,7 +137,7 @@ bash masking.sh --help
 
    - If you already have a .out file from RepeatMasker, you can convert it to .gtf with:
 ````
-tail -n +4 RMfile.out | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;print $5,"RepeatMasker","similarity",$6,$7,$2,$9,".",$10}' > RMfile.gtf
+tail -n +4 RMfile.out | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;print $5,"RepeatMasker","similarity",$6,$7,$2,$9,".",$10}' | egrep -v 'Satellite|Simple_repeat|rRNA|Low_complexity|RNA|ARTEFACT' > RMfile.gtf
 ````
 
 ---

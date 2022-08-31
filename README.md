@@ -320,6 +320,7 @@ The output files can be found at ```$DIR/ChimeraTE/projects/$your_project_name``
    - chimTE-final-transcriptome.ct
 
 ````chimTE-final-chimreads.ct````
+
 ---
 
 ## License

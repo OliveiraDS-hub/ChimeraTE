@@ -163,13 +163,20 @@ bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mo
 ### Output Mode 1 <a name="out_m1"></a>
 The output files can be found at ```$DIR/ChimeraTE/projects/$your_project_name```. For instance, for the example data, you can find the output at ```$DIR/ChimeraTE/projects/sampling-mode1```. Inside this directory, you might found 5 tables:
    
-   - TE-exonized_final.ct
+   - TE-initiated-UP_final.ct
    - TE-initiated-5UTR_final.ct
-    
-TE-initiated-UP_final.ct
-TE-terminated-3UTR_final.ct
-TE-terminated-DOWN_final.ct
+   - TE-exonized_final.ct
+   - TE-terminated-3UTR_final.ct
+   - TE-terminated-DOWN_final.ct
 
+Each table have a list of chimeric transcripts based on chimeric reads evidence. For TEs located upstream/downstream and with chimeric reads with exons (UTRs/CDSs), they can be found at ```TE-initiated-UP_final.ct``` and ```TE-terminated-DOWN_final.ct```, respetively. For TEs located inside the gene region, they are separated into three categories: (1) Evidence of chimeric reads between TE and 5'UTR (TE-initiated-5UTR_final.ct); (2) chimeric reads between TE and CDS region (TE-exonized_final.ct) and (3) chimeric reads between TE and 3' UTR (TE-terminated-3UTR_final.ct).
+If in your dataset one of these tables is missing, it means that there were no chimeric transcripts detected for these category.
+Table content:
+
+| gene_id | gene_strand | TE_family | TE_strand |  TE_position | Exon-position | chimeric_reads |
+| -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+| FBgn0001169 | +    | roo  | +   | 3R:20622645-20622806 | 3R:20622584-20623298 | 49.0 | 
+| FBgn0003028 | +    | roo  | +   | X:5066743-5066982 | X:5066073-5067781 | 61.0 | 
 ---
 
 ## ChimeraTE genome-blinded (mode2) <a name="mode2"></a>

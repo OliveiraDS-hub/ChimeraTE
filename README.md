@@ -176,7 +176,7 @@ Checking the ```TE-exonized_final.ct``` from example data:
 
     head $DIR/ChimeraTE/projects/sampling-mode1/TE-exonized_final.ct
 
-You should find:
+You should find at the first lines:
  
 | gene_id | gene_strand | TE_family | TE_strand |  TE_position | Exon-position | chimeric_reads |
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
@@ -316,10 +316,34 @@ If you don't want to test the assembly option, just remove ````--assembly```` an
 ### Output Mode 2 <a name="out_m2"></a>
 The output files can be found at ```$DIR/ChimeraTE/projects/$your_project_name```. For instance, for the example data, you can find the output at ```$DIR/ChimeraTE/projects/sampling-mode2```. Inside this directory, you'll find 3 tables:
    - chimTE-final-chimreads.ct
-   - chimTE-final-double-evidence.ct
    - chimTE-final-transcriptome.ct
+   - chimTE-final-double-evidence.ct
 
-````chimTE-final-chimreads.ct````
+````chimTE-final-chimreads.ct````:
+This table contains all chimeric transcripts detected **only** through chimeric reads evidence. Chimeras listed on this table will be also found when ````--assembly```` option is disabled.
+
+    head $DIR/ChimeraTE/projects/sampling-mode2/chimTE-final-chimreads.ct
+
+You should find at the first lines:
+| gene_id | TE_family | chimeric_reads |  ref_transcript | FPKM |
+| -------- | -------- | -------- | -------- | -------- | 
+| FBgn0000448 | ROO_I    | 6.0000  | Hr3-RA_FBgn0000448   | 79.3795 |
+| FBgn0001169 | ROO_I    | 34.0000  | H-RA_FBgn0001169,H-RB_FBgn0001169,H-RD_FBgn0001169   | 367.3170 | 
+
+````chimTE-final-transcriptome.ct````:
+This table contains all chimeric transcripts detected **only** through the transcriptome assembly evidence.
+
+    head $DIR/ChimeraTE/projects/sampling-mode2/chimTE-final-transcriptome.ct
+ 
+You should find at the first lines:
+
+| Trinity_isoform | Ref_transcript | Gene |  Identity | Chimeric_transcript_length | Ref_transcript_length | Match_length | TE_family |  Chimeric_reads |
+| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+| TRINITY_DN83_c0_g1_i1 | Abl-RB    | FBgn0000017  | 99.800   | 5507 | 12564 | 6345 | 297 | 2.0000 |
+| TRINITY_DN19_c0_g1_i2 | Agpat1-RB | FBgn0030421  | 98.718   | 477 | 3795 | 468 | 1360 | 3.0000 |
+
+
+
 
 ---
 

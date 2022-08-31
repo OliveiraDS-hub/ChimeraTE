@@ -342,8 +342,19 @@ You should find at the first lines:
 | TRINITY_DN83_c0_g1_i1 | Abl-RB    | FBgn0000017  | 99.800   | 5507 | 12564 | 6345 | 297 | 2.0000 |
 | TRINITY_DN19_c0_g1_i2 | Agpat1-RB | FBgn0030421  | 98.718   | 477 | 3795 | 468 | 1360 | 3.0000 |
 
+````chimTE-final-double-evidence.ct````:
+This table contains all chimeric transcripts detected through **both** chimeric reads and transcriptome assembly evidences.
+
+    head $DIR/ChimeraTE/projects/sampling-mode2/chimTE-final-double-evidence.ct
+ 
+You should find at the first lines:
+| Gene | TE_family | Chimeric_reads |  Transcripts | FPKM | Trinity_isoform | Identity | Chimeric_transcript_length |  Ref_Length | Match_length | Masked_TE_family | chim_reads_trinity|
+| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |  -------- | -------- | -------- |
+| FBgn0004882 | ROO_I | 49.0000  | orb-RA_FBgn0004882,orb-RB_FBgn0004882,orb-RD_FBgn0004882,orb-RF_FBgn0004882,orb-RG_FBgn0004882   | 405.4890 | TRINITY_DN5_c1_g1_i1 | 100.000 | 474 | 4862 | 474 | roo | 63.0000 |
+| FBgn0010215 | DNAREP1_DM | 11.0000  | alpha-Cat-RB_FBgn0010215 | 411.5380 | TRINITY_DN83_c0_g1_i1 | 99.582 | 479 | 3487 | 479 | INE-1 | 3.0000 |
 
 
+The sequences of assembled chimeric transcripts (column 1) are stored at 
 
 ---
 

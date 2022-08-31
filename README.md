@@ -293,11 +293,14 @@ We provide here the corrected fasta file with all headers formatted for _D. mela
 ---
 
 ### Example data Mode 2 <a name="example_m2"></a>
+
 ````
 cd $FOLDER/ChimeraTE/example_data/mode1
 gunzip *
 cd ../../
-
+````
+To run it with the transcriptome assembly option:
+````
 bash ChimeraTE-mode2.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq \
                         --mate2 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq \
                         --te data/data_sampling-MODE2/dmel-all-chromosome-r6.43_RM_final.fasta \
@@ -307,11 +310,16 @@ bash ChimeraTE-mode2.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mo
                         --assembly \
                         --ref_TEs util/bergman_cons.fa \
 ````
+If you don't want to test the assembly option, just remove ````--assembly```` and ````--ref_TEs```` from the commandline.
+
 ---
-
 ### Output Mode 2 <a name="out_m2"></a>
-blabla
+The output files can be found at ```$DIR/ChimeraTE/projects/$your_project_name```. For instance, for the example data, you can find the output at ```$DIR/ChimeraTE/projects/sampling-mode2```. Inside this directory, you'll find 3 tables:
+   - chimTE-final-chimreads.ct
+   - chimTE-final-double-evidence.ct
+   - chimTE-final-transcriptome.ct
 
+````chimTE-final-chimreads.ct````
 ---
 
 ## License

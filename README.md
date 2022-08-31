@@ -161,7 +161,14 @@ bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mo
 ---
 
 ### Output Mode 1 <a name="out_m1"></a>
-blabla
+The output files can be found at ```$DIR/ChimeraTE/projects/$your_project_name```. For instance, for the example data, you can find the output at ```$DIR/ChimeraTE/projects/sampling-mode1```. Inside this directory, you might found 5 tables:
+   
+   - TE-exonized_final.ct
+   - TE-initiated-5UTR_final.ct
+    
+TE-initiated-UP_final.ct
+TE-terminated-3UTR_final.ct
+TE-terminated-DOWN_final.ct
 
 ---
 

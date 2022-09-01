@@ -76,19 +76,19 @@ double-evidence
 mv "$PROJECT"/chimTE-final-chimreads.ct "$PROJECT"/tmp/
 
 if [[ ! -z "$PROJECT"/chimTE-final-transcriptome.ct ]]; then
-  total=$(wc -l "$PROJECT"/chimTE-final-transcriptome.ct | awk '{print $1}'); echo -e "It has been found "$total" chimeric transcripts only with transcriptome assembly"
-  echo -e "Check it out the result in ====> $PROJECT/chimTE-final-transcriptome.ct"; else
-  echo -e "The analysis did not find any chimeric transcripts based on transcriptome assembly!"
+  total=$(wc -l "$PROJECT"/chimTE-final-transcriptome.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with transcriptome assembly"
+  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-transcriptome.ct"; else
+  echo -e "The analysis did not find any chimeric transcripts based only on transcriptome assembly!"
 fi
 
 if [[ ! -z "$PROJECT"/chimTE-final-chimreads-without-assembly.ct ]]; then
-  total=$(wc -l "$PROJECT"/chimTE-final-chimreads-without-assembly.ct | awk '{print $1}'); echo -e "It has been found "$total" chimeric transcripts only with chimeric reads alignment"
-  echo -e "Check it out the result in ====> $PROJECT/chimTE-final-chimreads-without-assembly.ct"; else
-  echo -e "The analysis did not find any chimeric transcripts based on transcriptome assembly!"
+  total=$(wc -l "$PROJECT"/chimTE-final-chimreads-without-assembly.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with chimeric reads alignment"
+  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-chimreads-without-assembly.ct${NC}\n"; else
+  echo -e "The analysis did not find any chimeric transcripts based only on chimeric reads!"
 fi
 
 if [[ ! -z "$PROJECT"/chimTE-final-double-evidence.ct ]]; then
-  total=$(wc -l "$PROJECT"/chimTE-final-double-evidence.ct | awk '{print $1}'); echo -e "It has been found "$total" chimeric transcripts based on both chimeric reads alignemnt and transcriptome assembly"
-  echo -e "Check it out the result in ====> $PROJECT/chimTE-final-double-evidence.ct"; else
+  total=$(wc -l "$PROJECT"/chimTE-final-double-evidence.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts based on both chimeric reads alignemnt and transcriptome assembly"
+  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-double-evidence.ct${NC}\n"; else
   echo -e "The analysis did not find any chimeric transcripts based on both chimeric reads alignemnt and transcriptome assembly!"
 fi

@@ -50,7 +50,7 @@ for val in ${StringArray[@]}; do
   merging
   if [[ -s "$PROJECT"/tmp/"$val"_merged.lst ]]; then
     replicated
-    if [[ -f "$PROJECT"/chimTE-final-chimreads.ct || -z "$ASSEMLY" ]]; then
+    if [[ -f "$PROJECT"/chimTE-final-chimreads.ct && -z "$ASSEMLY" ]]; then
       total=$(wc -l "$PROJECT"/chimTE-final-chimreads.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with chimeric reads evidence"
       echo -e "The analysis has been finished! Check it out the result in ====> "$PROJECT"/chimTE-final-chimreads.ct\n"; else
       echo -e "The analysis did not find any chimeric transcripts based on chimeric reads evidence!"

@@ -153,11 +153,11 @@ cd $FOLDER/ChimeraTE/example_data/mode1
 gunzip *
 cd ../../
                         
-bash ChimeraTE-mode1.sh --mate1 example-data/data_sampling-MODE1/sample1_R1.fq.gz,example-data/data_sampling-MODE1/sample2_R1.fq.gz \
---mate2 example-data/data_sampling-MODE1/sample1_R2.fq.gz,example-data/data_sampling-MODE1/sample2_R2.fq.gz \
---genome example-data/data_sampling-MODE1/dmel-chrX.fa \
---te example-data/data_sampling-MODE1/dmel_sample-TEs-chrX.gtf \
---gene example-data/data_sampling-MODE1/dmel_sample-transcripts-chrX.gtf \
+bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.gz,example_data/data_sampling-MODE1/sample2_R1.fq.gz \
+--mate2 example_data/data_sampling-MODE1/sample1_R2.fq.gz,example_data/data_sampling-MODE1/sample2_R2.fq.gz \
+--genome example_data/data_sampling-MODE1/dmel-chrX.fa \
+--te example_data/data_sampling-MODE1/dmel_sample-TEs-chrX.gtf \
+--gene example_data/data_sampling-MODE1/dmel_sample-transcripts-chrX.gtf \
 --strand rf-stranded \
 --project example_data-Mode1 \
 --utr
@@ -305,14 +305,15 @@ cd ../../
 ````
 To run it with the transcriptome assembly option:
 ````
-bash ChimeraTE-mode2.sh --mate1 example-data/data_sampling-MODE2/sample1_R1.fq.gz,example-data/data_sampling-MODE2/sample2_R1.fq.gz 
---mate2 example-data/data_sampling-MODE2/sample1_R2.fq.gz,example-data/data_sampling-MODE2/sample2_R2.fq.gz \
---te example-data/data_sampling-MODE2/dmel-sampled_TE-copies.fa \
---transcripts example-data/data_sampling-MODE2/dmel-sampled_transcripts.fa \
+bash ChimeraTE-mode2.sh --mate1 example_data/data_sampling-MODE2/sample1_R1.fq.gz,example_data/data_sampling-MODE2/sample2_R1.fq.gz \
+--mate2 example_data/data_sampling-MODE2/sample1_R2.fq.gz,example_data/data_sampling-MODE2/sample2_R2.fq.gz \
+--te example_data/data_sampling-MODE2/dmel-sampled_TE-copies.fa \
+--transcripts example_data/data_sampling-MODE2/dmel-sampled_transcripts.fa \
 --strand rf-stranded \
---project example-mode2 \
+--project example_mode2 \
+--threads 8 \
 --assembly \
---ref_TEs example-data/data_sampling-MODE2/dmel-sampled_TEconsensus.fa
+--ref_TEs example_data/data_sampling-MODE2/dmel-sampled_TEconsensus.fa
 ````
 If you don't want to test the assembly option, just remove ````--assembly```` and ````--ref_TEs```` from the commandline.
 

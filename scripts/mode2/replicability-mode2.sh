@@ -4,6 +4,7 @@ set -e
 declare -a StringArray=("output-final")
 
 merging () {
+echo -e "Merging results from replicates..."
 raw_results=$(ls -1 "$PROJECT"/tmp/ | grep "$val" | wc -l)
 if [[ "$raw_results" > 1 ]]; then
   cat "$PROJECT"/tmp/*"$val"*.ct | awk '{print $1,$2}' | sed 's/ /@/g' > "$PROJECT"/tmp/"$val".lst
@@ -19,6 +20,7 @@ if [[ "$raw_results" > 1 ]]; then
     done <<< "$MATCH"
   fi
 fi
+echo -e "${GREEN}DONE!!${NC}\n" 
 }
 
 replicated () {
@@ -49,7 +51,7 @@ for val in ${StringArray[@]}; do
   if [[ -s "$PROJECT"/tmp/"$val"_merged.lst ]]; then
     replicated
     if [[ -f "$PROJECT"/chimTE-final-chimreads.ct || -z "$ASSEMLY" ]]; then
-      total=$(wc -l "$PROJECT"/chimTE-final-chimreads.ct | awk '{print $1}'); echo -e "It has been found "$total" chimeric transcripts only with chimeric reads evidence"
+      total=$(wc -l "$PROJECT"/chimTE-final-chimreads.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with chimeric reads evidence"
       echo -e "The analysis has been finished! Check it out the result in ====> "$PROJECT"/chimTE-final-chimreads.ct\n"; else
       echo -e "The analysis did not find any chimeric transcripts based on chimeric reads evidence!"
     fi

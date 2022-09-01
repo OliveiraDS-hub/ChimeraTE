@@ -29,7 +29,7 @@ The installation may be easily done with conda. If you don't have conda installe
 Once you have installed conda, all dependencies to run ChimeraTE can be easily installed in a new conda environment by using the chimeraTE.yml file:
 ````
 #Download repository from github
-git clone https://github.com/oliveirads-bioinfo/ChimeraTE.git
+git clone https://github.com/OliveiraDS-hub/ChimeraTE.git
 
 #Go to ChimeraTE's folder
 cd $FOLDER/ChimeraTE
@@ -41,8 +41,7 @@ conda env create -f chimeraTE.yml
 conda activate chimeraTE
 
 #Give write permissions
-chmod a+x $FOLDER/ChimeraTE/scripts/*
-
+chmod +x scripts/mode1/* scripts/mode2/*
 ````
 ---
 

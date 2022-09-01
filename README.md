@@ -259,7 +259,7 @@ Despite the format of the input files are simple fastas, the sequence IDs must b
     - *transcripts_IDs_FLYBASE.sh*  (native IDs from FLYBASE to the ChimeraTE format)
 
 ````
-cd $FOLDER/ChimeraTE/util
+cd ChimeraTE/util
 bash transcripts_IDs_[NCBI-ENSEMBL-FLYBASE].sh --help
 ````
 ````
@@ -279,7 +279,7 @@ In addition, the reference TE insertions **must** have only the TE family in the
     - *rmout2fasta.sh*      (RepeatMasker .out file to .fasta file with ChimeraTE Mode 2 IDs)
 
 ````
-cd $FOLDER/ChimeraTE/util
+cd ChimeraTE/util
 bash util/rmout2fasta.sh --help 
 ````
 ````
@@ -290,7 +290,6 @@ rmout2fasta.sh [--genome <genome.fa>] [--rm <repeatmasker.out>] [--out <output_f
   --rm   file from RepeatMasker (.out)
   --out   output with TE insertions (.fasta)
 ````
-We provide here the corrected fasta file with all headers formatted for _D. melanogaster_, human (hg38), mouse (mmX) and _A. thaliana_. 
 
 ---
 
@@ -324,36 +323,37 @@ The output files can be found at ```$DIR/ChimeraTE/projects/$your_project_name``
 ````chimTE-final-chimreads.ct````:
 This table contains all chimeric transcripts detected **only** through chimeric reads evidence. Chimeras listed on this table will be also found when ````--assembly```` option is disabled.
 
-    head $DIR/ChimeraTE/projects/sampling-mode2/chimTE-final-chimreads.ct
+    head projects/sampling-mode2/chimTE-final-chimreads-without-assembly.ct
 
 You should find at the first lines:
 | gene_id | TE_family | chimeric_reads |  ref_transcript | FPKM |
 | -------- | -------- | -------- | -------- | -------- | 
-| FBgn0000448 | ROO_I    | 6.0000  | Hr3-RA_FBgn0000448   | 79.3795 |
-| FBgn0001169 | ROO_I    | 34.0000  | H-RA_FBgn0001169,H-RB_FBgn0001169,H-RD_FBgn0001169   | 367.3170 | 
+| FBgn0000448 | ROO    | 11.0000  | Hr3-RA_FBgn0000448   | 2635.6200 |
+| FBgn0001169 | ROO    | 32.0000  | H-RA_FBgn0001169,H-RB_FBgn0001169,H-RD_FBgn0001169   | 3011.6400 | 
+
 
 ````chimTE-final-transcriptome.ct````:
 This table contains all chimeric transcripts detected **only** through the transcriptome assembly evidence.
 
-    head $DIR/ChimeraTE/projects/sampling-mode2/chimTE-final-transcriptome.ct
+    head projects/sampling-mode2/chimTE-final-transcriptome.ct
  
 You should find at the first lines:
 
 | Trinity_isoform | Ref_transcript | Gene |  Identity | Chimeric_transcript_length | Ref_transcript_length | Match_length | TE_family |  Chimeric_reads |
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-| TRINITY_DN83_c0_g1_i1 | Abl-RB    | FBgn0000017  | 99.800   | 5507 | 12564 | 6345 | 297 | 2.0000 |
-| TRINITY_DN19_c0_g1_i2 | Agpat1-RB | FBgn0030421  | 98.718   | 477 | 3795 | 468 | 1360 | 3.0000 |
+| TRINITY_DN18_c1_g1_i1 | Ssdp-RB    | FBgn0011481  | 97.826   | 733 | 5016 | 736 | HMS-Beagle | 268.5000 |
+| TRINITY_DN137_c0_g1_i1 | CG46385-RA | FBgn0286778  | 98.645   | 1032 | 5129 | 1033 | HMS-Beagle | 152.0000 |
 
 ````chimTE-final-double-evidence.ct````:
 This table contains all chimeric transcripts detected through **both** chimeric reads and transcriptome assembly evidences.
 
-    head $DIR/ChimeraTE/projects/sampling-mode2/chimTE-final-double-evidence.ct
+    head projects/sampling-mode2/chimTE-final-double-evidence.ct
  
 You should find at the first lines:
 | Gene | TE_family | Chimeric_reads |  Transcripts | FPKM | Trinity_isoform | Identity | Chimeric_transcript_length |  Ref_Length | Match_length | Masked_TE_family | chim_reads_trinity|
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |  -------- | -------- | -------- |
-| FBgn0004882 | ROO_I | 49.0000  | orb-RA_FBgn0004882,orb-RB_FBgn0004882,orb-RD_FBgn0004882,orb-RF_FBgn0004882,orb-RG_FBgn0004882   | 405.4890 | TRINITY_DN5_c1_g1_i1 | 100.000 | 474 | 4862 | 474 | roo | 63.0000 |
-| FBgn0010215 | DNAREP1_DM | 11.0000  | alpha-Cat-RB_FBgn0010215 | 411.5380 | TRINITY_DN83_c0_g1_i1 | 99.582 | 479 | 3487 | 479 | INE-1 | 3.0000 |
+| FBgn0026076 | ROO | 25.0000  | UBL3-RA_FBgn0026076,UBL3-RC_FBgn0026076   | 11512.9000 | TRINITY_DN1_c0_g1_i1 | 98.428 | 636 | 2250 | 636 | roo | 55.0000 |
+| FBgn0058160 | DNAREP1 | 60.0000  | CG40160-RH_FBgn0058160 | 62178.0000 | TRINITY_DN22_c0_g1_i1 | 100.000 | 1020 | 4869 | 919 | INE-1 | 32.5000 |
 
 ---
 

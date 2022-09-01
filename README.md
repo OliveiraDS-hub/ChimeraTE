@@ -31,13 +31,13 @@ Once you have installed conda, all dependencies to run ChimeraTE can be easily i
 #Download repository from github
 git clone https://github.com/OliveiraDS-hub/ChimeraTE.git
 
-#Go to ChimeraTE's folder
-cd $FOLDER/ChimeraTE
+#Change to the ChimeraTE's folder
+cd ChimeraTE
 
-#create chimeraTE environment with all dependencies
+#Create chimeraTE environment with all dependencies
 conda env create -f chimeraTE.yml
 
-#activate the new environment
+#Activate the new environment
 conda activate chimeraTE
 
 #Give write permissions

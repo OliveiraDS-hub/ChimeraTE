@@ -6,7 +6,7 @@ Mode 1 chimeric transcripts detection based upon exons and TE copies positions i
 
 Mode 2 chimeric transcripts detection regardless the genomic position, allowing the detection of chimeras from TEs that are not present in the referece genome, but with less sensivity.
 
-It has been tested in Linux machines, Ubuntu 18.04 and 20.04.
+This pipeline has been tested in Linux machines, Ubuntu 18.04 and 20.04.
 
 1. [Install](#installation)
 2. [Required data](#req_data)

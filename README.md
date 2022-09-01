@@ -157,7 +157,7 @@ bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.g
 --te example_data/data_sampling-MODE1/dmel_sample-TEs-chrX.gtf \
 --gene example_data/data_sampling-MODE1/dmel_sample-transcripts-chrX.gtf \
 --strand rf-stranded \
---project example_data-Mode1 \
+--project example_mode2 \
 --utr
 ````
 ---

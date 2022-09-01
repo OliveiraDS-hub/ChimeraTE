@@ -59,11 +59,8 @@ COV="2"
 REP="2"
 DIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-#bash ./scripts/mode1/header.sh
-
 if [ "$#" -eq 0 ]; then echo -e "\n${RED}ERROR${NC}: No parameters provided! Exiting..." && usage >&2; exit 1; fi
 
-#echo -ne "\nChecking files and parameters..."
 while [[ $# -gt 0 ]]; do
 	case $1 in
 		--mate1)
@@ -209,7 +206,7 @@ while [[ $# -gt 0 ]]; do
     ;;
 esac
 done
-echo -e "\t${GREEN}==> DONE!${NC}"
+
 echo -e "Parameters:\n==> mate1:\t$MATE1\n==> mate2:\t$MATE2\n==> genome:\t$GENOME\n==> TE gtf:\t$TE_ANNOTATION\n==> gene gtf:\t$GENE_ANNOTATION\n==> project:\t$PROJECT\n==> window:\t$WINDOW\n==> overlap:\t$OVERLAP\n==> fpkm:\t$FPKM\n==> replicability:\t$REP"
 
 if [[ ! -d "$PROJECT" || ! -d "$PROJECT"/tmp ]]; then

@@ -71,6 +71,7 @@ bash ChimeraTE-mode1.sh --help
 ````
 ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replicate3_R1.fastq>]
                   [--mate2 <replicate1_R2.fastq.gz,replicate2_R2.fastq.gz,replicate3_R2.fastq>]
+                  [--strand <rf-stranded> OR <fr-stranded>]
                   [--genome <genome.fasta>]
                   [--te <TE_insertions.gtf>]
                   [--gene <gene_annotation.gtf>]
@@ -78,9 +79,9 @@ ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replic
 
 #Mandatory arguments:
 
-   --mate1                 FASTQ paired-end R1 (replicates separated by ",")
+   --mate1                 FASTQ paired-end R1
 
-   --mate2                 FASTQ paired-end R2 (replicates separated by ",")
+   --mate2                 FASTQ paired-end R2
 
    --genome                FASTA genome sequence
 
@@ -88,7 +89,9 @@ ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replic
 
    --gene                  GTF/GFF with genes coordinates
 
-   --project               project name (it's the name of the directory that will be created inside projects/ -spaces are not allowed-)
+   --strand                Select "rf-stranded" if your reads are reverse->forward; or "fr-stranded" if they are forward->reverse
+
+   --project               project name -spaces are not allowed- (it's the name of the directory that will be created inside projects/)
 
 #Optional arguments:
 
@@ -149,14 +152,15 @@ After installation, you can run ChimeraTE with the example data from the sampled
 cd $FOLDER/ChimeraTE/example_data/mode1
 gunzip *
 cd ../../
-
-bash ChimeraTE-mode1.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq \
-                        --mate2 example_data/mode1/sample1_R2.fq,example_data/mode1/sample2_R2.fq \
-                        --genome example_data/mode1/dmel-all-chromosome-r6.46.fasta \
-                        --te example_data/mode1/dmel-all-chromosome-r6.46_RM_final.gtf \
-                        --gene example_data/mode1/dmel-all-r6.46.gtf \
-                        --project sampling-mode1 \
-                        --utr
+                        
+bash ChimeraTE-mode1.sh --mate1 example-data/data_sampling-MODE1/sample1_R1.fq.gz,example-data/data_sampling-MODE1/sample2_R1.fq.gz \
+--mate2 example-data/data_sampling-MODE1/sample1_R2.fq.gz,example-data/data_sampling-MODE1/sample2_R2.fq.gz \
+--genome example-data/data_sampling-MODE1/dmel-chrX.fa \
+--te example-data/data_sampling-MODE1/dmel_sample-TEs-chrX.gtf \
+--gene example-data/data_sampling-MODE1/dmel_sample-transcripts-chrX.gtf \
+--strand rf-stranded \
+--project example_data-Mode1 \
+--utr
 ````
 ---
 
@@ -301,14 +305,14 @@ cd ../../
 ````
 To run it with the transcriptome assembly option:
 ````
-bash ChimeraTE-mode2.sh --mate1 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq \
-                        --mate2 example_data/mode1/sample1_R1.fq,example_data/mode1/sample2_R1.fq \
-                        --te data/data_sampling-MODE2/dmel-all-chromosome-r6.43_RM_final.fasta \
-                        --transcripts data/data_sampling-MODE2/dmel-all-transcripts-clean.fa \
-                        --stranded rf-stranded \
-                        --project sampling-mode2 \
-                        --assembly \
-                        --ref_TEs util/bergman_cons.fa \
+bash ChimeraTE-mode2.sh --mate1 example-data/data_sampling-MODE2/sample1_R1.fq.gz,example-data/data_sampling-MODE2/sample2_R1.fq.gz 
+--mate2 example-data/data_sampling-MODE2/sample1_R2.fq.gz,example-data/data_sampling-MODE2/sample2_R2.fq.gz \
+--te example-data/data_sampling-MODE2/dmel-sampled_TE-copies.fa \
+--transcripts example-data/data_sampling-MODE2/dmel-sampled_transcripts.fa \
+--strand rf-stranded \
+--project example-mode2 \
+--assembly \
+--ref_TEs example-data/data_sampling-MODE2/dmel-sampled_TEconsensus.fa
 ````
 If you don't want to test the assembly option, just remove ````--assembly```` and ````--ref_TEs```` from the commandline.
 

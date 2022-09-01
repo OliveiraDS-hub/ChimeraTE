@@ -183,9 +183,8 @@ You should find at the first lines:
  
 | gene_id | gene_strand | TE_family | TE_strand |  TE_position | Exon-position | chimeric_reads |
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
-| FBgn0001169 | +    | roo  | +   | 3R:20622645-20622806 | 3R:20622584-20623298 | 49.0 | 
 | FBgn0003028 | +    | roo  | +   | X:5066743-5066982 | X:5066073-5067781 | 61.0 | 
-
+| FBgn0004656 | -    | roo  | +-   | X:8042536-8042744 | X:8041351-8043733 | 18.0 | 
 
 ---
 

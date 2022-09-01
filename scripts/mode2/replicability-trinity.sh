@@ -75,20 +75,21 @@ final
 double-evidence
 mv "$PROJECT"/chimTE-final-chimreads.ct "$PROJECT"/tmp/
 
-if [[ ! -z "$PROJECT"/chimTE-final-transcriptome.ct ]]; then
-  total=$(wc -l "$PROJECT"/chimTE-final-transcriptome.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with transcriptome assembly"
-  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-transcriptome.ct${NC}\n"; else
-  echo -e "The analysis did not find any chimeric transcripts based only on transcriptome assembly!"
-fi
-
 if [[ ! -z "$PROJECT"/chimTE-final-chimreads-without-assembly.ct ]]; then
   total=$(wc -l "$PROJECT"/chimTE-final-chimreads-without-assembly.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with chimeric reads alignment"
+  sed -i 1i"gene_id""\t""TE_family""\t""Chimeric_reads""\t""Ref_transcript""\t""FPKM" "$PROJECT"/chimTE-final-chimreads-without-assembly.ct
   echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-chimreads-without-assembly.ct${NC}\n"; else
   echo -e "The analysis did not find any chimeric transcripts based only on chimeric reads!"
 fi
-
+if [[ ! -z "$PROJECT"/chimTE-final-transcriptome.ct ]]; then
+  total=$(wc -l "$PROJECT"/chimTE-final-transcriptome.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with transcriptome assembly" 
+  sed -i 1i"Trinity_isoform""\t""Ref_transcript""\t""Gene""\t""Identity""\t""Chimeric_transcript_length""\t""Ref_transcript_length""\t""Match_length""\t""TE_family""\t""Chimeric_reads" "$PROJECT"/chimTE-final-transcriptome.ct
+  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-transcriptome.ct${NC}\n"; else
+  echo -e "The analysis did not find any chimeric transcripts based only on transcriptome assembly!"
+fi
 if [[ ! -z "$PROJECT"/chimTE-final-double-evidence.ct ]]; then
   total=$(wc -l "$PROJECT"/chimTE-final-double-evidence.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts based on both chimeric reads alignemnt and transcriptome assembly"
+  sed -i 1i"Gene_id""\t""TE_family""\t""Chimeric_reads""\t""Transcripts""\t""FPKM""\t""Trinity_isoform""\t""Identity""\t""Chimeric_transcript_length""\t""Ref_Length""\t""Match_length""\t""Masked_TE_family""\t""Chim_reads_trinity" "$PROJECT"/chimTE-final-double-evidence.ct
   echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-double-evidence.ct${NC}\n"; else
   echo -e "The analysis did not find any chimeric transcripts based on both chimeric reads alignemnt and transcriptome assembly!"
 fi

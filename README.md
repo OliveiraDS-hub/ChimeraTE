@@ -353,9 +353,6 @@ You should find at the first lines:
 | FBgn0004882 | ROO_I | 49.0000  | orb-RA_FBgn0004882,orb-RB_FBgn0004882,orb-RD_FBgn0004882,orb-RF_FBgn0004882,orb-RG_FBgn0004882   | 405.4890 | TRINITY_DN5_c1_g1_i1 | 100.000 | 474 | 4862 | 474 | roo | 63.0000 |
 | FBgn0010215 | DNAREP1_DM | 11.0000  | alpha-Cat-RB_FBgn0010215 | 411.5380 | TRINITY_DN83_c0_g1_i1 | 99.582 | 479 | 3487 | 479 | INE-1 | 3.0000 |
 
-
-The sequences of assembled chimeric transcripts (column 1) are stored at 
-
 ---
 
 ## License

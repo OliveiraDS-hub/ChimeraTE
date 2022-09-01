@@ -150,7 +150,8 @@ After installation, you can run ChimeraTE with the example data from the sampled
 ````
 #Do not forget to activate your conda environment:
 conda activate chimeraTE
-                        
+````
+````
 bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.gz,example_data/data_sampling-MODE1/sample2_R1.fq.gz \
 --mate2 example_data/data_sampling-MODE1/sample1_R2.fq.gz,example_data/data_sampling-MODE1/sample2_R2.fq.gz \
 --genome example_data/data_sampling-MODE1/dmel-chrX.fa \

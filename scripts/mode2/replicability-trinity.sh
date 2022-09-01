@@ -77,7 +77,7 @@ mv "$PROJECT"/chimTE-final-chimreads.ct "$PROJECT"/tmp/
 
 if [[ ! -z "$PROJECT"/chimTE-final-transcriptome.ct ]]; then
   total=$(wc -l "$PROJECT"/chimTE-final-transcriptome.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with transcriptome assembly"
-  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-transcriptome.ct"; else
+  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-transcriptome.ct${NC}\n"; else
   echo -e "The analysis did not find any chimeric transcripts based only on transcriptome assembly!"
 fi
 

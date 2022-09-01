@@ -148,9 +148,8 @@ tail -n +4 RMfile.out | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;p
 After installation, you can run ChimeraTE with the example data from the sampled RNA-seq from *D. melanogaster* used in our paper.
 
 ````
-cd $FOLDER/ChimeraTE/example_data/mode1
-gunzip *
-cd ../../
+#Do not forget to activate your conda environment:
+conda activate chimeraTE
                         
 bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.gz,example_data/data_sampling-MODE1/sample2_R1.fq.gz \
 --mate2 example_data/data_sampling-MODE1/sample1_R2.fq.gz,example_data/data_sampling-MODE1/sample2_R2.fq.gz \
@@ -298,9 +297,8 @@ We provide here the corrected fasta file with all headers formatted for _D. mela
 ### Example data Mode 2 <a name="example_m2"></a>
 
 ````
-cd $FOLDER/ChimeraTE/example_data/mode1
-gunzip *
-cd ../../
+#Do not forget to activate your conda environment:
+conda activate chimeraTE
 ````
 To run it with the transcriptome assembly option:
 ````

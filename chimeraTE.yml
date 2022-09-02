@@ -99,7 +99,6 @@ dependencies:
   - pthread-stubs=0.4
   - python=3.6.15
   - python_abi=3.6
-  - r=3.1.2
   - readline=8.1.2
   - repeatmasker=4.1.2.p1
   - rmblast=2.11.0

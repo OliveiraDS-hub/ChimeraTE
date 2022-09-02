@@ -1,0 +1,95 @@
+#!/bin/bash
+set -e
+raw_results=$(ls -1 "$PROJECT"/tmp | grep "output.tsv")
+
+simplyfing () {
+n_files=$(ls -1 "$PROJECT"/tmp | grep "output.tsv" | wc -l)
+if [[ "$n_files" > 1 ]]; then
+  while IFS= read -r raw_file; do
+    genes=$(cut -f3 "$PROJECT"/tmp/"$raw_file" | sort | uniq)
+    while IFS= read -r ID; do
+      genelist=$(grep -w "$ID" "$PROJECT"/tmp/"$raw_file")
+      top=$(sort -Vr -k9,9 <<< "$genelist" | head -1)
+      echo -e "$top" >> "$PROJECT"/tmp/"$raw_file"_final.lst
+    done <<< "$genes"
+  done <<< "$raw_results"
+fi
+}
+
+replicated () {
+freq=$(cat "$PROJECT"/tmp/*output.tsv_final.lst | awk '{print $3,$8}' | sed 's/ /@/g' | sort | uniq -c)
+MATCH=$(awk -v number="$REP" '$1 >= number' <<< "$freq" | awk '{print $2}' | sed 's/@/\t/g' | awk '{print $1}')
+raw_data=$(ls -1 "$PROJECT"/tmp/ | grep "_final.lst")
+
+while IFS= read -r file; do
+  while IFS= read -r gene_id; do
+    grep -w "$gene_id" "$PROJECT"/tmp/"$file" >> "$PROJECT"/tmp/replicated.tsv
+  done <<< "$MATCH"
+
+done <<< "$raw_data"
+}
+
+final () {
+
+replicated_genes=$(cut -f3 "$PROJECT"/tmp/replicated.tsv | sort | uniq)
+
+while IFS= read -r gene_id; do
+  chimeras=$(grep -w "$gene_id" "$PROJECT"/tmp/replicated.tsv | sort -Vr -k5,5 | head -1 | cut -f1-8)
+  chim_reads=$(grep -w "$gene_id" "$PROJECT"/tmp/replicated.tsv | cut -f9)
+  freq=$(grep -w "$gene_id" "$PROJECT"/tmp/replicated.tsv | wc -l | awk '{print $1}')
+  sum=$(awk '{sum+=$1;} END{print sum;}' <<< "$chim_reads")
+  avg_reads=$(awk -v var1=$sum -v var2=$freq 'BEGIN { print  ( var1 / var2 ) }' | awk '{printf("%.4f\n", $1)}')
+  printf "$chimeras""\t""$avg_reads""\n" >> "$PROJECT"/tmp/replicated_final.tsv
+done <<< "$replicated_genes"
+
+}
+
+double-evidence () {
+  cut -f3 "$PROJECT"/tmp/replicated_final.tsv > "$PROJECT"/tmp/geneIDs-assembly.lst
+  cut -f1 "$PROJECT"/chimTE-final-chimreads.ct > "$PROJECT"/tmp/geneIDs-chimTE.lst
+  cat "$PROJECT"/tmp/geneIDs-* | sort | uniq -c | awk '$1 >= 2' | awk '{print $2}' > "$PROJECT"/tmp/double-evidence.lst
+
+  while IFS= read -r gene_id; do
+    chimTE=$(grep -w "$gene_id" "$PROJECT"/chimTE-final-chimreads.ct)
+    isoform_ID=$(grep -w "$gene_id" "$PROJECT"/tmp/replicated_final.tsv | cut -f1)
+    rest=$(grep -w "$gene_id" "$PROJECT"/tmp/replicated_final.tsv | cut -f4-9)
+    echo -e "$chimTE\t$isoform_ID\t$rest" >> "$PROJECT"/chimTE-final-double-evidence.ct
+  done < "$PROJECT"/tmp/double-evidence.lst
+
+  solo_assembly=$(cat "$PROJECT"/tmp/double-evidence.lst "$PROJECT"/tmp/geneIDs-assembly.lst | sort | uniq -c | awk '$1 == "1"' | awk '{print $2}')
+  while IFS= read -r gene_id; do
+    grep -w "$gene_id" "$PROJECT"/tmp/replicated_final.tsv >> "$PROJECT"/chimTE-final-transcriptome.ct
+  done <<< "$solo_assembly"
+
+  solo_chimTE=$(cat "$PROJECT"/tmp/double-evidence.lst "$PROJECT"/tmp/geneIDs-chimTE.lst | sort | uniq -c | awk '$1 == "1"' | awk '{print $2}')
+  while IFS= read -r gene_id; do
+    grep -w "$gene_id" "$PROJECT"/chimTE-final-chimreads.ct >> "$PROJECT"/chimTE-final-chimreads-without-assembly.ct
+  done <<< "$solo_chimTE"
+
+  rm "$PROJECT"/tmp/geneIDs* "$PROJECT"/tmp/double-evidence.lst "$PROJECT"/tmp/replicated.tsv
+}
+
+simplyfing
+replicated
+final
+double-evidence
+mv "$PROJECT"/chimTE-final-chimreads.ct "$PROJECT"/tmp/
+
+if [[ ! -z "$PROJECT"/chimTE-final-chimreads-without-assembly.ct ]]; then
+  total=$(wc -l "$PROJECT"/chimTE-final-chimreads-without-assembly.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with chimeric reads alignment"
+  sed -i 1i"gene_id""\t""TE_family""\t""Chimeric_reads""\t""Ref_transcript""\t""FPKM" "$PROJECT"/chimTE-final-chimreads-without-assembly.ct
+  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-chimreads-without-assembly.ct${NC}\n"; else
+  echo -e "The analysis did not find any chimeric transcripts based only on chimeric reads!"
+fi
+if [[ ! -z "$PROJECT"/chimTE-final-transcriptome.ct ]]; then
+  total=$(wc -l "$PROJECT"/chimTE-final-transcriptome.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts only with transcriptome assembly" 
+  sed -i 1i"Trinity_isoform""\t""Ref_transcript""\t""Gene""\t""Identity""\t""Chimeric_transcript_length""\t""Ref_transcript_length""\t""Match_length""\t""TE_family""\t""Chimeric_reads" "$PROJECT"/chimTE-final-transcriptome.ct
+  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-transcriptome.ct${NC}\n"; else
+  echo -e "The analysis did not find any chimeric transcripts based only on transcriptome assembly!"
+fi
+if [[ ! -z "$PROJECT"/chimTE-final-double-evidence.ct ]]; then
+  total=$(wc -l "$PROJECT"/chimTE-final-double-evidence.ct | awk '{print $1}'); echo -e "ChimeraTE has been found "$total" chimeric transcripts based on both chimeric reads alignemnt and transcriptome assembly"
+  sed -i 1i"Gene_id""\t""TE_family""\t""Chimeric_reads""\t""Transcripts""\t""FPKM""\t""Trinity_isoform""\t""Identity""\t""Chimeric_transcript_length""\t""Ref_Length""\t""Match_length""\t""Masked_TE_family""\t""Chim_reads_trinity" "$PROJECT"/chimTE-final-double-evidence.ct
+  echo -e "Check it out the result in ====> ${GREEN} $PROJECT/chimTE-final-double-evidence.ct${NC}\n"; else
+  echo -e "The analysis did not find any chimeric transcripts based on both chimeric reads alignemnt and transcriptome assembly!"
+fi

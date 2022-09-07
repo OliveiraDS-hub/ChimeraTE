@@ -356,6 +356,7 @@ You should find at the first lines:
 | FBgn0058160 | DNAREP1 | 60.0000  | CG40160-RH_FBgn0058160 | 62178.0000 | TRINITY_DN22_c0_g1_i1 | 100.000 | 1020 | 4869 | 919 | INE-1 | 32.5000 |
 
 ---
-
+## How to cite us
+Check it out the pre-print paper on BioRchive!<br />ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. https://doi.org/10.1101/2022.09.05.505575<br />
 ## License
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.

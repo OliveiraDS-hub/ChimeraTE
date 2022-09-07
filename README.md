@@ -358,5 +358,9 @@ You should find at the first lines:
 ---
 ## Read more about ChimeraTE!
 Check it out the pre-print paper on BioRchive!<br />ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. https://doi.org/10.1101/2022.09.05.505575<br />
+
+## Development and help
+To report bugs and give us suggestions, you can open an [issue](https://github.com/OliveiraDS-hub/ChimeraTE/issues) on the github repository. Feel free also to contact me by e-mail (daniel.sdo2015@gmail.com) or twitter (https://twitter.com/Oliveira_D_S)
+
 ## License
 <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.

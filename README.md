@@ -54,7 +54,7 @@ First, build the docker image by running:
 Then, you can run it,e.g., using:
 
 ````
-docker -v $HOME/my_folder:/chimeraTE/projects run -it chimerate:0.2a bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.gz,example_data/data_sampling-MODE1/sample2_R1.fq.gz \
+docker run -v $HOME/my_folder:/chimeraTE/projects -it chimerate:0.2a bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.gz,example_data/data_sampling-MODE1/sample2_R1.fq.gz \
 --mate2 example_data/data_sampling-MODE1/sample1_R2.fq.gz,example_data/data_sampling-MODE1/sample2_R2.fq.gz \
 --genome example_data/data_sampling-MODE1/dmel-chrX.fa \
 --te example_data/data_sampling-MODE1/dmel_sample-TEs-chrX.gtf \

@@ -9,6 +9,8 @@ Mode 2 chimeric transcripts detection regardless the genomic position, allowing 
 This pipeline has been tested in Linux machines, Ubuntu 18.04 and 20.04.
 
 1. [Install](#installation)
+   1. [Conda](#conda)
+   2. [Docker](#docker)
 2. [Required data](#req_data)
 3. [ChimeraTE Mode 1](#mode1)
     1. [Usage](#usage)
@@ -24,6 +26,7 @@ This pipeline has been tested in Linux machines, Ubuntu 18.04 and 20.04.
 ---
 
 ## Install <a name="installation"></a>
+### Conda <a name="conda"></a>
 The installation may be easily done with conda. If you don't have conda installed in your machine, please follow [this tutorial](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html).
 
 Once you have installed conda, all dependencies to run ChimeraTE can be easily installed in a new conda environment by using the chimeraTE.yml file:
@@ -43,6 +46,25 @@ conda activate chimeraTE
 #Give write permissions
 chmod +x scripts/mode1/* scripts/mode2/*
 ````
+
+### Docker <a name="docker"></a>
+First, build the docker image by running:
+`docker build -t chimerate:0.2a .`
+
+Then, you can run it,e.g., using:
+
+````
+docker run -v $HOME/my_folder:/chimeraTE/projects -it chimerate:0.2a bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.gz,example_data/data_sampling-MODE1/sample2_R1.fq.gz \
+--mate2 example_data/data_sampling-MODE1/sample1_R2.fq.gz,example_data/data_sampling-MODE1/sample2_R2.fq.gz \
+--genome example_data/data_sampling-MODE1/dmel-chrX.fa \
+--te example_data/data_sampling-MODE1/dmel_sample-TEs-chrX.gtf \
+--gene example_data/data_sampling-MODE1/dmel_sample-transcripts-chrX.gtf \
+--strand rf-stranded \
+--project example_mode1 \
+--utr
+````
+
+
 ---
 
 ## Required data <a name="req_data"></a>

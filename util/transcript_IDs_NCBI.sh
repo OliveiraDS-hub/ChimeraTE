@@ -94,4 +94,4 @@ old_ID=$(grep '>' "$TRANSCRIPTS" | head -4)
 new_ID=$(grep '>' "$OUTPUT" | head -4)
 
 echo -e "\nDONE!"
-echo -e "\nThe IDs have been changed from FLYBASE pattern:\n$old_ID\n\nTo ChimeraTE Mode 2 pattern:\n\n$new_ID"
+echo -e "\nThe IDs have been changed from NCBI pattern:\n$old_ID\n\nTo ChimeraTE Mode 2 pattern:\n\n$new_ID"

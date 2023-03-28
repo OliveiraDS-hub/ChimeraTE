@@ -1,3 +1,5 @@
+![image](https://github.com/OliveiraDS-hub/ChimeraTE/blob/main/image/logo.png)
+
 # The pipeline
 
 ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two running Modes:

@@ -1,7 +1,11 @@
 ![image](https://github.com/OliveiraDS-hub/ChimeraTE/blob/main/image/logo.png)
 
-# The pipeline
+**The current bash version is deprecated!!!**
 
+A python version with several improvements will be available soon. We recommend the use of this current version only for tests.
+
+---
+# The pipeline
 ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two running Modes:
 
 Mode 1 chimeric transcripts detection based upon exons and TE copies positions in the genome sequence; 

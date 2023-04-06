@@ -139,7 +139,7 @@ python3 chimTE_mode1.py --genome example_data/dmel-chrX.fa \
 ---
 
 ## Read more about ChimeraTE!
-Check it out the pre-print paper on BioRchive!<br />ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. https://doi.org/10.1101/2022.09.05.505575<br />
+Check it out the pre-print paper on BioRxiv!<br />ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. https://doi.org/10.1101/2022.09.05.505575<br />
 
 ## Development and help
 To report bugs and give us suggestions, you can open an [issue](https://github.com/OliveiraDS-hub/ChimeraTE/issues) on the github repository. Feel free also to contact me by e-mail (daniel.sdo2015@gmail.com) or twitter (https://twitter.com/Oliveira_D_S)

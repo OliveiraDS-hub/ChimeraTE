@@ -116,8 +116,8 @@ Usually, the coordinates for TE insertions is given as the .out file from Repeat
 ````
 tail -n +4 RMfile.out | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;print $5,"RepeatMasker","similarity",$6,$7,$2,$9,".",$10}' | egrep -v 'Satellite|Simple_repeat|rRNA|Low_complexity|RNA|ARTEFACT' > RMfile.gtf
 ````
-
 If you don't have the .out file for your genome assembly, check it out the util section.
+
 ---
  
 ### Example Data Mode 1 <a name="example_m1"></a>

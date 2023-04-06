@@ -15,7 +15,6 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
 
 1. [Install](#installation)
    1. [Conda](#conda)
-   2. [Docker](#docker)
 2. [Required data](#req_data)
 3. [ChimeraTE Mode 1](#mode1)
     1. [Usage](#usage)

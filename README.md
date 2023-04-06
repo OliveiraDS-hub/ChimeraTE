@@ -1,18 +1,17 @@
 ![image](https://github.com/OliveiraDS-hub/ChimeraTE/blob/main/image/logo.png)
 
-**The current bash version is deprecated!!!**
+**The previous bash version (ChimeraTE v1.0) is deprecated!!!**
 
-A python version with several improvements will be available soon. We recommend the use of this current version only for tests.
+A python version with several improvements (ChimeraTE v1.1) will be available soon.
 
 ---
 # The pipeline
 ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two running Modes:
 
-Mode 1 chimeric transcripts detection based upon exons and TE copies positions in the genome sequence; 
+- Mode 1 chimeric transcripts detection based upon exons and TE copies positions in the genome sequence; 
 
-Mode 2 chimeric transcripts detection regardless the genomic position, allowing the detection of chimeras from TEs that are not present in the referece genome, but with less sensivity.
+- Mode 2 chimeric transcripts detection regardless the genomic position, allowing the detection of chimeras from TEs that are not present in the referece genome, but with less sensivity.
 
-This pipeline has been tested in Linux machines, Ubuntu 18.04 and 20.04.
 
 1. [Install](#installation)
    1. [Conda](#conda)
@@ -35,43 +34,22 @@ This pipeline has been tested in Linux machines, Ubuntu 18.04 and 20.04.
 ### Conda <a name="conda"></a>
 The installation may be easily done with conda. If you don't have conda installed in your machine, please follow [this tutorial](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html).
 
-Once you have installed conda, all dependencies to run ChimeraTE can be easily installed in a new conda environment by using the chimeraTE.yml file:
-````
-#Download repository from github
-git clone https://github.com/OliveiraDS-hub/ChimeraTE.git
-
-#Change to the ChimeraTE's folder
-cd ChimeraTE
-
-#Create chimeraTE environment with all dependencies
-conda env create -f chimeraTE.yml
-
-#Activate the new environment
-conda activate chimeraTE
-
-#Give write permissions
-chmod +x scripts/mode1/* scripts/mode2/*
+Once you have installed conda, you need to enable Bioconda channel with:
+````conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+conda config --set channel_priority strict
 ````
 
-### Docker <a name="docker"></a>
-First, build the docker image by running:
-`docker build -t chimerate:0.2a .`
+Then, all dependencies to run ChimeraTE can be easily installed in a new conda environment by using the chimeraTE.yml file:
 
-Then, you can run it,e.g., using:
+Download repository from github:<br />````git clone https://github.com/OliveiraDS-hub/ChimeraTE.git````
 
-````
-docker run -v $HOME/my_folder:/chimeraTE/projects -it chimerate:0.2a bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.gz,example_data/data_sampling-MODE1/sample2_R1.fq.gz \
---mate2 example_data/data_sampling-MODE1/sample1_R2.fq.gz,example_data/data_sampling-MODE1/sample2_R2.fq.gz \
---genome example_data/data_sampling-MODE1/dmel-chrX.fa \
---te example_data/data_sampling-MODE1/dmel_sample-TEs-chrX.gtf \
---gene example_data/data_sampling-MODE1/dmel_sample-transcripts-chrX.gtf \
---strand rf-stranded \
---project example_mode1 \
---utr
-````
+Change to the ChimeraTE's folder:<br />````cd ChimeraTE````
 
+Create chimeraTE environment with all dependencies:<br />````conda env create -f chimeraTE.yml````
 
----
+Activate the new environment:<br />````conda activate chimeraTE````
 
 ## Required data <a name="req_data"></a>
 In order to run ChimeraTE, the following files are required according to the running Mode: 
@@ -84,57 +62,37 @@ In order to run ChimeraTE, the following files are required according to the run
 | TE annotation -  GTF file with TE insertions     | X     |       |       |
 | Reference transcripts - Fasta file with reference transcripts     |      |   X    |    X   |
 | Reference TEs - Fasta file with reference TE insertions    |      |   X    |    X   |
-| TE consensuses - Fasta file with reference TE consensuses    |      |       |    X   |
 
 ---
 
 ## ChimeraTE genome-guided (mode1) <a name="mode1"></a>
-In the Mode 1, chimeric transcripts will be detected considering the genomic location of TE insertions and exons. Chimeras from this Mode can be classified as TE-initiated upstream, TE-initiated 5’UTR, TE-exonized, TE-terminated 3’UTR and TE-terminated downstream. In addition, results from Mode 1 can be visualized in genome browsers, which allows a manual curation of chimeric transcripts in the reference genome. Mode 1 does not detect chimeric transcripts derived from TE insertions absent from the reference genome that is provided. 
+In the Mode 1, chimeric transcripts will be detected considering the genomic location of TE insertions and exons. Chimeras from this Mode can be classified as TE-initiated TE-exonized, and TE-terminated transcripts. Mode 1 does not detect chimeric transcripts derived from TE insertions absent from the reference genome that is provided. 
 ````
-cd $FOLDER/ChimeraTE/
-bash ChimeraTE-mode1.sh --help
+cd ChimeraTE/
+python3 chimTE_mode1.py --help
 ````
-### USAGE <a name="usage"></a>
 ````
-ChimTE-mode1.sh   [--mate1 <replicate1_R1.fastq.gz,replicate2_R1.fastq.gz,replicate3_R1.fastq>]
-                  [--mate2 <replicate1_R2.fastq.gz,replicate2_R2.fastq.gz,replicate3_R2.fastq>]
-                  [--strand <rf-stranded> OR <fr-stranded>]
-                  [--genome <genome.fasta>]
-                  [--te <TE_insertions.gtf>]
-                  [--gene <gene_annotation.gtf>]
-                  [--project <project_name>]
+ChimeraTE Mode 1: The genome-guided approach to detect chimeric transcripts with RNA-seq data.
 
-#Mandatory arguments:
+Required arguments:
+  --genome      Genome in fasta
+  --input       Paired-end files and their respective group/replicate
+  --project     Directory name with output data
+  --te          GTF file containing TE information
+  --gene        GTF file containing gene information
+  --strand      Define the strandness direction of the RNA-seq. Two options:
+                "rf-stranded" OR "fwd-stranded"
 
-   --mate1                 FASTQ paired-end R1
-
-   --mate2                 FASTQ paired-end R2
-
-   --genome                FASTA genome sequence
-
-   --te                    GTF/GFF with TE coordinates
-
-   --gene                  GTF/GFF with genes coordinates
-
-   --strand                Select "rf-stranded" if your reads are reverse->forward; or "fr-stranded" if they are forward->reverse
-
-   --project               project name -spaces are not allowed- (it's the name of the directory that will be created inside projects/)
-
-#Optional arguments:
-
-   --window                Upstream and downstream window size (default = 3000)
-
-   --overlap               Minimum overlap between chimeric reads and TE insertions (default = 0.5 -50%-)
-
-   --utr                   It must be used if your gene annotation (-a | --gene) has UTR regions (default = off)
-
-   --fpkm                  Minimum fpkm to consider a gene as expressed (default = 1)
-
-   --coverage              Minimum coverage for chimeric transcripts detection (default = 2)
-
-   --replicate	           Minimum recurrency of chimeric transcripts between RNA-seq replicates (default = 2)
-
-   --threads               Number of threads (default = 6)
+Optional arguments:
+  --window      Upstream and downstream window size (default = 3000)
+  --replicate   Minimum recurrency of chimeric transcripts between RNA-seq
+                replicates (default 2)
+  --coverage    Minimum coverage (mean between replicates default 2 for
+                chimeric transcripts detection)
+  --fpkm        Minimum fpkm to consider a gene as expressed (default 1)
+  --threads     Number of threads (default 6
+  --overlap     Minimum overlap between chimeric reads and TE insertions
+                (default 0.50)
 ````
 ---
 

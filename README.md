@@ -97,37 +97,27 @@ Optional arguments:
 ---
 
 ### Prepare your data for Mode 1! <a name="prep_data"></a>
+#### Input table
+The input tab-delimited table provided with ````--input```` must have a specific format:
+First column: Mate 1 from the paired-end data
+Second column: Mate 2 from the paired-end data
+Third column: Replicate/group name
 
-Stranded paired-end libraries, genome fasta file and gene annotation are common files that can be found in databases for many species. However, TE annotation may not be found publicly available to non-reference species/strains. 
-   - If you don't have TE annotation for your assembled genome, you can use the util script *masking.sh*.The genome is masked with TE consensus available in Dfam 3.6, by providing the lineage with ````--ref_TEs```` or a fasta file with a TE consensus library. This script will provide you a gtf file with TE annotation to run ChimeraTE Mode 1.
+| mate1 | mate2 | rep | 
+| -------- | -------- | -------- |
+| /home/user/ChimeraTE/mate1_control1.fastq.gz | /home/user/ChimeraTE/mate2_control1.fastq.gz | rep1 |
+| /home/user/ChimeraTE/mate1_control2.fastq.gz | /home/user/ChimeraTE/mate2_control2.fastq.gz | rep2 |
+| /home/user/ChimeraTE/mate1_control3.fastq.gz | /home/user/ChimeraTE/mate2_control3.fastq.gz | rep3 |
 
-````
-cd $FOLDER/ChimeraTE/util
-bash masking.sh --help
-````
-````
-#Mandatory arguments:
+The header must be absent, as it follows in the example ````--input```` table at example_data/mode1/input_example.tsv
 
-  --genome    file with genome (.fasta)
-
-  --ref_TEs   species database used by RepeatMasker ("flies", "human", "mouse", "arabidopsis"...);
-  	      or a file with your custom TE library (.fasta)
-
-#Optional arguments:
-
-  --out       output directory (if not provided, the output will be created in the current folder)
-
-  --threads   Number of threads, (default = 6)
-
-  --dist      Distance in nt between LTR and Internal regions, as well as fragments from the
-              same TE family that will be merged by One Code to Find them all, (default = 50)
-````
-
-   - If you already have a .out file from RepeatMasker, you can convert it to .gtf with:
+#### GTF for TEs
+Usually, the coordinates for TE insertions is given as the .out file from RepeatMasker in many databases. If you already have a .out file from RepeatMasker, you can convert it to .gtf on Linux with:
 ````
 tail -n +4 RMfile.out | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;print $5,"RepeatMasker","similarity",$6,$7,$2,$9,".",$10}' | egrep -v 'Satellite|Simple_repeat|rRNA|Low_complexity|RNA|ARTEFACT' > RMfile.gtf
 ````
 
+If you don't have the .out file for your genome assembly, check it out the util section.
 ---
  
 ### Example Data Mode 1 <a name="example_m1"></a>
@@ -138,14 +128,12 @@ After installation, you can run ChimeraTE with the example data from the sampled
 conda activate chimeraTE
 ````
 ````
-bash ChimeraTE-mode1.sh --mate1 example_data/data_sampling-MODE1/sample1_R1.fq.gz,example_data/data_sampling-MODE1/sample2_R1.fq.gz \
---mate2 example_data/data_sampling-MODE1/sample1_R2.fq.gz,example_data/data_sampling-MODE1/sample2_R2.fq.gz \
---genome example_data/data_sampling-MODE1/dmel-chrX.fa \
---te example_data/data_sampling-MODE1/dmel_sample-TEs-chrX.gtf \
---gene example_data/data_sampling-MODE1/dmel_sample-transcripts-chrX.gtf \
---strand rf-stranded \
---project example_mode1 \
---utr
+python3 chimTE_mode1.py --genome example_data/dmel-chrX.fa \
+--input example_data/input_example.tsv \
+--project example_test \
+--te example_data/dmel_sample-TEs-chrX.gtf \
+--gene example_data/dmel_sample-transcripts-chrX.gtf \
+--strand rf-stranded
 ````
 ---
 

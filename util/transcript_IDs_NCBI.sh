@@ -66,7 +66,7 @@ fi
 
 echo -e "Converting transcripts IDs..."
 
-grep '>' "$TRANSCRIPTS" | awk '{print $1}' > tmp/part1.rm
+grep '>' "$TRANSCRIPTS" | awk '{print $1}' | sed 's/_/-/g' > tmp/part1.rm
 grep '>' "$TRANSCRIPTS" | sed 's/>.*(//g; s/).*//' > tmp/part2.rm
 
 paste tmp/part1.rm tmp/part2.rm --delimiter '_' > tmp/formated_IDs.lst

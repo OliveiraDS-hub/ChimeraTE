@@ -4,15 +4,15 @@ set -e
 function usage() {
 cat << help
 
-Conversion of FLYBASE native transcript IDs to the ChimeraTE Mode 2 format
+Conversion of NCBI native transcript IDs to the ChimeraTE Mode 2 format
 
 #Mandatory arguments:
 
-  --transcripts     transcripts downloaded from FLYBASE (.fasta)
-                    i.e.: dmel-all-transcript-r6.47.fasta (D. melanogaster)
-                          dsim-all-transcript-r2.02.fasta (D. simulans)
+  --transcripts     transcripts downloaded from NCBI (.fasta)
+                    i.e.: GCF_000001735.4_TAIR10.1_rna.fna  (A. thaliana)
+                          GCF_000001215.4_Release_6_plus_ISO1_MT_rna.fna (D. melanogaster)
 
-  --out   output file name (.fasta)
+  --out             output file name (.fasta)
 help
 }
 

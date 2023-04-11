@@ -1,4 +1,6 @@
 ![image](https://github.com/OliveiraDS-hub/ChimeraTE/blob/main/image/logo.png)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+
 
 **The previous bash version (ChimeraTE v1.0) is deprecated!!!**
 

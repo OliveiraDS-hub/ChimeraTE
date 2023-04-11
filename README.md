@@ -63,7 +63,7 @@ In order to run ChimeraTE, the following files are required according to the run
 | Gene annotation -  GTF file with gene annotations (UTRs,exons,CDS)     | X     |       |       |
 | TE annotation -  GTF file with TE insertions     | X     |       |       |
 | Reference transcripts - Fasta file with reference transcripts     |      |   X    |    X   |
-| Reference TEs - Fasta file with reference TE insertions    |      |   X    |    X   |
+| Reference TEs - Dfam taxonomy level OR fasta with TE consensuses    |      |   X    |    X   |
 
 ---
 

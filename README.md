@@ -19,16 +19,11 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
    1. [Conda](#conda)
 2. [Required data](#req_data)
 3. [ChimeraTE Mode 1](#mode1)
-    1. [Usage](#usage)
+    1. [Usage](#mode1)
     2. [Preparing your data](#prep_data)
     3. [Example data](#example_m1)
-    4. [Output](#out_m1)
-4. [ChimeraTE Mode 2](#mode2)
-    1. [Usage](#usage_m2)
-    2. [Preparing your data](#prep_data_m2)
-    3. [Example data](#example_m2)
-    4. [Output](#out_m2)
-5. [Util]
+    4. [Output](#out_m1)   #comming soon
+4. [ChimeraTE Mode 2](#nothing)  #coming soon
 
 ---
 

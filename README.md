@@ -22,7 +22,7 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
     1. [Usage](#mode1)
     2. [Preparing your data](#prep_data)
     3. [Example data](#example_m1)
-    4. [Output](#out_m1)   #comming soon
+    4. [Output](#out_m1)   #coming soon
 4. [ChimeraTE Mode 2](#nothing)  #coming soon
 
 ---

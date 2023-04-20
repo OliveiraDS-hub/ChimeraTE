@@ -48,6 +48,13 @@ Create chimeraTE environment with all dependencies:<br />````conda env create -f
 
 Activate the new environment:<br />````conda activate chimeraTE````
 
+Note: We advise you to return your condarc config to the default with:
+```
+conda config --remove channels bioconda
+conda config --remove channels conda-forge
+conda config --set channel_priority false
+```
+
 ## Required data <a name="req_data"></a>
 In order to run ChimeraTE, the following files are required according to the running Mode: 
 

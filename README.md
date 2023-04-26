@@ -12,7 +12,7 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
 
 - Mode 1 chimeric transcripts detection based upon exons and TE copies positions in the genome sequence; 
 
-- Mode 2 chimeric transcripts detection regardless the genomic position, allowing the detection of chimeras from TEs that are not present in the referece genome, but with less sensivity.
+- Mode 2 chimeric transcripts detection regardless the genomic position, allowing the detection of chimeras from TEs that are not present in the referece genome, but with less sensitivity.
 
 
 1. [Install](#installation)

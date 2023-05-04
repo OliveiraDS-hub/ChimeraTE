@@ -118,7 +118,7 @@ The header must be absent, as it follows in the example ````--input```` table at
 #### GTF for TEs
 Usually, the coordinates for TE insertions is given as the .out file from RepeatMasker in many databases. If you already have a .out file from RepeatMasker, you can convert it to .gtf on Linux with:
 ````
-tail -n +4 RMfile.out | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;print $5,"RepeatMasker","similarity",$6,$7,$2,$9,".",$10}' | egrep -v 'Satellite|Simple_repeat|rRNA|Low_complexity|RNA|ARTEFACT' > RMfile.gtf
+tail -n +4 RMfile.out | egrep -v 'Satellite|Simple_repeat|rRNA|Low_complexity|RNA|ARTEFACT' | awk -v OFS='\t' '{Sense=$9;sub(/C/,"-",Sense);$9=Sense;print $5,"RepeatMasker","similarity",$6,$7,$2,$9,".",$10}' > RMfile.gtf
 ````
 If you don't have the .out file for your genome assembly, check it out the util section.
 

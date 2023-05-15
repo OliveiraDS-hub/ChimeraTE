@@ -19,11 +19,11 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
    1. [Conda](#conda)
 2. [Required data](#req_data)
 3. [ChimeraTE Mode 1](#mode1)
-    1. [Usage](#mode1)
-    2. [Preparing your data](#prep_data)
-    3. [Example data](#example_m1)
-    4. [Output](#out_m1)   #coming soon
+    1. [Preparing your data](#prep_data)
+    2. [Example data](#example_m1)
+    3. [Output](#out_m1)   #coming soon
 4. [ChimeraTE Mode 2](#mode2)
+    1. [Preparing your data](#prep_mode2)
 
 ---
 
@@ -69,7 +69,7 @@ In order to run ChimeraTE, the following files are required according to the run
 
 ---
 
-## ChimeraTE genome-guided (mode1) <a name="mode1"></a>
+## ChimeraTE genome-guided - Mode1 <a name="mode1"></a>
 In the Mode 1, chimeric transcripts will be detected considering the genomic location of TE insertions and exons. Chimeras from this Mode can be classified as TE-initiated TE-exonized, and TE-terminated transcripts. Mode 1 does not detect chimeric transcripts derived from TE insertions absent from the reference genome that is provided. 
 ````
 cd ChimeraTE/
@@ -141,9 +141,55 @@ python3 chimTE_mode1.py --genome example_data/dmel-chrX.fa \
 ````
 ---
 
-## ChimeraTE Mode 2 <a name="mode2"></a>
+## ChimeraTE genome-blinded - Mode 2 <a name="mode2"></a>
 
 Mode 2 is designed to identify chimeric transcripts without the reference genome, with the prediction of chimeras from fixed and polymorphic TEs. In Mode 2, two alignments with stranded RNA-seq reads are performed: (1) against transcripts; (2) against TE insertions. From these alignments, all reads supporting chimeric transcripts (chimeric reads) will be computed. These reads are thise ones that have different singleton mates from the same read pairs splitted between transcripts and TEs, or those that have concordant alignment in one of the alignments, but singleton aligned reads in the other. There is also an option to perform de novo transcriptome assembly with ```--assembly``` parameter. Such additional analysis will analyze whether gene transcripts contain TE-derived sequences.
+
+```
+cd ChimeraTE/
+python3 chimTE_mode2.py --help
+```
+```
+ChimeraTE Mode 2: The genome-blinded approach to detect chimeric transcripts with RNA-seq data.
+
+Required arguments:
+  --input         Paired-end files and their respective group/replicate
+  --project       Directory name with output data
+  --te            Fasta file containing TE information
+  --transcripts   Fasta file containing gene information
+  --strand        Define the strandness direction of the RNA-seq. Two options:
+                  "rf-stranded" OR "fwd-stranded"
+
+Optional arguments:
+  --coverage      Minimum coverage (mean between replicates default 2 for
+                  chimeric transcripts detection)
+  --fpkm          Minimum fpkm to consider a gene as expressed (default 1)
+  --replicate     Minimum recurrency of chimeric transcripts between RNA-seq
+                  replicates (default 2)
+  --threads       Number of threads (default 6)
+  --assembly      Search for chimeric transcript with transcriptome assembly
+                  with Trinity
+  --ref_TEs       "species" database used by RepeatMasker (flies, human,
+                  mouse, arabidopsis; or a built TE library in fasta format)
+  --ram           Minimum overlap between chimeric reads and TE insertions
+                  (default 0.50)
+  --overlap       Minimum overlap between chimeric reads and TE insertions
+                  (default 0.50)
+  --TE_length     Minimum TE length to keep it from RepeatMasker output
+                  (default = 80bp)
+  --identity      Minimum identity between de novo assembled transcripts and
+                  reference transcripts (default = 80)
+```
+
+## Prepare your data for Mode 2 <a name="prep_mode2"></a>
+Despite the format of the input files are simple fastas, altogether with paired-end RNA-seq reads, the sequence IDs for transcripts and TEs must be in a specific pattern. In order make it easier to generate these formats, we provide ```util``` scripts to manage your data.
+
+#### 1. Reference transcripts (.fasta)
+  - In order to run ChimeraTE correctly, this fasta file **must** have a specific header pattern. All IDs have be composed firstly by the isoform ID, followed by the gene name.  For instance, in _D. melanogaster_, the gene FBgn0263977 has two transcripts:<br />Tim17b-RA_FBgn0263977<br />Tim17b-RB_FBgn0263977
+  - Note that headers "Tim17b-RA" and "Tim17b-RB" have isoform ID separated from gene name by "_".  This is not a usual ID format, thefore we have developed auxiliary scripts ($FOLDER/ChimeraTE/util/) to convert native ID formats to ChimeraTE format. 
+    - *transcripts_IDs_NCBI.sh*     (native IDs from NCBI to the ChimeraTE format)
+    - *transcripts_IDs_ensembl.sh*  (native IDs from ENSEMBL to the ChimeraTE format)
+    - *transcripts_IDs_FLYBASE.sh*  (native IDs from FLYBASE to the ChimeraTE format)
 
 
 

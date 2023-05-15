@@ -163,16 +163,16 @@ Required arguments:
 Optional arguments:
   --coverage      Minimum coverage (mean between replicates default 2 for
                   chimeric transcripts detection)
-  --fpkm          Minimum fpkm to consider a gene as expressed (default 1)
+  --fpkm          Minimum fpkm to consider a gene as expressed (default = 1)
   --replicate     Minimum recurrency of chimeric transcripts between RNA-seq
-                  replicates (default 2)
-  --threads       Number of threads (default 6)
+                  replicates (default = 2)
+  --threads       Number of threads (default = 6)
   --assembly      Search for chimeric transcript with transcriptome assembly
                   with Trinity
   --ref_TEs       "species" database used by RepeatMasker (flies, human,
                   mouse, arabidopsis; or a built TE library in fasta format)
-  --ram           Minimum overlap between chimeric reads and TE insertions
-                  (default 0.50)
+  --ram           Ram memory in Gbytes 
+                  (default = 8)
   --overlap       Minimum overlap between chimeric reads and TE insertions
                   (default 0.50)
   --TE_length     Minimum TE length to keep it from RepeatMasker output

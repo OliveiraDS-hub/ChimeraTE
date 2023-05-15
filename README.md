@@ -23,7 +23,7 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
     2. [Preparing your data](#prep_data)
     3. [Example data](#example_m1)
     4. [Output](#out_m1)   #coming soon
-4. [ChimeraTE Mode 2](#nothing)  #coming soon
+4. [ChimeraTE Mode 2](#mode2)
 
 ---
 
@@ -140,6 +140,13 @@ python3 chimTE_mode1.py --genome example_data/dmel-chrX.fa \
 --strand rf-stranded
 ````
 ---
+
+## ChimeraTE Mode 2 <a name="mode2"></a>
+
+Mode 2 is designed to identify chimeric transcripts without the reference genome, with the prediction of chimeras from fixed and polymorphic TEs. In Mode 2, two alignments with stranded RNA-seq reads are performed: (1) against transcripts; (2) against TE insertions. From these alignments, all reads supporting chimeric transcripts (chimeric reads) will be computed. These reads are thise ones that have different singleton mates from the same read pairs splitted between transcripts and TEs, or those that have concordant alignment in one of the alignments, but singleton aligned reads in the other. There is also an option to perform de novo transcriptome assembly with ```--assembly``` parameter. Such additional analysis will analyze whether gene transcripts contain TE-derived sequences.
+
+
+
 
 ## Read more about ChimeraTE!
 Check it out the pre-print paper on BioRxiv!<br />ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. https://doi.org/10.1101/2022.09.05.505575<br />

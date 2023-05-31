@@ -1,11 +1,6 @@
 ![image](https://github.com/OliveiraDS-hub/ChimeraTE/blob/main/image/logo.png)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
-
-**The previous bash version (ChimeraTE v1.0) is deprecated!!!**
-
-A python version with several improvements (ChimeraTE v1.1) will be available soon.
-
 ---
 # The pipeline
 ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and transposable elements (TEs). It has two running Modes:
@@ -21,7 +16,7 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
 3. [ChimeraTE Mode 1](#mode1)
     1. [Preparing your data](#prep_data)
     2. [Example data](#example_m1)
-    3. [Output](#out_m1)   #coming soon
+    3. [Output](#output_m1)
 4. [ChimeraTE Mode 2](#mode2)
     1. [Preparing your data](#prep_mode2)
 
@@ -135,12 +130,23 @@ conda activate chimeraTE
 ````
 python3 chimTE_mode1.py --genome example_data/dmel-chrX.fa \
 --input example_data/input_example.tsv \
---project example_test \
+--project example_mode1 \
 --te example_data/dmel_sample-TEs-chrX.gtf \
 --gene example_data/dmel_sample-transcripts-chrX.gtf \
 --strand rf-stranded
 ````
 ---
+
+### Output Mode 1 <a name="output_m1"></a>
+The output files can be found at ```ChimeraTE/projects/$your_project_name```. For instance, for the example data, you can find the output at ```ChimeraTE/projects/example_mode1```. Inside this directory, you might found 3 tables:
+
+ -  TE-initiated_final.ct
+ -  TE-exonized_final.ct
+ -  TE-terminated_final.ct
+
+These tables contain the chimeric transcripts list with the location of genes and TE insertions generating chimeras, as well as their corresponding coverage of chimeric reads (support). At the 7th column of ```TE-exonized_final.ct```, you can find the position of the TE within the gene region (Embedded, Intronic, or Overlapped). As it follows in the example below:
+
+updating...
 
 ## ChimeraTE genome-blinded - Mode 2 <a name="mode2"></a>
 

@@ -202,6 +202,24 @@ Despite the format of the input files are simple fastas, altogether with paired-
     - *transcripts_IDs_FLYBASE.sh*  (native IDs from FLYBASE to the ChimeraTE format)
 
 
+### Example Data Mode 2 <a name="example_m2"></a>
+After installation, you can run ChimeraTE Mode 2 with the example data from the sampled RNA-seq from *D. melanogaster* used in our paper.
+
+````
+#Do not forget to activate your conda environment:
+conda activate chimeraTE
+````
+
+````
+python3 chimTE_mode2.py --input input_mode2.tsv \
+--project example_mode2 \
+--te data_sampling-MODE2/dmel-sampled_TE-copies.fa \
+--transcripts data_sampling-MODE2/dmel-sampled_transcripts.fa \
+--strand rf-stranded --assembly
+````
+Mode 2 will run with 8 threads and 8Gb of RAM memory, but you can speed up the analysis by increasing this values with ```--threads``` and ```--ram```, respectively.
+
+---
 
 
 ## Read more about ChimeraTE!

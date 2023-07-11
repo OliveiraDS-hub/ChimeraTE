@@ -270,9 +270,16 @@ The output files can be found at ```ChimeraTE/projects/$your_project_name```. Fo
 
 =========================> transcriptome_evidence_FINAL.tsv <=========================
 
-| gene_id | TE_family | transcript_ID | Trinity_transcripts | Identity_TE | trinity_length | ref_transcript_length | match_length | chim_reads | 
+| gene_id | TE_family | transcript_ID | Trinity_transcripts | Identity_transcripts | trinity_length | ref_transcript_length | match_length | chim_reads | 
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
 | FBgn0286778 | HMSBEAGLE_I |	CG46385-RA | TRINITY_DN87_c0_g1_i1; TRINITY_DN88_c0_g1_i1 |	97.992 |	741.5 | 5129.0 | 732.0 | 31.0 |
+
+
+=========================> double_evidence_FINAL.tsv <=========================
+
+| gene_id | TE_family | chim_reads | masked_family | chim_reads_masked | ref_transcript_FPKM | Trinity_transcripts | Identity_transcripts | trinity_length | ref_transcript_length | match_length | ref_transcript_IDs | 
+| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+| FBgn0001169 | ROO | 32.0 | ROO_I | 4.0 | 3011.5781 | TRINITY_DN13_c0_g1_i3; TRINITY_DN13_c0_g1_i2 |	100.0 | 604.5 | 4069.5 | 603.5 |	H-RD; H-RB	H-RD_FBgn0001169; H-RB_FBgn0001169; H-RA_FBgn0001169 |
 
 ---
 

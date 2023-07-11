@@ -239,13 +239,40 @@ conda activate chimeraTE
 ````
 
 ````
-python3 chimTE_mode2.py --input input_mode2.tsv \
+#One-line
+python3 chimTE_mode2.py --input example_data/mode2/input_mode2.tsv --project example_mode2 --te example_data/mode2/dmel-sampled_TE-copies.fa --transcripts example_data/mode2/dmel-sampled_transcripts.fa --strand rf-stranded --assembly
+
+#Multi-line
+python3 chimTE_mode2.py --input example_data/mode2/input_mode2.tsv \
 --project example_mode2 \
---te data_sampling-MODE2/dmel-sampled_TE-copies.fa \
---transcripts data_sampling-MODE2/dmel-sampled_transcripts.fa \
---strand rf-stranded --assembly
+--te example_data/mode2/dmel-sampled_TE-copies.fa\
+ --transcripts example_data/mode2/dmel-sampled_transcripts.fa \
+ --strand rf-stranded \
+--assembly
 ````
 Mode 2 will run with 8 threads and 8Gb of RAM memory, but you can speed up the analysis by increasing this values with ```--threads``` and ```--ram```, respectively.
+
+**NOTE**: If you are not working with *Drosophila* data, do not forget to change ```--ref_TEs```parameter, providing a Dfam taxonomy level to use with RepeatMasker, or a fasta with TE consensuses.
+
+
+### Output Mode 2 <a name="output_m2"></a>
+The output files can be found at ```ChimeraTE/projects/$your_project_name```. For instance, for the example data, you can find the output at ```ChimeraTE/projects/example_mode2```. Inside this directory, you might found 3 tables:
+
+ -  chimreads_evidence_FINAL.tsv
+ -  transcriptome_evidence_FINAL.tsv
+ -  double_evidence_FINAL.tsv
+
+=========================> chimreads_evidence_FINAL.tsv <=========================
+
+| gene_id | TE_family | chim_reads | transcript_ID | transcript_FPKM | 
+| -------- | -------- | -------- | -------- | -------- |
+| FBgn0058160 | DNAREP1 | 60.0 | CG40160-RH_FBgn0058160 | 62177.475 |
+
+=========================> transcriptome_evidence_FINAL.tsv <=========================
+
+| gene_id | TE_family | transcript_ID | Trinity_transcripts | Identity_TE | trinity_length | ref_transcript_length | match_length | chim_reads | 
+| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+| FBgn0286778 | HMSBEAGLE_I |	CG46385-RA | TRINITY_DN87_c0_g1_i1; TRINITY_DN88_c0_g1_i1 |	97.992 |	741.5 | 5129.0 | 732.0 | 31.0 |
 
 ---
 

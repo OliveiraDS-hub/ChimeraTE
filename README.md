@@ -21,7 +21,6 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
     1. [Preparing your data](#prep_mode2)
     2. [Example data](#example_m2)
     3. [Output](#output_m2)
-5. [Util scripts](#util)
 
 ---
 
@@ -286,7 +285,6 @@ Finally, "double_evidence" is the list of chimeras for which both previous metho
 | FBgn0001169 | ROO | 32.0 | ROO_I | 4.0 | 3011.5781 | TRINITY_DN13_c0_g1_i3; TRINITY_DN13_c0_g1_i2 |	100.0 | 604.5 | 4069.5 | 603.5 |	H-RD; H-RB	H-RD_FBgn0001169; H-RB_FBgn0001169; H-RA_FBgn0001169 |
 
 ---
-
 
 ## Read more about ChimeraTE!
 Check it out the pre-print paper on BioRxiv!<br />ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. https://doi.org/10.1101/2022.09.05.505575<br />

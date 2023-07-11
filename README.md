@@ -258,12 +258,12 @@ Mode 2 will run with 8 threads and 8Gb of RAM memory, but you can speed up the a
 The output files can be found at ```ChimeraTE/projects/$your_project_name```. For instance, for the example data, you can find the output at ```ChimeraTE/projects/example_mode2```. Inside this directory, you might found 3 tables:
 
  -  chimreads_evidence_FINAL.tsv
+<br />In the "chimreads_evidence" table, you will find chimeric transcripts supported **only** by paired-end reads that have mapped in both transcripts and TE sequences (singletons and concordant/singleton - Check manuscripts's methods).
  -  transcriptome_evidence_FINAL.tsv
+<br />In the "transcriptome_evidence" table, you will find chimeras supported **only** by the transcripme assembly method (if you have activated ```--assembly```option). This table will provide you the gene, TE family, and the respective assembled transcript ID for which a TE sequence was found.
  -  double_evidence_FINAL.tsv
+<br />Finally, "double_evidence" is the list of chimeras for which both previous methods have predicted the same chimera (strong evidence!), containing all information from both previous tables.
 
-In the "chimreads_evidence" table, you will find chimeric transcripts supported **only** by paired-end reads that have mapped in both transcripts and TE sequences (singletons and concordant/singleton - Check manuscripts's methods).
-In the "transcriptome_evidence" table, you will find chimeras supported **only** by the transcripme assembly method (if you have activated ```--assembly```option). This table will provide you the gene, TE family, and the respective assembled transcript ID for which a TE sequence was found.
-Finally, "double_evidence" is the list of chimeras for which both previous methods have predicted the same chimera (strong evidence!), containing all information from both previous tables.
 
 =========================> chimreads_evidence_FINAL.tsv <=========================
 

@@ -93,7 +93,7 @@ Optional arguments:
   --coverage    Minimum coverage (mean between replicates default 2 for
                 chimeric transcripts detection)
   --fpkm        Minimum fpkm to consider a gene as expressed (default 1)
-  --threads     Number of threads (default 6
+  --threads     Number of threads (default 6)
   --overlap     Minimum overlap between chimeric reads and TE insertions
                 (default 0.50)
 ````
@@ -131,13 +131,20 @@ After installation, you can run ChimeraTE with the example data from the sampled
 conda activate chimeraTE
 ````
 ````
-python3 chimTE_mode1.py --genome example_data/dmel-chrX.fa \
---input example_data/input_example.tsv \
+#One-line
+python3 chimTE_mode1.py --genome example_data/mode1/dmel_genome_sample.fa --input example_data/mode1/input_mode1.tsv --project example_mode1 --te example_data/mode1/dmel_TEs_sample.gtf --gene example_data/mode1/dmel_genes_sample.gtf --strand rf-stranded
+
+#Multi-line
+python3 chimTE_mode1.py --genome example_data/mode1/dmel_genome_sample.fa \
+--input example_data/mode1/input_mode1.tsv \
 --project example_mode1 \
---te example_data/dmel_sample-TEs-chrX.gtf \
---gene example_data/dmel_sample-transcripts-chrX.gtf \
+--te example_data/mode1/dmel_5TEs_sample.gtf \
+--gene example_data/mode1/dmel_5genes_sample.gtf \
 --strand rf-stranded
 ````
+
+If you have more than 6 threads available on your machine, you can use ```--threads``` to speed up the process. 
+
 ---
 
 ### Output Mode 1 <a name="output_m1"></a>
@@ -149,7 +156,28 @@ The output files can be found at ```ChimeraTE/projects/$your_project_name```. Fo
 
 These tables contain the chimeric transcripts list with the location of genes and TE insertions generating chimeras, as well as their corresponding coverage of chimeric reads (support). At the 7th column of ```TE-exonized_final.ct```, you can find the position of the TE within the gene region (Embedded, Intronic, or Overlapped). As it follows in the example below:
 
-updating...
+=========================> TE-initiated_final.ct <=========================
+
+| gene_id | gene_strand | gene_pos | TE_id | TE_strand | TE_pos | chim_reads | 
+| -------- | -------- | -------- | -------- | -------- | -------- |  -------- |
+| FBgn0031188 | - | X_RaGOO:21340686-21343686 | S2 | + | X_RaGOO:21341507-21342141 | 11.5 | 
+
+
+=========================> TE-exonized_final.ct <=========================
+
+| gene_id | gene_strand | gene_pos | TE_id | TE_strand | TE_pos | exonized_type | chim_reads | 
+| -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+| FBgn0285926 | - | X_RaGOO:10476773-10513188 | roo | - | X_RaGOO:10485868-10485985 | Embedded | 63.5 |
+| FBgn0052000 | + | 4_RaGOO:126456-137357 | 1360 | + | 4_RaGOO:133965-134061 | Overlapped | 4.5 |
+| FBgn0039923 | - | 4_RaGOO:761931-772400 | FB | - | 4_RaGOO:769101-769563 | Intronic | 91.0 |
+
+
+=========================> TE-terminated_final.ct <=========================
+
+| gene_id | gene_strand | gene_pos | TE_id | TE_strand | TE_pos | chim_reads | 
+| -------- | -------- | -------- | -------- | -------- | -------- |  -------- |
+| FBgn0011747 | - | 4_RaGOO:106334-1093346 | G5 | - | 4_RaGOO:109144-109334 | 5.0 |
+
 
 ## ChimeraTE genome-blinded - Mode 2 <a name="mode2"></a>
 

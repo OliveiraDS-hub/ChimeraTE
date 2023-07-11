@@ -262,6 +262,10 @@ The output files can be found at ```ChimeraTE/projects/$your_project_name```. Fo
  -  transcriptome_evidence_FINAL.tsv
  -  double_evidence_FINAL.tsv
 
+In the "chimreads_evidence" table, you will find chimeric transcripts supported **only** by paired-end reads that have mapped in both transcripts and TE sequences (singletons and concordant/singleton - Check manuscripts's methods).
+In the "transcriptome_evidence" table, you will find chimeras supported **only** by the transcripme assembly method (if you have activated ```--assembly```option). This table will provide you the gene, TE family, and the respective assembled transcript ID for which a TE sequence was found.
+Finally, "double_evidence" is the list of chimeras for which both previous methods have predicted the same chimera (strong evidence!), containing all information from both previous tables.
+
 =========================> chimreads_evidence_FINAL.tsv <=========================
 
 | gene_id | TE_family | chim_reads | transcript_ID | transcript_FPKM | 

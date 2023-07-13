@@ -1,5 +1,8 @@
 ![image](https://github.com/OliveiraDS-hub/ChimeraTE/blob/main/image/logo.png)
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) <br />
+[![DOI](https://zenodo.org/badge/470747321.svg)](https://zenodo.org/badge/latestdoi/470747321)
+
+
 
 ---
 # The pipeline

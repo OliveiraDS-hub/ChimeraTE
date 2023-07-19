@@ -15,6 +15,8 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
 
 1. [Install](#installation)
    1. [Conda](#conda)
+   2. [Singularity](#singularity) #Under development
+   3. [Requirements](#requirements)
 2. [Required data](#req_data)
 3. [ChimeraTE Mode 1](#mode1)
     1. [Preparing your data](#prep_data)
@@ -54,6 +56,34 @@ conda config --remove channels bioconda
 conda config --remove channels conda-forge
 conda config --set channel_priority false
 ```
+### Singularity <a name="singularity"></a>
+In order to extend even more the compatibility with other machines, we are building a singularity container with all dependencies of ChimeraTE. It will be available soon.
+
+### Requirements <a name="requirements"></a>
+
+If you don't have conda, or you are working with an OS that some packages in the conda repo are not available, you can install them manually. It's important to highlight that all of them must be installed in your path.
+
+- Python dependencies
+  - [Python 3.6+](https://www.python.org/downloads/release/python-360/)
+  - [Termcolor 1.1.0](https://pypi.org/project/termcolor/1.1.0/)
+  - [Pybedtools 0.9.0](https://daler.github.io/pybedtools/main.html)
+  - [Pandas 1.1.5](https://pandas.pydata.org/docs/getting_started/install.html)
+  - [Dateutil 2.8.2](https://pypi.org/project/python-dateutil/)
+  - [h5py 3.1.0](https://pypi.org/project/h5py/3.1.0/)
+  - [numpy 1.19.5](https://numpy.org/install/)
+  
+- Softwares
+  - [Bedtools 2.30.0](https://github.com/arq5x/bedtools2/releases/tag/v2.30.0)
+  - [BLAST 2.13+](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/)
+  - [Bowtie 1.3.1](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.3.1/)
+  - [Bowtie 2.5.1](https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.5.1/)
+  - [Cufflinks 2.2.1](http://cole-trapnell-lab.github.io/cufflinks/install/)
+  - [express 1.5.1](https://pachterlab.github.io/eXpress/overview.html)
+  - [RepeatMasker 4.1.2](https://www.repeatmasker.org/RepeatMasker/)
+  - [Trinity 2.9.1](https://github.com/trinityrnaseq/trinityrnaseq/releases/tag/v2.9.1)
+  - [Seqtk 1.3](https://github.com/lh3/seqtk)
+  - [Samtools 1.7](https://sourceforge.net/projects/samtools/files/samtools/1.7/)
+  - [STAR 2.7.10](https://github.com/alexdobin/STAR)
 
 ## Required data <a name="req_data"></a>
 In order to run ChimeraTE, the following files are required according to the running Mode: 

@@ -319,8 +319,8 @@ The output files can be found at ```ChimeraTE/projects/$your_project_name```. Fo
 
 ---
 
-## Read more about ChimeraTE!
-Check it out the pre-print paper on BioRxiv!<br />ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. https://doi.org/10.1101/2022.09.05.505575<br />
+## Please cite us!
+Daniel S Oliveira, Marie Fablet, Anaïs Larue, Agnès Vallier, Claudia M A Carareto, Rita Rebollo, Cristina Vieira. ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. Nucleic and Acids Research, 2023. https://doi.org/10.1093/nar/gkad671
 
 ## Development and help
 To report bugs and give us suggestions, you can open an [issue](https://github.com/OliveiraDS-hub/ChimeraTE/issues) on the github repository.

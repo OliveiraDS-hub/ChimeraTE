@@ -52,7 +52,7 @@ if __name__ == 'mode1_prep_data':
     # Creating STAR db
     clock = time()
     if os.path.isfile(str(out_dir + '/index/SAindex')):
-        print("Star index found! Be sure that it is not corrupted")
+        print("STAR index found! Be sure that it is not corrupted")
     else:
         print(str(clock) + '\t' + "Creating STAR index with " + str(out_genome))
         subprocess.call(['STAR', '--runThreadN', str(args.threads), '--runMode', str("genomeGenerate"), "--genomeDir", str(out_dir + '/index'), \

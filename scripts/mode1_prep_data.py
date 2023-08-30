@@ -48,50 +48,14 @@ if __name__ == 'mode1_prep_data':
     complete_te[['scaf', 'start', 'end', 'ID', 'dot2', 'strand']].to_csv(str(tmp + '/TE_file.bed'), sep='\t', encoding='utf-8', header=None,index=False)
     print(colored("Done!", "green", attrs=['bold']))
 
-
+    
     # Creating STAR db
     clock = time()
-    print(str(clock) + '\t' + "Creating STAR index with " + str(out_genome))
-    subprocess.call(['STAR', '--runThreadN', str(args.threads), '--runMode', str("genomeGenerate"), "--genomeDir", str(out_dir + '/index'), \
+    if os.path.isfile(str(out_dir + '/index/SAindex')):
+        print("Star index found! Be sure that it is not corrupted")
+    else:
+        print(str(clock) + '\t' + "Creating STAR index with " + str(out_genome))
+        subprocess.call(['STAR', '--runThreadN', str(args.threads), '--runMode', str("genomeGenerate"), "--genomeDir", str(out_dir + '/index'), \
     "--genomeFastaFiles", str(args.genome), "--sjdbGTFfile", str(tmp + '/gtf_file.gtf'), "--sjdbOverhang", str(99)], stdout=subprocess.DEVNULL)
-    print(colored("Done!", "green", attrs=['bold']))
+        print(colored("Done!", "green", attrs=['bold']))
 
-
-
-
-
-
-
-    # #Exon region - GTF to BED
-    #
-    # complete_gene = pd.read_csv(str(tmp + '/gtf_file.gtf'), header=None, sep="\t", usecols=[0,2,3,4,5,6,7,8],names=['scaf', 'source', 'feature', 'start', 'end', 'dot', 'strand', 'dot2', 'ID'])
-    # complete_gene['ID'] = complete_gene['ID'].str.split(';').str[0]
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("\"", '')
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("gene_id ", '')
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("ID=", '')
-
-
-
-
-
-
-    # #Gene region - GTF to BED
-    # complete_gene = pd.read_csv(str(tmp + '/gtf_file.gtf'), header=None, sep="\t", usecols=[0,2,3,4,5,6,7,8],names=['scaf', 'source', 'feature', 'start', 'end', 'dot', 'strand', 'dot2', 'ID'])
-    # complete_gene['ID'] = complete_gene['ID'].str.split(';').str[0]
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("\"", '')
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("gene_id ", '')
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("ID=", '')
-    # gene = complete_gene[complete_gene["feature"] == "gene"]
-    # gene[['scaf', 'start', 'end', 'ID', 'dot', 'strand']].to_csv(str(tmp + '/gene_coord.bed'), sep='\t', encoding='utf-8', header=None,index=False)
-    #
-    # #Exon region - GTF to BED
-    # complete_gene = pd.read_csv(str(tmp + '/gtf_file.gtf'), header=None, sep="\t", usecols=[0,2,3,4,5,6,7,8],names=['scaf', 'source', 'feature', 'start', 'end', 'dot', 'strand', 'dot2', 'ID'])
-    # complete_gene['ID'] = complete_gene['ID'].str.split(';').str[0]
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("\"", '')
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("gene_id ", '')
-    # complete_gene['ID'] = complete_gene['ID'].str.replace("ID=", '')
-    #
-    # exon = complete_gene[complete_gene["feature"] == "exon"].drop_duplicates()
-    # exon['ID'] = exon['ID'].str.replace('.*?gene=', '').str.replace(';product=.*', '')
-    # exon[['scaf', 'start', 'end', 'ID', 'dot', 'strand']].to_csv(str(tmp + '/exon_file.bed'), sep='\t', encoding='utf-8', header=None,index=False)
-    #

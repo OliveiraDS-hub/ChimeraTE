@@ -46,6 +46,7 @@ optional.add_argument('--coverage', help='Minimum coverage (mean between replica
 optional.add_argument('--fpkm', help='Minimum fpkm to consider a gene as expressed (default 1)', required=False, type=str, default=1, metavar = "")
 optional.add_argument('--threads', help='Number of threads (default 6', required=False, type=str, default=6, metavar = "")
 optional.add_argument('--overlap', help='Minimum overlap between chimeric reads and TE insertions (default 0.50)', required=False, type=float, default=0.50, metavar = "")
+optional.add_argument('--index', help='Absolute path to STAR index', required=False, type=str, metavar = "")
 parser.parse_args()
 args = parser.parse_args()
 

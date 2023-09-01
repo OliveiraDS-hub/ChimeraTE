@@ -126,8 +126,8 @@ Optional arguments:
                 chimeric transcripts detection)
   --fpkm        Minimum fpkm to consider a gene as expressed (default 1)
   --threads     Number of threads (default 6)
-  --overlap     Minimum overlap between chimeric reads and TE insertions
-                (default 0.50)
+  --overlap     Minimum overlap between chimeric reads and TE insertions (default 0.50)
+  --index       Absolute path to pre-existing STAR index
 ````
 ---
 

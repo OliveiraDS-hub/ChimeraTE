@@ -48,14 +48,25 @@ if __name__ == 'mode1_prep_data':
     complete_te[['scaf', 'start', 'end', 'ID', 'dot2', 'strand']].to_csv(str(tmp + '/TE_file.bed'), sep='\t', encoding='utf-8', header=None,index=False)
     print(colored("Done!", "green", attrs=['bold']))
 
-    
+
     # Creating STAR db
     clock = time()
-    if os.path.isfile(str(out_dir + '/index/SAindex')):
-        print("STAR index found! Be sure that it is not corrupted")
+
+    if str(args.index) != "None":
+        print("STAR index provided in " + str(args.index) + '\n')
+    elif os.path.isfile(str(out_dir + '/index/SAindex')):
+        print("Star index found! Be sure that it is not corrupted \n")
     else:
         print(str(clock) + '\t' + "Creating STAR index with " + str(out_genome))
         subprocess.call(['STAR', '--runThreadN', str(args.threads), '--runMode', str("genomeGenerate"), "--genomeDir", str(out_dir + '/index'), \
-    "--genomeFastaFiles", str(args.genome), "--sjdbGTFfile", str(tmp + '/gtf_file.gtf'), "--sjdbOverhang", str(99)], stdout=subprocess.DEVNULL)
+        "--genomeFastaFiles", str(args.genome), "--sjdbGTFfile", str(tmp + '/gtf_file.gtf'), "--sjdbOverhang", str(99)], stdout=subprocess.DEVNULL)
         print(colored("Done!", "green", attrs=['bold']))
 
+
+
+
+
+
+
+
+#

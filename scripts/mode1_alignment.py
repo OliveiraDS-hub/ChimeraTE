@@ -17,8 +17,14 @@ def alignment_func(out_dir,group,aln_dir,mate1,mate2):
     print('Running analysis with ------------------------------------------> ' + str(group) + '\n')
     clock = time()
     print(str(clock) + '\t' + "Performing alignment")
-    subprocess.call(['STAR', '--genomeDir', str(out_dir + '/index'), '--runThreadN', '18', "--readFilesCommand", str("zcat"), \
-    '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', str("BAM"), str("SortedByCoordinate"), "--outFileNamePrefix", str(aln_dir + '/' + group + '_')], stdout=subprocess.DEVNULL)
+
+    if str(args.index) != "None":
+        subprocess.call(['STAR', '--genomeDir', str(args.index), '--runThreadN', '18', "--readFilesCommand", str("zcat"), \
+        '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', str("BAM"), str("SortedByCoordinate"), "--outFileNamePrefix", str(aln_dir + '/' + group + '_')], stdout=subprocess.DEVNULL)
+    else:
+        subprocess.call(['STAR', '--genomeDir', str(out_dir + '/index'), '--runThreadN', '18', "--readFilesCommand", str("zcat"), \
+        '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', str("BAM"), str("SortedByCoordinate"), "--outFileNamePrefix", str(aln_dir + '/' + group + '_')], stdout=subprocess.DEVNULL)
+
 
     with open(str(aln_dir + '/accepted_hits.bam'), 'w') as bam_file:
         subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-q', '255', str(aln_dir + '/' + group + '_Aligned.sortedByCoord.out.bam')], stdout=bam_file)

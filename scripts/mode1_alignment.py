@@ -29,7 +29,6 @@ def alignment_func(out_dir,group,aln_dir,mate1,mate2):
     with open(str(aln_dir + '/accepted_hits.bam'), 'w') as bam_file:
         subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-q', '255', str(aln_dir + '/' + group + '_Aligned.sortedByCoord.out.bam')], stdout=bam_file)
     bam_file.close
-    samt_index(str(aln_dir + '/accepted_hits.bam'))
 
     with open(str(aln_dir + '/accepted_hits.bed'), 'w') as bed_file:
         subprocess.call(['bedtools', 'bamtobed', '-split', '-i', str(aln_dir + '/accepted_hits.bam')], stdout=bed_file)
@@ -39,33 +38,26 @@ def alignment_func(out_dir,group,aln_dir,mate1,mate2):
     with open(str(aln_dir + '/fwd1_f.bam'), 'w') as fwd1_f:
         subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-f', '128', '-F', '16', str(aln_dir + '/accepted_hits.bam')], stdout=fwd1_f)
     fwd1_f.close
-    samt_index(str(aln_dir + '/fwd1_f.bam'))
 
     with open(str(aln_dir + '/fwd2_f.bam'), 'w') as fwd2_f:
         subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-f', '80', str(aln_dir + '/accepted_hits.bam')], stdout=fwd2_f)
     fwd2_f.close
-    samt_index(str(aln_dir + '/fwd2_f.bam'))
 
     ### Combine alignments that originate on the forward strand.
     subprocess.call(['samtools', 'merge', '-@', str(args.threads), '-f', str(aln_dir + '/fwd.bam'), str(aln_dir + '/fwd1_f.bam'), str(aln_dir + '/fwd2_f.bam')])
 
-    samt_index(str(aln_dir + '/fwd.bam'))
 
     ### Reverse strand
     with open(str(aln_dir + '/rev1_r.bam'), 'w') as rev1_r:
         subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-f', '144', str(aln_dir + '/accepted_hits.bam')], stdout=rev1_r)
     rev1_r.close
-    samt_index(str(aln_dir + '/rev1_r.bam'))
 
     with open(str(aln_dir + '/rev2_r.bam'), 'w') as rev2_r:
         subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-f', '64', '-F', '16', str(aln_dir + '/accepted_hits.bam')], stdout=rev2_r)
     rev2_r.close
-    samt_index(str(aln_dir + '/rev2_r.bam'))
 
     ### Combine alignments that originate on the reverse strand.
     subprocess.call(['samtools', 'merge', '-@', str(args.threads), '-f', str(aln_dir + '/rev.bam'), str(aln_dir + '/rev1_r.bam'), str(aln_dir + '/rev2_r.bam')])
-
-    samt_index(str(aln_dir + '/rev.bam'))
 
     with open(str(aln_dir + '/fwd.bed'), 'w') as fwd_bed:
         subprocess.call(['bedtools', 'bamtobed', '-split', '-i', str(aln_dir + '/fwd.bam')], stdout=fwd_bed)

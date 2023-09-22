@@ -75,7 +75,6 @@ If you don't have conda, or you are working with an OS that some packages in the
 - Softwares
   - [Bedtools 2.30.0](https://github.com/arq5x/bedtools2/releases/tag/v2.30.0)
   - [BLAST 2.13+](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/)
-  - [Bowtie 1.3.1](https://sourceforge.net/projects/bowtie-bio/files/bowtie/1.3.1/)
   - [Bowtie 2.5.1](https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.5.1/)
   - [Cufflinks 2.2.1](http://cole-trapnell-lab.github.io/cufflinks/install/)
   - [express 1.5.1](https://pachterlab.github.io/eXpress/overview.html)

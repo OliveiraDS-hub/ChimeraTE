@@ -64,7 +64,7 @@ If you don't have ```sudo``` permissions:
 ```
 singularity build --fakeroot chimeraTE.simg singularity.def
 ```
-If you have ```sudo```
+If you have ```sudo```:
 ```
 sudo singularity build chimeraTE.simg singularity.def
 ```

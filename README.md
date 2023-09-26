@@ -1,6 +1,7 @@
 ![image](https://github.com/OliveiraDS-hub/ChimeraTE/blob/main/image/logo.png)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) <br />
 [![DOI](https://zenodo.org/badge/470747321.svg)](https://zenodo.org/badge/latestdoi/470747321)
+[![https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg](https://www.singularity-hub.org/static/img/hosted-singularity--hub-%23e32929.svg)](https://singularity-hub.org/collections/1681)
 
 
 
@@ -15,7 +16,7 @@ ChimeraTE is a pipeline to detect chimeric transcripts derived from genes and tr
 
 1. [Install](#installation)
    1. [Conda](#conda)
-   2. [Singularity](#singularity) #Under development
+   2. [Singularity](#singularity)
    3. [Requirements](#requirements)
 2. [Required data](#req_data)
 3. [ChimeraTE Mode 1](#mode1)
@@ -57,7 +58,25 @@ conda config --remove channels conda-forge
 conda config --set channel_priority false
 ```
 ### Singularity <a name="singularity"></a>
-In order to extend even more the compatibility with other machines, we are building a singularity container with all dependencies of ChimeraTE. It will be available soon.
+In order to extend even more the compatibility with other machines, you can use [singularity](https://github.com/sylabs/singularity/releases/tag/v3.10.0) v3.10.0+ to build a container with all dependencies for ChimeraTE.
+
+If you don't have ```sudo``` permissions:
+```
+singularity build --fakeroot chimeraTE.simg singularity.def
+```
+If you have ```sudo```
+```
+sudo singularity build chimeraTE.simg singularity.def
+```
+
+Then, to run ChimeraTE:
+
+```singularity exec chimeraTE.simg python3 chimTE_mode1.py --help```
+<br />```singularity exec chimeraTE.simg python3 chimTE_mode2.py --help```<br />
+
+
+
+
 
 ### Requirements <a name="requirements"></a>
 

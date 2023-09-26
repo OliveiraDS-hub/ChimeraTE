@@ -1,0 +1,192 @@
+Bootstrap: docker
+From: ubuntu:20.04
+%help
+    Container for ChimeraTE v1.1.1
+    https://github.com/OliveiraDS-hub/ChimeraTE.git
+
+    #Includes
+    Bedtools 2.30.0
+    BLAST 2.13+
+    Bowtie 1.3.1
+    Bowtie 2.5.1
+    Cufflinks 2.2.1
+    express 1.5.1
+    RepeatMasker 4.1.2
+    Trinity 2.9.1
+    Seqtk 1.3
+    Samtools 1.7
+    STAR 2.7.10
+
+    Python 3.6
+    #Python libs
+      Termcolor 1.1.0
+      Pybedtools 0.9.0
+      Pandas 1.1.5
+      Dateutil 2.8.2
+      h5py 3.1.0
+      numpy 1.19.5
+
+%labels
+    VERSION "ChimeraTE v1.1.1"
+    Maintainer Daniel S Oliveira <daniel.sdo2015@gmail.com>
+    Oct, 2023
+
+%post
+    # faster apt downloads
+    export DEBIAN_FRONTEND=noninteractive
+    export LC_ALL=C
+    (
+        . /etc/os-release
+        cat << _EOF_ > mirror.txt
+deb mirror://mirrors.ubuntu.com/mirrors.txt ${UBUNTU_CODENAME} main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt ${UBUNTU_CODENAME}-updates main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt ${UBUNTU_CODENAME}-backports main restricted universe multiverse
+deb mirror://mirrors.ubuntu.com/mirrors.txt ${UBUNTU_CODENAME}-security main restricted universe multiverse
+
+_EOF_
+        mv /etc/apt/sources.list /etc/apt/sources.list.bak
+        cat mirror.txt /etc/apt/sources.list.bak > /etc/apt/sources.list
+    )
+
+        #apt installing
+        apt update
+        apt install -y ca-certificates
+        apt install -y \
+          apt-utils \
+            autoconf \
+            automake \
+            cmake \
+            gcc \
+            wget \
+            build-essential \
+            software-properties-common \
+            tar \
+            unzip \
+            zlib1g-dev \
+            sudo \
+            git-core \
+            locales \
+            python3-pip \
+            libbz2-dev \
+            liblzma-dev \
+            libncurses-dev \
+            libfile-which-perl \
+            libjson-perl \
+            liburi-perl \
+            liblwp-useragent-determined-perl \
+            libtext-soundex-perl \
+            perl \
+            default-jdk \
+            python-is-python3
+
+        python3 -m pip install biopython \
+        termcolor==1.1.0 \
+        pybedtools==0.9.0 \
+        pandas==1.1.5 \
+        python-dateutil==2.8.2 \
+        h5py==3.1.0 \
+        numpy==1.19.5
+
+
+        ###STAR
+        cd /usr/bin
+        wget -q --show-progress https://github.com/alexdobin/STAR/releases/download/2.7.10b/STAR_2.7.10b.zip
+        unzip STAR_2.7.10b.zip
+
+        ###Bowtie
+        wget -q --show-progress https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.5.1/bowtie2-2.5.1-linux-x86_64.zip
+        unzip bowtie2-2.5.1-linux-x86_64.zip
+
+        ###Cufflinks
+        wget -q --show-progress http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz
+        tar -zxf cufflinks-2.2.1.Linux_x86_64.tar.gz
+
+        ###express
+        wget -q --show-progress https://pachterlab.github.io/eXpress/downloads/express-1.5.1/express-1.5.1-linux_x86_64.tgz
+        tar -zxf express-1.5.1-linux_x86_64.tgz
+
+        ###Bedtools
+        wget -q --show-progress https://github.com/arq5x/bedtools2/releases/download/v2.30.0/bedtools-2.30.0.tar.gz
+        tar -zxf bedtools-2.30.0.tar.gz
+        cd bedtools2
+        make && make install
+
+        ###Seqtk
+        cd /usr/bin
+        wget -q --show-progress https://github.com/lh3/seqtk/archive/refs/tags/v1.3.zip
+        unzip v1.3.zip
+        cd seqtk-1.3/
+        make && make install
+
+        ###Samtools
+        cd /usr/bin
+        wget -q --show-progress https://sourceforge.net/projects/samtools/files/samtools/1.7/samtools-1.7.tar.bz2
+        tar -xf samtools-1.7.tar.bz2
+        cd samtools-1.7
+        ./configure && make && make install
+
+        ###Jellyfish - Trinity dep
+        cd /usr/bin
+        wget -q --show-progress https://github.com/gmarcais/Jellyfish/releases/download/v2.3.0/jellyfish-linux
+        mv jellyfish-linux jellyfish
+        chmod +x jellyfish
+
+        ###Salmon - Trinity dep
+        wget -q --show-progress https://github.com/COMBINE-lab/salmon/releases/download/v1.10.0/salmon-1.10.0_linux_x86_64.tar.gz
+        tar -zxf salmon-1.10.0_linux_x86_64.tar.gz
+        chmod +x salmon-latest_linux_x86_64/bin/salmon
+
+        ###Trinity
+        wget -q --show-progress https://github.com/trinityrnaseq/trinityrnaseq/releases/download/v2.9.1/trinityrnaseq-v2.9.1.FULL.tar.gz
+        tar -zxf trinityrnaseq-v2.9.1.FULL.tar.gz
+        cd trinityrnaseq-v2.9.1
+        make
+
+        #BLAST
+        cd /usr/bin/
+        wget -q --show-progress https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.14.1+-x64-linux.tar.gz
+        tar -zxf ncbi-blast-2.14.1+-x64-linux.tar.gz
+
+
+        ###RepeatMasker deps
+        #TRF
+        wget -q --show-progress https://github.com/Benson-Genomics-Lab/TRF/releases/download/v4.09.1/trf409.linux64
+        mv trf*.linux64 trf && chmod +x trf
+
+        #hmmer
+        wget -q --show-progress http://eddylab.org/software/hmmer/hmmer-3.3.2.tar.gz
+        tar -zxf hmmer-3.3.2.tar.gz
+        cd hmmer-3.3.2
+        ./configure && make && make install
+        cd /usr/bin
+
+        #RMblast
+        wget -q --show-progress https://www.repeatmasker.org/rmblast/rmblast-2.13.0+-x64-linux.tar.gz
+        tar -zxf rmblast-2.13.0+-x64-linux.tar.gz
+
+        #RepeatMasker
+        wget -q --show-progress https://www.repeatmasker.org/RepeatMasker/RepeatMasker-4.1.2-p1.tar.gz
+        tar -zxf RepeatMasker-4.1.2-p1.tar.gz
+        cd RepeatMasker
+        perl configure \
+        -hmmer_dir=/usr/local/bin/ \
+        -rmblast_dir=/usr/bin/rmblast-2.13.0/bin \
+        -libdir=/usr/bin/RepeatMasker/Libraries \
+        -trf_prgm=/usr/bin \
+        -default_search_engine=rmblast
+
+
+
+%environment
+  export LC_ALL=C
+  export PATH="$PATH:/usr/bin/ncbi-blast-2.14.1+/bin"
+  export PATH="$PATH:/usr/bin/bowtie2-2.5.1-linux-x86_64"
+  export PATH="$PATH:/usr/bin/cufflinks-2.2.1.Linux_x86_64"
+  export PATH="$PATH:/usr/bin/bowtie2-2.5.1-linux-x86_64"
+  export PATH="$PATH:/usr/bin/STAR_2.7.10b/Linux_x86_64"
+  export PATH="$PATH:/usr/bin/trinityrnaseq-v2.9.1"
+  export PATH="$PATH:/usr/bin/express-1.5.1-linux_x86_64"
+  export PATH="$PATH:/usr/bin/RepeatMasker"
+  export PATH="$PATH:/usr/bin/salmon-latest_linux_x86_64/bin"
+
+#

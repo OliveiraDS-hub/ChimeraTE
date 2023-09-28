@@ -80,7 +80,7 @@ Then, to run ChimeraTE:
 
 ### Requirements <a name="requirements"></a>
 
-If you don't have conda, or you are working with an OS that some packages in the conda repo are not available, you can install them manually. It's important to highlight that all of them must be installed in your path.
+If you don't have conda or singularity, you can install all dependecies as an old school bioinformatician. It's important to highlight that all of them must be installed in your path.
 
 - Python dependencies
   - [Python 3.6+](https://www.python.org/downloads/release/python-360/)

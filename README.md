@@ -58,7 +58,7 @@ conda config --remove channels conda-forge
 conda config --set channel_priority false
 ```
 ### Singularity <a name="singularity"></a>
-In order to extend even more the compatibility with other machines, you can use [singularity](https://github.com/sylabs/singularity/releases/tag/v3.10.0) v3.10.0+ to build a container with all dependencies for ChimeraTE.
+Alternatively to conda, you can use [singularity](https://github.com/sylabs/singularity/releases/tag/v3.10.0) v3.10.0+ to build a container with all dependencies for ChimeraTE.
 
 If you don't have ```sudo``` permissions:
 ```

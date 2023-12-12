@@ -43,7 +43,7 @@ optional.add_argument('--replicate', help='Minimum recurrency of chimeric transc
 optional.add_argument('--threads', help='Number of threads (default 6)', required=False, type=str, default=6, metavar = "")
 optional.add_argument('--assembly', help='Search for chimeric transcript with transcriptome assembly with Trinity', required=False, action = 'store_true')
 optional.add_argument('--ref_TEs', help='"species" database used by RepeatMasker (flies, human, mouse, arabidopsis; or a built TE library in fasta format)', required=False, type=str, default=str('flies'), metavar = "")
-optional.add_argument('--ram', help='Minimum overlap between chimeric reads and TE insertions (default 0.50)', required=False, type=str, default=8, metavar = "")
+optional.add_argument('--ram', help='Minimum RAM memory in Gbytes (default 8)', required=False, type=str, default=8, metavar = "")
 optional.add_argument('--overlap', help='Minimum overlap between chimeric reads and TE insertions (default 0.50)', required=False, type=float, default=0.50, metavar = "")
 optional.add_argument('--TE_length', help='Minimum TE length to keep it from RepeatMasker output (default = 80bp)', required=False, type=int, default=80, metavar = "")
 optional.add_argument('--identity', help='Minimum identity between de novo assembled transcripts and reference transcripts (default = 80)', required=False, type=int, default=80, metavar = "")

@@ -26,7 +26,7 @@ print(colored("-. .-.   .-. .-.   .-. .-.   .-. .-.   .", "white") + colored('-.
 print(colored("||\|||\ /|||\|||\ /|||\|||\ /|||\|||\ /|", "white") + colored('||\|||\ /|||\|', 'red', attrs=['bold']))
 print(colored("|/ \|||\|||/ \|||\|||/ \|||\|||/ \|||\||", "white") + colored('|/ \|||\|||/ \ ', 'red', attrs=['bold']))
 print(colored('~   `-~ `-`   `-~ `-`   `-~ `-~   `-~ `-', "white") + colored('`   `-~ `-`   ', 'red', attrs=['bold']))
-print("Version 1.1")
+print("Version 1.1.1")
 
 sys.path.insert(1, 'scripts/')
 parser = argparse.ArgumentParser(description='ChimeraTE Mode 1: The genome-guided approach to detect chimeric transcripts with RNA-seq data.', usage=SUPPRESS, formatter_class=argparse.RawDescriptionHelpFormatter, epilog=textwrap.dedent('''Citation: Oliveira, D. S., et al. (2022). ChimeraTE: A pipeline to detect chimeric transcripts derived from genes and transposable elements. bioRxiv, 2022-09.'''))

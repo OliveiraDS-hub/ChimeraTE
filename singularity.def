@@ -144,7 +144,7 @@ _EOF_
 
         #BLAST
         cd /usr/bin/
-        wget -q --show-progress https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.14.1+-x64-linux.tar.gz
+        wget -q --show-progress https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.14.1/ncbi-blast-2.14.1+-x64-linux.tar.gz
         tar -zxf ncbi-blast-2.14.1+-x64-linux.tar.gz
 
 

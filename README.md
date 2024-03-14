@@ -137,6 +137,8 @@ Required arguments:
                 "rf-stranded" OR "fwd-stranded"
 
 Optional arguments:
+  --chimera     Identify specific type of chimera: "TE-initiated" OR "TE-
+                exonized" OR "TE-terminated"
   --window      Upstream and downstream window size (default = 3000)
   --replicate   Minimum recurrency of chimeric transcripts between RNA-seq
                 replicates (default 2)

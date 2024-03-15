@@ -47,7 +47,7 @@ def alignment_func(out_dir, aln_dir, mate1, mate2):
         fpkm_gene.loc[fpkm_gene['fpkm_conf_high'] > 1].loc[:,['target_id']].drop_duplicates().to_csv(f"{aln_dir}/genes_expressed_IDs.lst", header=None, index=False)
     else:
         print(colored("Unable to calculate gene expression! Including all transcripts with at least one read to the downstream analysis...", "yellow", attrs=['bold']))
-        pd.read_csv(str(f"{aln_dir}/genes_total_expressed.bed"), header=None, sep="\t", usecols=[0],names=['gene_id']).drop_duplicates().to_csv(f"{aln_dir}/genes_expressed_IDs.lst", header=None, index=False)
+        pd.read_csv(str(f"{aln_dir}/genes.bed"), header=None, sep="\t", usecols=[0],names=['gene_id']).drop_duplicates().to_csv(f"{aln_dir}/genes_expressed_IDs.lst", header=None, index=False)
     print(colored("Done!", "green", attrs=['bold']))
 
     clock = time()

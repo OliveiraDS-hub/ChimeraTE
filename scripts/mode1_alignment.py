@@ -183,4 +183,4 @@ def alignment_func(out_dir,group,aln_dir,mate1,mate2):
         print(str(chimeric_TEs), file = f)
     f.close()
 
-    print(colored("Done!", "green", attrs=['bold'])
+    print(colored("Done!", "green", attrs=['bold']))

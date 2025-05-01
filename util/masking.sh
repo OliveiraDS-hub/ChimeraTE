@@ -113,7 +113,7 @@ OUTfile=$(basename "$GENOME" | sed 's/.fasta//g; s/.fa//g')
 echo -ne "\nRunning RepeatMasker... it may take long"
 if egrep -q '.fasta|.fa' <<< "$REF_TEs"; then
         RepeatMasker "$GENOME" -lib "$REF_TEs" -cutoff 225 -nolow -norna -a -s -par "$THREADS" -dir "$OUTPUT" > /dev/null; else
-        RepeatMasker "$GENOME" -REF_TEs "$REF_TEs" -cutoff 225 -nolow -norna -a -s -par "$THREADS" -dir "$OUTPUT" > /dev/null
+        RepeatMasker "$GENOME" -species "$REF_TEs" -cutoff 225 -nolow -norna -a -s -par "$THREADS" -dir "$OUTPUT" > /dev/null
 fi
 echo -e "\t${GREEN}==> DONE!${NC}"
 

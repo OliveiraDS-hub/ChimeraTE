@@ -99,7 +99,7 @@ def annotation_manager():
         print("Star index found! Be sure that it is not corrupted \n")
     else:
         print(f"{clock}\tCreating STAR index with {out_genome}")
-        subprocess.call(['STAR', '--runThreadN', str(args.threads), '--runMode', str("genomeGenerate"), "--genomeDir", str(f"{out_dir}/index"), \
+        subprocess.check_call(['STAR', '--runThreadN', str(args.threads), '--runMode', str("genomeGenerate"), "--genomeDir", str(f"{out_dir}/index"), \
         "--genomeFastaFiles", str(args.genome), "--sjdbGTFfile", str(f"{tmp}/gtf_file.gtf"), "--sjdbOverhang", str(99)], stdout=subprocess.DEVNULL)
         print(colored("Done!", "green", attrs=['bold']))
 

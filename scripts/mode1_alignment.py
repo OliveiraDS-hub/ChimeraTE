@@ -51,7 +51,7 @@ def alignment_func(out_dir,group,aln_dir,mate1,mate2):
             subprocess.call(['STAR', '--genomeDir', str(args.index), '--runThreadN', '18', \
             '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', str("BAM"), str("SortedByCoordinate"), "--outFileNamePrefix", str(aln_dir + '/' + group + '_')], stdout=subprocess.DEVNULL)
     else:
-        if mate1.endswtih(".gz"):
+        if mate1.endswith(".gz"):
             subprocess.call(['STAR', '--genomeDir', str(out_dir + '/index'), '--runThreadN', '18', "--readFilesCommand", str("zcat"), \
             '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', str("BAM"), str("SortedByCoordinate"), "--outFileNamePrefix", str(aln_dir + '/' + group + '_')], stdout=subprocess.DEVNULL)
         else:

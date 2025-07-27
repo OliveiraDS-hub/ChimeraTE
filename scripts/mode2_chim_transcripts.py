@@ -119,7 +119,7 @@ def expression():
 
     copy(str(out_group + '/' + group + '_chimreads_evidence.tsv'), tmp)
 
-def multicore_chimeras():
+def multicore_chimeras(threads):
     from __main__ import aln_dir
     from __main__ import group
     from __main__ import out_group
@@ -131,7 +131,7 @@ def multicore_chimeras():
         gene_list = f.read().splitlines()
     f.close
     if check_file(f"{out_group}/chimTEs_raw.tsv") == False:
-        pool = Pool(processes=int(args.threads))
+        pool = Pool(processes=int(threads))
         pool.map(chim_transcript, gene_list)
         pool.close()
         print(colored("Done!", "green", attrs=['bold']))

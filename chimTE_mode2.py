@@ -1,19 +1,26 @@
 import sys
 sys.dont_write_bytecode = True
 import argparse
-import datetime
-from termcolor import colored
-import shutil
-import subprocess
-import glob, os
-import pandas as pd
-import re
-import csv
-import textwrap
 from argparse import ArgumentParser,SUPPRESS
+from termcolor import colored
 from io import StringIO
+import pandas as pd
+import subprocess
 import pybedtools
 import contextlib
+import textwrap
+import datetime
+import shutil
+import glob
+import csv
+import os
+import re
+
+from scripts.mode2_prep import *
+from scripts.mode2_alignment import *
+from scripts.mode2_chim_transcripts import *
+from scripts.mode2_assembly import *
+from scripts.mode2_replicability import *
 
 print(colored("   ________    _                         ","white")+ colored(' ____________', 'red', attrs=['bold']))
 print(colored("  / ____/ /_  (_)___ ___  ___  _________","white")+ colored(' /_  __/ ____/', 'red', attrs=['bold']))
@@ -47,6 +54,8 @@ optional.add_argument('--ram', help='Minimum RAM memory in Gbytes (default 8)', 
 optional.add_argument('--overlap', help='Minimum overlap between chimeric reads and TE insertions (default 0.50)', required=False, type=float, default=0.50, metavar = "")
 optional.add_argument('--TE_length', help='Minimum TE length to keep it from RepeatMasker output (default = 80bp)', required=False, type=int, default=80, metavar = "")
 optional.add_argument('--identity', help='Minimum identity between de novo assembled transcripts and reference transcripts (default = 80)', required=False, type=int, default=80, metavar = "")
+optional.add_argument('--index', help='Folder with bowtie2 index from transcriptome', required=False, type=str, metavar = "")
+
 parser.parse_args()
 args = parser.parse_args()
 
@@ -59,148 +68,47 @@ if args.assembly:
 else:
     print(f"Transcriptome assembly ==> OFF\n")
 
+from util.parser_mode2 import *
+
 out_genome = str(args.transcripts).replace(".fasta","").replace(".fas","").replace(".fa","")
 input = pd.read_csv(args.input, header=None, sep="\t", usecols=[0,1,2],names=['mate1', 'mate2', 'group'])
 mydir = str(os.getcwd())
 
-def create_dir(path):
-    if not os.path.isdir(path):
-        os.mkdir(path)
-    return path
-
-def samt_index(bam_file):
-    subprocess.call(['samtools', 'index', str(bam_file)])
-
-def intersection(file1, file2, output=None, prop=None):
-    if prop is not None:
-        with open(str(output), 'w') as tmp_var:
-            subprocess.call(['bedtools', 'intersect', '-a', str(file1), '-b', str(file2), '-wa', '-wb', '-f', str(prop), '-nonamecheck'], stdout=tmp_var)
-        tmp_var.close
-    else:
-        with open(str(output), 'w') as tmp_var:
-            subprocess.call(['bedtools', 'intersect', '-a', str(file1), '-b', str(file2), '-wa', '-wb', '-nonamecheck'], stdout=tmp_var)
-        tmp_var.close
-
-def pybedtools_intersection(file1, file2, prop = None):
-    bed1 = pybedtools.BedTool(str(file1))
-    if type(file2) == str:
-        bed2 = pybedtools.BedTool(str(file2))
-    else:
-        bed2 = file2
-    if prop is not None:
-        intersect = bed1.intersect(bed2, wa=True, nonamecheck=True, f=float(prop))
-    else:
-        intersect = bed1.intersect(bed2, wa=True, nonamecheck=True)
-    return intersect
-
-def dropdup_bed(intersection_bed):
-    bed2string = str(intersection_bed)
-    bed2string = StringIO(bed2string)
-    pd_df = pd.read_table(bed2string, header=None, sep="\t").drop_duplicates().to_csv(header=None, index=False, sep="\t")
-    return pd_df
-
-def get_IDs_from_bed(bed_file):
-    bed2string = str(bed_file)
-    bed2string = StringIO(bed2string)
-    ID_column = pd.read_csv(bed2string, sep="\t", usecols=[3],names=['ID'])
-    return ID_column
-
-def mate_spec_IDs(bedfile, mate):
-    df = pd.read_csv(str(bedfile), header=None, sep="\t", usecols=[3],names=['read_ID'])
-    df = df.to_csv(header=None, index=False, sep="\t"); df = StringIO(df)
-    pattern = str('/' + str(mate))
-    reads = ''
-    for line in df:
-        if re.search(pattern, line):
-            reads += line.replace(str(pattern), '')
-    return reads
-
-def import_csv(dataframe):
-    df = pd.read_csv(str(dataframe), header=None, sep="\t", usecols=[6,7,8,9,10,11],names=['scaf', 'start', 'end', 'ID', 'dot', 'strand'])
-    return df
-
-def overlap(bed, list, out):
-    df = pd.read_csv(str(bed), header=None, sep="\t", usecols=[0,1,2,3,4,5],names=['scaf', 'start', 'end', 'ID', 'dot', 'strand'])
-    df[['ID']] = df[['ID']].replace('/1', '', regex=True).replace('/2', '', regex=True)
-    df[df['ID'].isin(list)].to_csv(str(out), header=None, index=False, sep="\t")
-
-def time():
-    x = datetime.datetime.now()
-    clock = str("[" + str(x.strftime("%A")) + " " + str(x.day) + "/" + str(x.month) +  "/" + str(x.year) + " - " + str(x.strftime("%H")) + "h:" + str(x.strftime("%M")) + "]")
-    return clock
-
-def copy(file, folder):
-    if os.path.exists(file):
-        shutil.copy(file, folder)
-
-def remove():
-    list = ["rev*", "fwd*", "accepted_hits.bed", "*out.bam", "gene_reads.lst"]
-    for pattern in list:
-        for file in glob.glob(str(aln_dir) + '/' + str(pattern)):
-            os.remove(file)
-
-def rm_file_or_dir(f):
-    if os.path.exists(f):
-        if os.path.isfile(f):
-            os.remove(f)
-        elif os.path.isdir(f):
-            if not os.listdir(f):
-                os.rmdir(f)
-
-def check_file(f):
-    if os.path.exists(f):
-        if os.stat(str(f)).st_size > 0:
-            return True
-        else:
-            return False
-    else:
-        return False
-
 out_dir = create_dir(str(f"{mydir}/projects/{args.project}"))
+create_dir(f'{mydir}/index')
 tmp = create_dir(str(f"{mydir}/projects/{args.project}/tmp"))
 create_dir(str(f"{out_dir}/index"))
 
-###import a script
-import mode2_prep
-
-###import a function from a script
-from mode2_alignment import alignment_func
-from mode2_chim_transcripts import multicore_chimeras
-from mode2_chim_transcripts import prep_data
-from mode2_chim_transcripts import merging_transc
-from mode2_chim_transcripts import expression
-from mode2_assembly import transcriptome_assembly
-from mode2_assembly import singleton_crossing
-from mode2_replicability import chim_reads_rep
-from mode2_replicability import trasnc_rep
+### Create bowtie2 indexes
+bowtie_indexer(args.te, args.transcripts, args.threads)
 
 for index, row in input.iterrows():
     mate1 = row['mate1']
     mate2 = row['mate2']
     group = row['group']
-    out_group = create_dir(str(f"{out_dir}/{group}"))
-    global aln_dir
+    out_group = create_dir(f"{out_dir}/{group}")
+
     print(f"Running analysis with ------------------------------------------> {group}\n")
-    aln_dir = create_dir(str(f"{out_dir}/{group}/alignment"))
-    create_dir(str(f"{out_dir}/{group}/alignment/fpkm_counts"))
+    aln_dir = create_dir(f"{out_dir}/{group}/alignment")
+    create_dir(f"{out_dir}/{group}/alignment/fpkm_counts")
 
     ##Perform bowtie2 alignment and identify chimeric reads
-    alignment_func(out_dir, aln_dir, mate1, mate2)
+    alignment_func(out_dir, args.index, aln_dir, mate1, mate2, args.threads, args.strand, args.transcripts)
 
     ##Perform STAR alignment and identify chimeric reads
     prep_data()
-    multicore_chimeras()
+    multicore_chimeras(args.threads)
 
-    if check_file(str(f"{out_group}/chimTEs_raw.tsv")) == True:
+    if check_file(f"{out_group}/chimTEs_raw.tsv") == True:
         merging_transc()
-    if check_file(str(f"{out_group}/chimTEs_final.tsv")) == True:
+    if check_file(f"{out_group}/chimTEs_final.tsv") == True:
         expression()
 
     ###Assembly
     if args.assembly:
-        trinity_out = create_dir(str(f"{out_dir}/{group}/trinity_out"))
-        transcriptome_assembly()
-        singleton_crossing()
+        trinity_out = create_dir(f"{out_dir}/{group}/trinity_out")
+        transcriptome_assembly(mate1, mate2, args.strand, args.ram, args.threads, args.ref_TEs, args.TE_length, args.overlap)
+        singleton_crossing(args.transcripts, args.identity)
 
 chim_reads_rep()
 if args.assembly:

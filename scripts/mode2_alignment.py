@@ -12,19 +12,22 @@ import contextlib
 import sys
 import os
 #13/03
-def alignment_func(out_dir, aln_dir, mate1, mate2):
+def alignment_func(out_dir, index, aln_dir, mate1, mate2, threads, stranded, transcripts):
     clock = time()
     print(f"{clock}\tPerfoming bowtie2 alignment for TEs...")
     if check_file(str(f"{aln_dir}/tes.bed")) == False:
-        subprocess.call(['bowtie2', '-x', str(f"{out_dir}/index/TE_index"), '-1', str(mate1), '-2', str(mate2), '-D', '20', '-R', '3', '-N', '1', '-L', '20', '-i', 'S,1,0.50', '-p', str(args.threads), '-S', str(f"{aln_dir}/tes.sam")], stdout=subprocess.DEVNULL)
-        print(colored("Done!", "green", attrs=['bold']))
+        if str(index) == "None":
+            subprocess.call(['bowtie2', '-x', "index/TE_index", '-1', str(mate1), '-2', str(mate2), '-D', '20', '-R', '3', '-N', '1', '-L', '20', '-i', 'S,1,0.50', '-p', str(threads), '-S', str(f"{aln_dir}/tes.sam")], stdout=subprocess.DEVNULL)
+            print(colored("Done!", "green", attrs=['bold']))
+        else:
+            print("Bowtie index with TE data has been found! Skiping it...")
     else:
         print(f"TE alignment has been found!"); print(colored("Skipping...\n", "yellow", attrs=['bold']))
 
     clock = time()
     print(f"{clock}\tPerfoming bowtie2 alignment for transcripts...")
     if check_file(str(f"{aln_dir}/genes.bed")) == False:
-        subprocess.call(['bowtie2', '-x', str(f"{out_dir}/index/transcripts_index"), '-1', str(mate1), '-2', str(mate2), '-D', '20', '-R', '3', '-N', '1', '-L', '20', '-i', 'S,1,0.50', '-p', str(args.threads), '-S', str(f"{aln_dir}/genes.sam")], stdout=subprocess.DEVNULL)
+        subprocess.call(['bowtie2', '-x', "index/transcripts_index", '-1', str(mate1), '-2', str(mate2), '-D', '20', '-R', '3', '-N', '1', '-L', '20', '-i', 'S,1,0.50', '-p', str(threads), '-S', str(f"{aln_dir}/genes.sam")], stdout=subprocess.DEVNULL)
         print(colored("Done!", "green", attrs=['bold']))
     else:
         print(f"TE alignment has been found!"); print(colored("Skipping...\n", "yellow", attrs=['bold']))
@@ -34,7 +37,7 @@ def alignment_func(out_dir, aln_dir, mate1, mate2):
     check_file(str(f"{aln_dir}/tes.bed")) == False:
         sam = ['tes', 'genes']
         for samf in sam:
-            subprocess.call(['samtools', 'view', '-@', str(args.threads), '-bS', str(f"{aln_dir}/{samf}.sam")], stdout = open(str(f"{aln_dir}/{samf}.bam"), 'w'), stderr=subprocess.DEVNULL)
+            subprocess.call(['samtools', 'view', '-@', str(threads), '-bS', str(f"{aln_dir}/{samf}.sam")], stdout = open(str(f"{aln_dir}/{samf}.bam"), 'w'), stderr=subprocess.DEVNULL)
             os.remove(str(f"{aln_dir}/{samf}.sam"))
             subprocess.call(['bedtools', 'bamtobed', '-i', str(f"{aln_dir}/{samf}.bam")], stdout= open(str(f"{aln_dir}/{samf}.bed"), 'w'))
 
@@ -46,7 +49,7 @@ def alignment_func(out_dir, aln_dir, mate1, mate2):
     clock = time()
     print(f"{clock}\tCalculating transcripts expression...")
     if check_file(str(f"{aln_dir}/genes_chim.bed")) == False:
-        subprocess.call(['express', '-o', str(f"{aln_dir}/fpkm_counts"), '-O', '1', '--output-align-prob', '--no-bias-correct', str('--' + str(args.strand)), str(args.transcripts), str(f"{aln_dir}/genes.bam")], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.call(['express', '-o', str(f"{aln_dir}/fpkm_counts"), '-O', '1', '--output-align-prob', '--no-bias-correct', str('--' + str(stranded)), str(transcripts), str(f"{aln_dir}/genes.bam")], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         ### Filtering genes with low expression rates
         if check_file(str(f"{aln_dir}/fpkm_counts/hits.1.prob.bam")) == True and \

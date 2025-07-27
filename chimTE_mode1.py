@@ -1,21 +1,28 @@
-import sys
-sys.dont_write_bytecode = True
+import sys ;sys.dont_write_bytecode = True
+from argparse import ArgumentParser,SUPPRESS
+from termcolor import colored
+from io import StringIO
+import pyranges as pr
+import pandas as pd
+import subprocess
+import contextlib
 import argparse
 import datetime
-from termcolor import colored
-import shutil
-import subprocess
-import glob, os
-import pandas as pd
-import re
-import csv
 import textwrap
-from argparse import ArgumentParser,SUPPRESS
-from io import StringIO
-import pybedtools
-import contextlib
-from termcolor import colored
-import sys
+import shutil
+import glob
+import csv
+import os
+import re
+
+from util.parser import *
+from util.intersector import *
+from scripts.mode1_prep_data import *
+from scripts.mode1_alignment import *
+from scripts.mode1_te_initiated import *
+from scripts.mode1_te_terminated import *
+from scripts.mode1_te_exonized import *
+from scripts.mode1_replicability import *
 
 print(colored("   ________    _                         ","white")+ colored(' ____________', 'red', attrs=['bold']))
 print(colored("  / ____/ /_  (_)___ ___  ___  _________","white")+ colored(' /_  __/ ____/', 'red', attrs=['bold']))
@@ -26,7 +33,7 @@ print(colored("-. .-.   .-. .-.   .-. .-.   .-. .-.   .", "white") + colored('-.
 print(colored("||\|||\ /|||\|||\ /|||\|||\ /|||\|||\ /|", "white") + colored('||\|||\ /|||\|', 'red', attrs=['bold']))
 print(colored("|/ \|||\|||/ \|||\|||/ \|||\|||/ \|||\||", "white") + colored('|/ \|||\|||/ \ ', 'red', attrs=['bold']))
 print(colored('~   `-~ `-`   `-~ `-`   `-~ `-~   `-~ `-', "white") + colored('`   `-~ `-`   ', 'red', attrs=['bold']))
-print("Version 1.2\n")
+print("Version 2.0.0\n")
 
 sys.path.insert(1, 'scripts/')
 parser = argparse.ArgumentParser(description='ChimeraTE Mode 1: The genome-guided approach to detect chimeric transcripts with RNA-seq data.', usage=SUPPRESS, formatter_class=argparse.RawDescriptionHelpFormatter, epilog=textwrap.dedent('''Citation: Oliveira, D. S., Fablet, M., Larue, A., Vallier, A., Carareto, C. M., Rebollo, R., & Vieira, C. (2023). ChimeraTE: a pipeline to detect chimeric transcripts derived from genes and transposable elements. Nucleic Acids Research, 51(18), 9764-9784.'''))
@@ -36,7 +43,7 @@ required.add_argument('--genome', help='Genome in fasta', required=True, type=st
 required.add_argument('--input', help='Paired-end files and their respective group/replicate', required=True, type=str, metavar = "")
 required.add_argument('--project', help='Directory name with output data', required=True, type=str, metavar = "")
 required.add_argument('--te', help='GTF file containing TE information', required=True, type=str, metavar = "")
-required.add_argument('--gene', help='GTF file containing gene information', required=True, type=argparse.FileType('r'), metavar = "")
+required.add_argument('--gene', help='GTF file containing gene information', required=True, type=str, metavar = "")
 required.add_argument('--strand', choices=['rf-stranded','fwd-stranded'], required=True, help='Define the strandness direction of the RNA-seq. Two options: \"rf-stranded\" OR \"fwd-stranded\"', type=str, metavar = "")
 
 optional = parser.add_argument_group('Optional arguments')
@@ -45,7 +52,7 @@ optional.add_argument('--window', help='Upstream and downstream window size (def
 optional.add_argument('--replicate', help='Minimum recurrency of chimeric transcripts between RNA-seq replicates (default = 2)', required=False, type=str, default=2, metavar = "")
 optional.add_argument('--coverage', help='Minimum coverage as the mean between replicates for chimeric transcripts detection', required=False, type=str, default=2, metavar = "")
 optional.add_argument('--fpkm', help='Minimum fpkm to consider a gene as expressed (default = 1)', required=False, type=str, default=1, metavar = "")
-optional.add_argument('--threads', help='Number of threads (default = 6)', required=False, type=str, default=6, metavar = "")
+optional.add_argument('--threads', help='Number of threads (default = 6)', required=False, type=int, default=6, metavar = "")
 optional.add_argument('--overlap', help='Minimum overlap between chimeric reads and TE insertions (default = 0.50)', required=False, type=float, default=0.50, metavar = "")
 optional.add_argument('--index', help='Absolute path to STAR index', required=False, type=str, metavar = "")
 parser.parse_args()
@@ -55,72 +62,7 @@ print(f"/==================== Project {args.project} ====================\\")
 out_genome = str(args.genome).replace(".fasta","").replace(".fas","").replace(".fa","")
 input = pd.read_csv(args.input, header=None, sep="\t", usecols=[0,1,2],names=['mate1', 'mate2', 'group'])
 mydir = str(os.getcwd())
-
-def create_dir(path):
-    if not os.path.isdir(path):
-        os.mkdir(path)
-    return path
-
-def samt_index(bam_file):
-    subprocess.call(['samtools', 'index', str(bam_file)])
-
-def intersection(file1, file2, output=None, prop=None):
-    if prop is not None:
-        with open(str(output), 'w') as tmp_var:
-            subprocess.call(['bedtools', 'intersect', '-a', str(file1), '-b', str(file2), '-wa', '-wb', '-f', str(prop), '-nonamecheck'], stdout=tmp_var)
-        tmp_var.close
-    else:
-        with open(str(output), 'w') as tmp_var:
-            subprocess.call(['bedtools', 'intersect', '-a', str(file1), '-b', str(file2), '-wa', '-wb', '-nonamecheck'], stdout=tmp_var)
-        tmp_var.close
-
-def pybedtools_intersection(file1, file2, prop = None):
-    bed1 = pybedtools.BedTool(str(file1))
-    if type(file2) == str:
-        bed2 = pybedtools.BedTool(str(file2))
-    else:
-        bed2 = file2
-    if prop is not None:
-        intersect = bed1.intersect(bed2, wa=True, nonamecheck=True, f=float(prop))
-    else:
-        intersect = bed1.intersect(bed2, wa=True, nonamecheck=True)
-    return intersect
-
-def dropdup_bed(intersection_bed):
-    bed2string = str(intersection_bed)
-    bed2string = StringIO(bed2string)
-    pd_df = pd.read_table(bed2string, header=None, sep="\t").drop_duplicates().to_csv(header=None, index=False, sep="\t")
-    return pd_df
-
-def get_IDs_from_bed(bed_file):
-    bed2string = str(bed_file)
-    bed2string = StringIO(bed2string)
-    ID_column = pd.read_csv(bed2string, sep="\t", usecols=[3],names=['ID'])
-    return ID_column
-
-def import_csv(dataframe):
-    df = pd.read_csv(str(dataframe), header=None, sep="\t", usecols=[6,7,8,9,10,11],names=['scaf', 'start', 'end', 'ID', 'dot', 'strand'])
-    return df
-
-def overlap(bed, list, out):
-    df = pd.read_csv(str(bed), header=None, sep="\t", usecols=[0,1,2,3,4,5],names=['scaf', 'start', 'end', 'ID', 'dot', 'strand'])
-    df[df['ID'].isin(list)].to_csv(str(out), header=None, index=False, sep="\t")
-
-def time():
-    x = datetime.datetime.now()
-    clock = str("[" + str(x.strftime("%A")) + " " + str(x.day) + "/" + str(x.month) +  "/" + str(x.year) + " - " + str(x.strftime("%H")) + "h:" + str(x.strftime("%M")) + "]")
-    return clock
-
-def copy(file, folder):
-    if os.path.exists(file):
-        shutil.copy(file, folder)
-
-def remove():
-    list = ["rev*", "fwd*", "accepted_hits.bed", "*out.bam", "gene_reads.lst"]
-    for pattern in list:
-        for file in glob.glob(str(f"{aln_dir}/{pattern}")):
-            os.remove(file)
-
+print(out_genome)
 out_dir = create_dir(str(f"{mydir}/projects/{args.project}"))
 tmp = create_dir(str(f"{mydir}/projects/{args.project}/tmp"))
 
@@ -128,94 +70,75 @@ tmp = create_dir(str(f"{mydir}/projects/{args.project}/tmp"))
 ### Check GTF annotations
 clock = time()
 print(f"{clock}\tChecking gene and TE annotations")
-from mode1_prep_data import test_GTF_feature
+
 features_GTF = ['gene', 'exon']
-print(f"GTF GENE\n{args.gene.name} contains:", end = '\n')
+print(f"GTF GENE\n{args.gene} contains:", end = '\n')
 for feat in features_GTF:
-    res_test = test_GTF_feature(str(tmp), str(args.gene.name), str(feat))
+    res_test = test_GTF_feature(str(tmp), str(args.gene), str(feat))
     if res_test == False:
         print(str(f"ERROR: Bad GTF format\n{args.gene.name} does not contain coordinates of {feat}s! The 3rd column must contain \"{feat}\"\tExiting..."))
         exit()
 
-from mode1_prep_data import gene_IDs
-gene_IDs()
+## Check gene IDs
+n_genes = gene_IDs(tmp)
+print(f"First two gene IDs: {n_genes}")
 
-from mode1_prep_data import count_TE_families
 print(f"\nGTF TE\n{args.te} contains:", end = '\n')
 count_TE_families(str(args.te))
 
-from mode1_prep_data import annotation_manager
-from mode1_alignment import alignment_func
-from mode1_te_initiated import te_init
-from mode1_te_initiated import init_chimeras
-from mode1_te_initiated import multicore_process_init
-from mode1_te_terminated import te_term
-from mode1_te_terminated import multicore_process_term
-from mode1_te_exonized import te_exon_embedded
-from mode1_te_exonized import prep_overlapped
-from mode1_te_exonized import prep_intronic
-from mode1_te_exonized import multicore_process_exon
+
 
 ### Create STAR index and bed files
-annotation_manager()
+annotation_manager(tmp, args.index, out_dir, args.genome, args.te, args.threads)
 
 for index, row in input.iterrows():
+    global aln_dir
     mate1 = row['mate1']
     mate2 = row['mate2']
     group = row['group']
-    out_group = create_dir(str(f"{out_dir}/{group}"))
-    global aln_dir
-    aln_dir = create_dir(str(f"{out_dir}/{group}/alignment"))
+
+    out_group = create_dir(f"{out_dir}/{group}")
+    aln_dir = create_dir(f"{out_dir}/{group}/alignment")
 
     ###Perform STAR alignment and identify chimeric reads
-    alignment_func(out_dir,group,aln_dir,mate1,mate2)
+    aln_check = alignment_func(out_dir,group,aln_dir,mate1,mate2, args.threads, args.strand, tmp, args.fpkm)
+    # aln_check = True
+    if aln_check:
+        if args.chimera is None or args.chimera == "TE-initiated":
+            ###Search for TE-initiated transcripts
+            if not os.path.exists(f"{out_group}/TE-initiated-{group}.tsv"):
+                itsct_TEs_up = te_init(aln_dir, args.window)
+                multicore_process_init(itsct_TEs_up, args.threads)
+            else:
+                print(f"{out_group}/TE-initiated-{group}.tsv has been found!\tSkipping the identification of TE-initiated transcripts...")
 
-    if args.chimera is None or args.chimera == "TE-initiated":
-    ###Search for TE-initiated transcripts
-        te_init(aln_dir, group, out_group)
-        multicore_process_init()
+        if args.chimera is None or args.chimera == "TE-terminated":
+            ###Search for TE-terminated transcripts
+            if not os.path.exists(f"{out_group}/TE-terminated-{group}.tsv"):
+                itsct_TEs_down = te_term(aln_dir, args.window)
+                multicore_process_term(itsct_TEs_down, args.threads)
+            else:
+                print(f"{out_group}/TE-terminated-{group}.tsv has been found!\tSkipping the identification of TE-initiated transcripts...")
 
-        if os.path.exists(f"{out_group}/TE-initiated-{group}.tsv") == True:
-            copy(str(f"{out_group}/TE-initiated-{group}.tsv"), tmp)
-    else:
-        print(f"Skipping the identification of TE-initiated transcripts...")
+        if args.chimera is None or args.chimera == "TE-exonized":
+            ### Search for TE-exonized transcripts - embedded
+            te_emb_ids, te_emb_mbed, embedded_exons = prep_embedded(aln_dir)
+            multicore_emb_exon(te_emb_ids, te_emb_mbed, args.threads, args.overlap)
 
-    if args.chimera is None or args.chimera == "TE-terminated":
-        ###Search for TE-terminated transcripts
-        te_term(aln_dir, group, out_group)
-        multicore_process_term()
+            ### Search for TE-exonized transcripts - overlapped
+            overlap_TEs_exons_mbed, geneIDs_overl = prep_overlapped(aln_dir, te_emb_mbed)
+            multicore_overl_exon(geneIDs_overl, overlap_TEs_exons_mbed, args.threads, args.overlap)
 
-        if os.path.exists(f"{out_group}/TE-terminated-{group}.tsv") == True:
-            copy(str(f"{out_group}/TE-terminated-{group}.tsv"), tmp)
-    else:
-        print(f"Skipping the identification of TE-terminated transcripts...")
+            ###Search for TE-exonized transcripts - intronic
+            geneids_intron, exons_genes_TEs_intron, genes_TE_intron_mbed = prep_intronic(aln_dir)
+            multicore_intron_exon(geneids_intron, exons_genes_TEs_intron, genes_TE_intron_mbed, args.threads , args.overlap)
 
-    if args.chimera is None or args.chimera == "TE-exonized":
-        ##Search for TE-exonized transcripts
-        te_exon_embedded(aln_dir, group, out_group)
-        prep_overlapped(aln_dir, group, out_group)
-        prep_intronic(aln_dir, group, out_group)
-        multicore_process_exon()
-
-        if os.path.exists(f"{out_group}/TE-exonized-{group}.tsv") == True:
-            copy(str(f"{out_group}/TE-exonized-{group}.tsv"), tmp)
-    else:
-        print(f"Skipping the identification of TE-exonized transcripts...")
-
-    ###Removing tmp files
-    remove()
+        # if os.path.exists(f"{out_group}/TE-exonized-{group}.tsv") == True:
+        #     copy(f"{out_group}/TE-exonized-{group}.tsv", tmp)
+        # else:
+        #     print(f"Skipping the identification of TE-exonized transcripts...")
 
 ###Checking for replicability of chimeric transcripts in RNA-seq samples
-import mode1_replicability
+replicability(args.replicate, args.coverage)
 
 print(colored("ChimeraTE has finished successfullly!", "green", attrs=['bold']))
-
-
-
-
-
-
-
-
-
-#

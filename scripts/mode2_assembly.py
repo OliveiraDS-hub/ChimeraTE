@@ -13,21 +13,24 @@ import sys
 import os
 import shutil
 
-def transcriptome_assembly():
+def transcriptome_assembly(mate1, mate2, strandness,ram, threads, ref_TEs, TE_length, overlap):
     from __main__ import aln_dir
     from __main__ import trinity_out
     from __main__ import mate1
     from __main__ import mate2
 
-    if str(args.strand) == "rf-stranded":
+    if str(strandness) == "rf-stranded":
         strand = "RF"
     else:
         strand = "FR"
 
     clock = time()
     print(f"{clock}\tPerforming transcriptome assembly... It may take a while")
+    print(f"strand= {strand}")
+    print(f"ram = {ram}")
+
     if check_file(f"{trinity_out}/Trinity.fasta") == False:
-        subprocess.call(['Trinity', '--seqType', 'fq', '--SS_lib_type', str(strand), '--max_memory', str(str(args.ram) + 'G'), '--left', str(mate1), '--right', str(mate2), '--CPU', str(args.threads), '--output', str(trinity_out)], stderr = subprocess.DEVNULL, stdout = subprocess.DEVNULL)
+        subprocess.call(['Trinity', '--seqType', 'fq', '--SS_lib_type', str(strand), '--max_memory', str(ram), + 'G', '--left', str(mate1), '--right', str(mate2), '--CPU', str(threads), '--output', str(trinity_out)], stderr = subprocess.DEVNULL, stdout = subprocess.DEVNULL)
         rm_files = ['insilico_read_normalization', 'chrysalis', 'read_partitions', 'scaffolding_entries.sam', 'jellyfish.kmers.25.asm.fa', 'both.fa']
         for file in rm_files:
             rm_file_or_dir(str(file))
@@ -39,7 +42,7 @@ def transcriptome_assembly():
     clock = time()
     print(str(clock) + '\t' + "Creating bowtie2 index with assembled transcripts...")
     if check_file(f"{trinity_out}/trinity_assembly.1.bt2") == False:
-        subprocess.call(['bowtie2-build', str(trinity_out + '/Trinity.fasta'), str(trinity_out + '/trinity_assembly'), '--threads', str(args.threads)], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        subprocess.call(['bowtie2-build', str(trinity_out + '/Trinity.fasta'), str(trinity_out + '/trinity_assembly'), '--threads', str(threads)], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         print(colored("Done!", "green", attrs=['bold']))
     else:
         print(f"Trinity index has been found!"); print(colored("Skipping...\n", "yellow", attrs=['bold']))
@@ -48,10 +51,10 @@ def transcriptome_assembly():
     clock = time()
     print(str(clock) + '\t' + "Alignment with assembled transcripts...")
     if check_file(f"{trinity_out}/all_candidates.tsv") == False:
-        subprocess.call(['bowtie2', '-x', str(trinity_out + '/trinity_assembly'), '-1', str(mate1), '-2', str(mate2), '-p', str(args.threads), '-S', str(trinity_out + '/transcripts_aln.sam')], stdout=subprocess.DEVNULL)
+        subprocess.call(['bowtie2', '-x', str(trinity_out + '/trinity_assembly'), '-1', str(mate1), '-2', str(mate2), '-p', str(threads), '-S', str(trinity_out + '/transcripts_aln.sam')], stdout=subprocess.DEVNULL)
 
         with open(str(trinity_out + '/transcripts_aln.bam'), 'w') as f:
-            subprocess.call(['samtools', 'view', '-@', str(args.threads), '-bS', str(trinity_out + '/transcripts_aln.sam')], stdout=f, stderr=subprocess.DEVNULL)
+            subprocess.call(['samtools', 'view', '-@', str(threads), '-bS', str(trinity_out + '/transcripts_aln.sam')], stdout=f, stderr=subprocess.DEVNULL)
         f.close()
         os.remove(str(trinity_out + '/transcripts_aln.sam'))
 
@@ -66,14 +69,14 @@ def transcriptome_assembly():
 
 
     clock = time()
-    print(f"{clock}\tMasking transcripts with \"{args.ref_TEs}\" database...")
+    print(f"{clock}\tMasking transcripts with \"{ref_TEs}\" database...")
     if check_file(f"{trinity_out}/all_candidates.tsv") == False:
         format = '.fa'
-        test_fasta = re.search(format, str(args.ref_TEs))
+        test_fasta = re.search(format, str(ref_TEs))
         if test_fasta is None:
-            subprocess.call(['RepeatMasker', str(trinity_out + '/Trinity.fasta'), '-species', str(args.ref_TEs), '-cutoff', '225', '-nolow', '-norna', '-s', '-par', str(args.threads)], stdout = subprocess.DEVNULL)
+            subprocess.call(['RepeatMasker', str(trinity_out + '/Trinity.fasta'), '-species', str(ref_TEs), '-cutoff', '225', '-nolow', '-norna', '-s', '-par', str(threads)], stdout = subprocess.DEVNULL)
         else:
-            subprocess.call(['RepeatMasker', str(trinity_out + '/Trinity.fasta'), '-lib', str(args.ref_TEs), '-cutoff', '225', '-nolow', '-norna', '-s', '-par', str(args.threads)], stdout = subprocess.DEVNULL)
+            subprocess.call(['RepeatMasker', str(trinity_out + '/Trinity.fasta'), '-lib', str(ref_TEs), '-cutoff', '225', '-nolow', '-norna', '-s', '-par', str(threads)], stdout = subprocess.DEVNULL)
         print(colored("Done!", "green", attrs=['bold']))
 
         clock = time()
@@ -92,11 +95,11 @@ def transcriptome_assembly():
         trinity_masked['start'] = trinity_masked['start'].astype(int)
         trinity_masked['end'] = trinity_masked['end'].astype(int)
         trinity_masked['length'] = trinity_masked.apply(lambda x: x['end'] - x['start'], axis=1)
-        trinity_masked = trinity_masked[trinity_masked.length > int(args.TE_length)]
+        trinity_masked = trinity_masked[trinity_masked.length > int(TE_length)]
         trinity_masked = trinity_masked[['transcript', 'start', 'end', 'TE_fam', 'dot', 'strand']]
         trinity_masked.to_csv(str(trinity_out + '/trinity_TEs.bed'), header = False, index = False, sep = '\t')
 
-        intersection(str(trinity_out + '/transcripts_aln.bed'), str(trinity_out + '/trinity_TEs.bed'), str(trinity_out + '/overlapped.mbed'), str(args.overlap))
+        intersection(str(trinity_out + '/transcripts_aln.bed'), str(trinity_out + '/trinity_TEs.bed'), str(trinity_out + '/overlapped.mbed'), str(overlap))
 
         TE_reads = pd.read_csv(str(trinity_out + '/overlapped.mbed'), header=None, sep='\t', usecols=[3], names=['read_IDs']).replace('/1', '', regex=True).replace('/2', '', regex=True).value_counts().rename_axis('reads').reset_index(name='counts')
         TE_reads = TE_reads[TE_reads["counts"] == 1]#.to_csv(str(trinity_out + 'all_candidates'))
@@ -116,7 +119,7 @@ def transcriptome_assembly():
 
 
 
-def singleton_crossing():
+def singleton_crossing(transcripts, identity):
     from __main__ import aln_dir
     from __main__ import trinity_out
     from __main__ import group
@@ -179,9 +182,9 @@ def singleton_crossing():
         with open(str(trinity_out + '/chim_trinity.fa'), 'w') as f:
             subprocess.call(['seqtk', 'subseq', str(f"{trinity_out}/Trinity.fasta"), str(f"{trinity_out}/putative_isoforms.lst")], stdout = f)
 
-        subprocess.call(['makeblastdb', '-in', str(args.transcripts), '-dbtype', 'nucl', '-out', str(f"{trinity_out}/transcripts_db")], stdout=subprocess.DEVNULL)
+        subprocess.call(['makeblastdb', '-in', str(transcripts), '-dbtype', 'nucl', '-out', str(f"{trinity_out}/transcripts_db")], stdout=subprocess.DEVNULL)
         with open(str(f"{trinity_out}/blast-result.tsv"), 'w') as f:
-            subprocess.call(['blastn', '-query', str(f"{trinity_out}/chim_trinity.fa"), '-db', str(f"{trinity_out}/transcripts_db"), '-outfmt', '6 qseqid sseqid length pident gaps mismatch qlen slen qstart qend sstart send evalue bitscore', '-num_threads', str(args.threads)], stdout =f)
+            subprocess.call(['blastn', '-query', str(f"{trinity_out}/chim_trinity.fa"), '-db', str(f"{trinity_out}/transcripts_db"), '-outfmt', '6 qseqid sseqid length pident gaps mismatch qlen slen qstart qend sstart send evalue bitscore', '-num_threads', str(threads)], stdout =f)
         print(colored("Done!", "green", attrs=['bold']))
     else:
         print(f"Blast output file has been found!"); print(colored("Skipping...\n", "yellow", attrs=['bold']))
@@ -208,7 +211,7 @@ def singleton_crossing():
 
             transcript_gene = re.sub('_', '\t', best_hit_ID)
             perc = (int(best_hit_length) * 100) / int(isoform_length)
-            if perc > int(args.identity):
+            if perc > int(identity):
                 with open(str(trinity_out + '/IDs_isoforms.lst'), 'a') as isoforms:
                     print(str(line), file=isoforms)
                 isoforms.close()

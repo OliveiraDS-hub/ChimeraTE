@@ -1,18 +1,6 @@
-import argparse
-import datetime
-import subprocess
-import glob
-import pandas as pd
-import re
-import csv
-from io import StringIO
 from __main__ import *
-import pybedtools
-import contextlib
-import sys
-import os
 
-def stranded_reads(strand_option, aln_dir):
+def stranded_reads(strand_option, aln_dir, threads):
     if strand_option == "fwd-stranded":
         pair_sense = ["rev", "fwd"]
     elif strand_option == "rf-stranded":
@@ -22,165 +10,196 @@ def stranded_reads(strand_option, aln_dir):
         print(f"Creating bed file for {sense} reads...")
         if index == 0:
             ### First strand
-            subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-f', '128', '-F', '16', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}1_f.bam"], stderr=subprocess.DEVNULL)
+            subprocess.call(['samtools', 'view', '-@', str(threads), '-b', '-f', '128', '-F', '16', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}1_f.bam"], stderr=subprocess.DEVNULL)
 
-            subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-f', '80', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}2_f.bam"], stderr=subprocess.DEVNULL)
+            subprocess.call(['samtools', 'view', '-@', str(threads), '-b', '-f', '80', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}2_f.bam"], stderr=subprocess.DEVNULL)
         elif index == 1:
             ### Second strand
-            subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-f', '144', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}1_f.bam"], stderr=subprocess.DEVNULL)
+            subprocess.call(['samtools', 'view', '-@', str(threads), '-b', '-f', '144', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}1_f.bam"], stderr=subprocess.DEVNULL)
 
-            subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-f', '64', '-F', '16', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}2_f.bam"], stderr=subprocess.DEVNULL)
+            subprocess.call(['samtools', 'view', '-@', str(threads), '-b', '-f', '64', '-F', '16', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}2_f.bam"], stderr=subprocess.DEVNULL)
 
         ### Combine alignments that originate on the forward strand.
-        subprocess.call(['samtools', 'merge', '-@', str(args.threads), '-f', f"{aln_dir}/{sense}.bam", f"{aln_dir}/{sense}1_f.bam", f"{aln_dir}/{sense}2_f.bam"])
+        subprocess.call(['samtools', 'merge', '-@', str(threads), '-f', f"{aln_dir}/{sense}.bam", f"{aln_dir}/{sense}1_f.bam", f"{aln_dir}/{sense}2_f.bam"])
 
         subprocess.run('bedtools bamtobed -split -i {}/{}.bam > {}/{}.bed'.format(aln_dir, sense, aln_dir, sense), shell = True)
 
+def overlap_reads(df, read_ids, aln_dir=None, output=None):
+        # Ensure fast lookup by using a set
+        read_ids_set = set(read_ids)
 
+        # Define col names
+        df.columns = ['Chromosome', 'Start', 'End', 'Name', 'Score', 'Strand']
 
-def alignment_func(out_dir,group,aln_dir,mate1,mate2):
-    print('Running analysis with ------------------------------------------> ' + str(group) + '\n')
+        # Normalize read names (remove /1 and /2)
+        df['ID_mod'] = df["Name"].str.replace('/1', '', regex=False).str.replace('/2', '', regex=False)
+
+        # Filter rows with matching IDs
+        filtered = df[df['ID_mod'].isin(read_ids_set)]
+
+        # Columns to keep
+        cols = ['Chromosome', 'Start', 'End', 'Name', 'Score', 'Strand']
+
+        # Output
+        if output is None:
+            filtered.to_csv(sys.stdout, header=None, index=False, sep="\t", columns=cols)
+        else:
+            filtered.to_csv(f"{aln_dir}/{output}.bed", header=None, index=False, sep="\t", columns=cols)
+
+def alignment_func(out_dir,group,aln_dir,mate1,mate2, threads, strandness, tmp_dir, fpkm, index=False):
+    print(f'Running analysis with ------------------------------------------> {group}\n')
     clock = time()
-    print(str(clock) + '\t' + "Performing alignment")
+    print(f'{clock}\tPerforming alignment')
 
-    if str(args.index) != "None":
-        subprocess.call(['STAR', '--genomeDir', str(args.index), '--runThreadN', '18', "--readFilesCommand", str("zcat"), \
-        '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', str("BAM"), str("SortedByCoordinate"), "--outFileNamePrefix", str(aln_dir + '/' + group + '_')], stdout=subprocess.DEVNULL)
+    prop_cpu = int(int(threads) - (int(threads) * 0.2))
+    
+    ### STAR alignment | output = sorted bam file
+    # Check write permission
+    if not os.access(aln_dir, os.W_OK):
+        raise PermissionError(f"No write permission for {aln_dir}")
+    
+    if os.path.exists(f'{out_dir}/{group}_Aligned.sortedByCoord.out.bam') and \
+        os.path.getsize(f'{out_dir}/{group}_Aligned.sortedByCoord.out.bam') == 0:
+        os.remove(f'{out_dir}/{group}_Aligned.sortedByCoord.out.bam')
+    
+    if not os.path.exists(f"{aln_dir}/{group}_Aligned.sortedByCoord.out.bam"):
+        if not index == False:
+            if mate1.endswith('gz'):
+                subprocess.call(['STAR', '--genomeDir', str(index), '--runThreadN', str(prop_cpu), "--readFilesCommand", "zcat", \
+                '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', "BAM", "SortedByCoordinate", '--outTmpDir', f"{aln_dir}/{group}_STARtmp", "--outFileNamePrefix", f"{aln_dir}/{group}_"], stdout=subprocess.DEVNULL)
+            else:
+                subprocess.call(['STAR', '--genomeDir', str(index), '--runThreadN', str(prop_cpu), \
+                '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', "BAM", "SortedByCoordinate", '--outTmpDir', f"{aln_dir}/{group}_STARtmp", "--outFileNamePrefix", f"{aln_dir}/{group}_"], stdout=subprocess.DEVNULL)
+        else:
+            if mate1.endswith('gz'):
+                subprocess.call(['STAR', '--genomeDir', f"{out_dir}/index", '--runThreadN', str(prop_cpu), "--readFilesCommand", "zcat", \
+                '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', "BAM", "SortedByCoordinate", '--outTmpDir', f"{aln_dir}/{group}_STARtmp", "--outFileNamePrefix", f"{aln_dir}/{group}_"], stdout=subprocess.DEVNULL)
+            else:
+                subprocess.call(['STAR', '--genomeDir', f"{out_dir}/index", '--runThreadN', str(prop_cpu), \
+                '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', "BAM", "SortedByCoordinate",'--outTmpDir', f"{aln_dir}/{group}_STARtmp", "--outFileNamePrefix", f"{aln_dir}/{group}_"], stdout=subprocess.DEVNULL)
     else:
-        subprocess.call(['STAR', '--genomeDir', str(out_dir + '/index'), '--runThreadN', '18', "--readFilesCommand", str("zcat"), \
-        '--readFilesIn', str(mate1), str(mate2), '--outSAMtype', str("BAM"), str("SortedByCoordinate"), "--outFileNamePrefix", str(aln_dir + '/' + group + '_')], stdout=subprocess.DEVNULL)
+        print(f'BAM file found: {aln_dir}/{group}_Aligned.sortedByCoord.out.bam\t Skipping alignment')
 
+    if os.path.exists(f'{out_dir}/accepted_hits.bed'):
+        os.remove(f'{out_dir}/accepted_hits.bed')
 
-    with open(str(aln_dir + '/accepted_hits.bam'), 'w') as bam_file:
-        subprocess.call(['samtools', 'view', '-@', str(args.threads), '-b', '-q', '255', str(aln_dir + '/' + group + '_Aligned.sortedByCoord.out.bam')], stdout=bam_file)
-    bam_file.close
-
-    with open(str(aln_dir + '/accepted_hits.bed'), 'w') as bed_file:
-        subprocess.call(['bedtools', 'bamtobed', '-split', '-i', str(aln_dir + '/accepted_hits.bam')], stdout=bed_file)
-    bed_file.close
+    if not os.path.exists(f'{aln_dir}/accepted_hits.bed'):
+        ### samtools conversion | output = bam file with concordant paired reads
+        with open(f"{aln_dir}/accepted_hits.bam", 'w') as bam_file:
+            subprocess.call(['samtools', 'view', '-@', str(threads), '-b', '-q', '255', f"{aln_dir}/{group}_Aligned.sortedByCoord.out.bam"], stdout=bam_file)
+        bam_file.close
+        ### samtools conversion | output = bed file with coordiantes of aligned reads
+        with open(f'{aln_dir}/accepted_hits.bed', 'w') as bed_file:
+            subprocess.call(['bedtools', 'bamtobed', '-split', '-i', f'{aln_dir}/accepted_hits.bam'], stdout=bed_file)
+        bed_file.close
 
     ### Creating bed files per strand
-    stranded_reads(args.strand, aln_dir)
+    if not os.path.exists(f'{aln_dir}/rev.bed') and not os.path.exists(f'{aln_dir}/fwd.bed'):
+        stranded_reads(strandness, aln_dir, threads)
+        print(colored("Done!", "green", attrs=['bold']))
+    
 
-    print(colored("Done!", "green", attrs=['bold']))
-    rev_bed = pybedtools.BedTool(str(aln_dir + '/rev.bed'))
-    fwd_bed = pybedtools.BedTool(str(aln_dir + '/fwd.bed'))
 
-    clock = time()
-    print(str(clock) + '\t' + "Genes expression")
-    fpkm_dir = create_dir(str(out_dir + '/' + group + '/alignment/fpkm'))
 
-    if str(args.strand) == str("rf-stranded"):
-        subprocess.call(['cufflinks', str(aln_dir + '/accepted_hits.bam'), '-p', str(args.threads), '-G', str(tmp + '/gtf_file.gtf'), '-o', str(fpkm_dir), '--quiet', '--library-type', 'fr-firststrand'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    else:
-        subprocess.call(['cufflinks', str(aln_dir + '/accepted_hits.bam'), '-p', str(args.threads), '-G', str(tmp + '/gtf_file.gtf'), '-o', str(fpkm_dir), '--quiet', '--library-type', 'fr-secondstrand'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-
-    TEfile = pybedtools.BedTool(str(tmp + '/TE_file.bed'))
-    acc_hits = pybedtools.BedTool(str(aln_dir + '/accepted_hits.bed'))
-    exp_TEs = TEfile.intersect(acc_hits, wa=True, nonamecheck=True)
-    exp_TEs = dropdup_bed(exp_TEs)
-    with open(str(aln_dir + '/expressed_TEs.bed'), "w") as f:
-        print(str(exp_TEs), file = f)
-    f.close()
-
-    expressed_TEs = pybedtools_intersection(str(tmp + '/TE_file.bed'), str(aln_dir + '/accepted_hits.bed'))
-    expressed_TEs = dropdup_bed(expressed_TEs)
-    expressed_TEs = pybedtools.BedTool(expressed_TEs, from_string=True)
-    print(colored("Done!", "green", attrs=['bold']))
 
     clock = time()
-    print(str(clock) + '\t' + "Getting fpkm")
-    fpkm_gene = pd.read_csv(str(out_dir + '/' + group + '/alignment/fpkm/genes.fpkm_tracking'), sep="\t", usecols=[0,11])
-    fpkm_gene['tracking_id'] = fpkm_gene['tracking_id'].str.replace("gene-", '')
-    fpkm_gene.loc[fpkm_gene['FPKM_conf_hi'] > int(args.fpkm)].loc[:,['tracking_id']].drop_duplicates().to_csv(aln_dir + '/genes_expressed_IDs.lst', header=None, index=False)
+    print(f'{clock}\tGenes expression')
+    ### Calculate gene expression in fpkm with cufflinks | output = fpkm/genes.fpkm_tracking
+    if not os.path.exists(f'{out_dir}/{group}/alignment/fpkm/genes.fpkm_tracking'):
+        fpkm_dir = create_dir(f'{out_dir}/{group}/alignment/fpkm')
 
-    with open(str(aln_dir + '/genes_expressed_IDs.lst')) as f:
-        list_genes = f.read().splitlines()
-
-    overlap(str(tmp + '/gene_coord.bed'), list_genes, str(aln_dir + '/genes_total_expressed.bed'))
-    intersected_genes = pybedtools_intersection(str(aln_dir + '/accepted_hits.bed'), str(tmp + '/gene_coord.bed'))
-
-    print(colored("Done!", "green", attrs=['bold']))
-
-    clock = time()
-    print(str(clock) + '\t' + "Strand-specific expression analysis")
-
-    ### TE reads
-    TE_reads_fwd_all = fwd_bed.intersect(expressed_TEs, wa=True, nonamecheck=True)
-    TE_reads_rev_all = rev_bed.intersect(expressed_TEs, wa=True, nonamecheck=True)
-
-    fwd_TE = get_IDs_from_bed(TE_reads_fwd_all)
-    rev_TE = get_IDs_from_bed(TE_reads_rev_all)
-
-    merged_TE = pd.concat([fwd_TE, rev_TE])
-    merged_TE["ID"].str.replace('/1', '').str.replace('/2', '').drop_duplicates().to_csv(aln_dir + '/TE_reads.lst', header=None, index=False)
-
-    ### Gene reads
-    genes_total_expressed = pybedtools.BedTool(str(aln_dir + '/genes_total_expressed.bed'))
-    gene_reads_fwd_all = fwd_bed.intersect(genes_total_expressed, wa=True, nonamecheck=True)
-    gene_reads_rev_all = rev_bed.intersect(genes_total_expressed, wa=True, nonamecheck=True)
-
-    fwd_gene = get_IDs_from_bed(gene_reads_fwd_all)
-    rev_gene = get_IDs_from_bed(gene_reads_rev_all)
-
-    merged_gene = pd.concat([fwd_gene, rev_gene])
-    merged_gene["ID"].str.replace('/1', '').str.replace('/2', '').drop_duplicates().to_csv(aln_dir + '/gene_reads.lst', header=None, index=False)
-    print(colored("Done!", "green", attrs=['bold']))
-
-    clock = time()
-    print(str(clock) + '\t' + "Chimeric reads pairs identification")
-    with open(str(aln_dir + '/TE_reads.lst')) as f:
-        list_TE_reads = f.read().splitlines()
-    f.close
-
-    gene_reads = pd.read_csv(str(aln_dir + '/gene_reads.lst'), usecols=[0], names=['ID'])
-    chim_reads = gene_reads[gene_reads['ID'].isin(list_TE_reads)].to_csv(aln_dir + '/chim_reads.lst', header=None, index=False)
-
-    with open(str(aln_dir + '/chim_reads.lst')) as f:
-        chim_list = f.read().splitlines()
-    f.close
-
-    def overlap_reads(bed, list, output=None):
-        intersect_TE = str(bed)
-        intersect_TE = StringIO(intersect_TE)
-        df = pd.read_table(intersect_TE, header=None, sep="\t", usecols=[0,1,2,3,4,5],names=['scaf', 'start', 'end', 'ID', 'dot', 'strand'])
-        mod = df["ID"].str.replace('/1', '').str.replace('/2', '')
-        df['ID_mod'] = mod
-        if output is None:
-            df[df['ID_mod'].isin(list)].to_csv(header=None, index=False, sep="\t", columns = ['scaf', 'start', 'end', 'ID', 'dot', 'strand'])
+        if str(strandness) == str("rf-stranded"):
+            subprocess.call(['cufflinks', f'{aln_dir}/accepted_hits.bam', '-p', str(threads), '-G', f'{tmp_dir}/gtf_file.gtf', '-o', str(fpkm_dir), '--quiet', '--library-type', 'fr-firststrand'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         else:
-            df[df['ID_mod'].isin(list)].to_csv(str(aln_dir + '/' + output + '.bed'),header=None, index=False, sep="\t", columns = ['scaf', 'start', 'end', 'ID', 'dot', 'strand'])
-
-    TE_reads_fwd = str('TE_reads_fwd')
-    overlap_reads(TE_reads_fwd_all, chim_list, TE_reads_fwd)
-
-    TE_reads_rev = str('TE_reads_rev')
-    overlap_reads(TE_reads_rev_all, chim_list, TE_reads_rev)
-
-    gene_reads_fwd = str('gene_reads_fwd')
-    overlap_reads(gene_reads_fwd_all, chim_list, gene_reads_fwd)
-
-    gene_reads_rev = str('gene_reads_rev')
-    overlap_reads(gene_reads_rev_all, chim_list, gene_reads_rev)
-
-    #Exons with chimeric reads
-    accepted_hits = pybedtools.BedTool(str(aln_dir + '/accepted_hits.bed'))
-
-    chim_reads_coord = str('chim_reads_coord')
-    chim_reads = overlap_reads(accepted_hits, chim_list, chim_reads_coord)
-    chim_reads = pybedtools.BedTool(str(aln_dir + '/chim_reads_coord.bed'))
-
-    exon_file = pybedtools.BedTool(str(tmp + '/exon_file.bed'))
-    chimeric_exons = exon_file.intersect(chim_reads, wa=True, nonamecheck=True)
-    chimeric_exons = dropdup_bed(chimeric_exons)
-    with open(str(aln_dir + '/chim_exons.bed'), "w") as f:
-        print(str(chimeric_exons), file = f)
-    f.close()
-
-    chimeric_TEs = expressed_TEs.intersect(chim_reads, wa=True, nonamecheck=True, F=str(args.overlap))
-    chimeric_TEs = dropdup_bed(chimeric_TEs)
-    with open(str(aln_dir + '/chimeric_TEs.bed'), "w") as f:
-        print(str(chimeric_TEs), file = f)
-    f.close()
-
+            subprocess.call(['cufflinks', f'{aln_dir}/accepted_hits.bam', '-p', str(threads), '-G', f'{tmp_dir}/gtf_file.gtf', '-o', str(fpkm_dir), '--quiet', '--library-type', 'fr-secondstrand'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     print(colored("Done!", "green", attrs=['bold']))
+
+    ### Filter gene expression based on minimum fpkm | output = genes_expressed_IDs.lst
+    if os.path.isfile(f'{out_dir}/{group}/alignment/fpkm/genes.fpkm_tracking') and os.path.getsize(f'{out_dir}/{group}/alignment/fpkm/genes.fpkm_tracking') > 0:
+        fpkm_gene = pd.read_csv(f'{out_dir}/{group}/alignment/fpkm/genes.fpkm_tracking', sep="\t", usecols=[0,11])
+        fpkm_gene['tracking_id'] = fpkm_gene['tracking_id'].str.replace("gene-", '')
+        list_genes = (fpkm_gene.loc[fpkm_gene['FPKM_conf_hi'] > int(fpkm)]
+            .loc[:, ['tracking_id']]
+            .drop_duplicates()['tracking_id']
+            .tolist())
+    else:
+        raise RuntimeError(f"Expected output from cufflinks: {out_dir}/{group}/alignment/fpkm/genes.fpkm_tracking was not found or is empty!"); return False
+    
+    if len(list_genes) > 0:
+        try:
+            clock = time()
+            print(f'{clock}\tStrand-specific expression analysis')
+
+            ### Create bed file only for expressed genes | output = genes_total_expressed.bed
+            overlap(f'{tmp_dir}/gene_coord.bed', list_genes, f'{aln_dir}/genes_total_expressed.bed')
+
+            ### Create bed file only for expressed TEs (at least 1 read) | output = expressed_TEs.bed
+            if not os.path.exists(f'{aln_dir}/expressed_TEs.bed'):
+                intersection_any_bp(f'{tmp_dir}/TE_file.bed', f'{aln_dir}/accepted_hits.bed', f'{aln_dir}/expressed_TEs.bed')
+
+            ### Extract TE read IDs from expressed copies | output = hold reads into variables
+            fwd_TE = intersection_any_bp(f'{aln_dir}/fwd.bed', f'{tmp_dir}/TE_file.bed', False)
+            rev_TE = intersection_any_bp( f'{aln_dir}/rev.bed', f'{tmp_dir}/TE_file.bed', False)
+
+            # ### Merge fwd and rev reads | output = list with read IDs
+            merged_TE = pd.concat([fwd_TE, rev_TE])
+            read_list_TE = merged_TE["Name"].str.replace('/1', '').str.replace('/2', '').drop_duplicates().to_list()
+            
+            # ### Extract Gene read IDs from expressed copies | output = hold reads into variables
+            fwd_gene = intersection_any_bp(f'{aln_dir}/fwd.bed', f'{aln_dir}/genes_total_expressed.bed', False)
+            rev_gene = intersection_any_bp(f'{aln_dir}/rev.bed', f'{aln_dir}/genes_total_expressed.bed', False)
+
+            ### Merge fwd and rev reads | output = TE_reads.lst
+            merged_gene = pd.concat([fwd_gene, rev_gene])
+            # merged_gene["Name"].str.replace('/1', '').str.replace('/2', '').drop_duplicates().to_csv(aln_dir + '/gene_reads.lst', header=None, index=False)
+            read_list_gene = merged_gene["Name"].str.replace('/1', '').str.replace('/2', '').drop_duplicates().to_list()
+
+
+            print(f'total reads from TEs: {len(read_list_TE)}')
+            print(f'total reads from genes: {len(read_list_gene)}')
+            print(colored("Done!", "green", attrs=['bold']))
+        except ValueError as e:
+            print("Failed to intersect foward and reverse reads", e)
+
+
+        if not os.path.exists(f'{aln_dir}/chim_exons.bed') and not os.path.exists(f'{aln_dir}/chimeric_TEs.bed'):
+            clock = time()
+            print(f'{clock}\tChimeric reads pairs identification')
+            
+            ### Load TE and gene reads as a sets
+            te_reads_set = set(read_list_TE)
+            gene_reads_set = set(read_list_gene)
+
+            ### Find intersection
+            chim_reads_set = te_reads_set & gene_reads_set
+
+            ### Convert back to list if needed
+            chim_reads = list(chim_reads_set)
+
+
+            ### Create bed file with TEs' chimeric reads fwd and rev | output = fwd/rev.bed files
+            overlap_reads(fwd_TE, chim_reads, aln_dir, "TE_reads_fwd")
+            overlap_reads(rev_TE, chim_reads, aln_dir, "TE_reads_rev")
+
+            ### Create bed file with genes' chimeric reads fwd and rev | output = fwd/rev.bed files
+            overlap_reads(fwd_gene, chim_reads, aln_dir, "gene_reads_fwd")
+            overlap_reads(rev_gene, chim_reads, aln_dir, "gene_reads_rev")
+
+
+            ### Create bed file only for chimeric reads | output = chim_reads.bed
+            accepted_hits = pd.read_csv(f'{aln_dir}/accepted_hits.bed', sep = "\t", names=['Chromosome', 'Start', 'End', 'Name', 'Score', 'Strand'])
+            overlap_reads(accepted_hits, chim_reads, aln_dir, 'chim_reads')
+
+            ### Detect exons with chimeric reads | output = chim_exons.bed
+            intersection_any_bp(f'{tmp_dir}/exon_file.bed', f'{aln_dir}/chim_reads.bed', f'{aln_dir}/chim_exons.bed') 
+            
+            ### Detect TEs with chimeric reads | output = chimeric_TEs.bed
+            intersection_any_bp(f'{aln_dir}/expressed_TEs.bed', f'{aln_dir}/chim_reads.bed', f'{aln_dir}/chimeric_TEs.bed') 
+            return True
+            print(colored("Done!", "green", attrs=['bold']))
+        else:
+            print(f'chimeric reads for TEs and genes have been found!\tSkipping it...'); return True
+    else:
+        print(f"{group} has no genes with fpkm >= {fpkm}!\t Exiting...")
+        return None
+    

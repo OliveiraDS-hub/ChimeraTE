@@ -2,9 +2,12 @@ import pyranges as pr
 import pandas as pd
 import numpy as np
 import subprocess
+import warnings
+warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 import argparse
-import re
+import shutil
 import os
+import re
 
 parser = argparse.ArgumentParser(description='')
 parser._action_groups.pop()
@@ -13,6 +16,7 @@ required.add_argument('--input', help='Paired-end files and their respective gro
 required.add_argument('--index', help='Directory STAR index', required=True, type=str, metavar = "")
 required.add_argument('--output', help='prefix for output files', required=True, type=str, metavar = "")
 required.add_argument('--gff', help='gff with gene annotation', required=True, type=str, metavar = "")
+required.add_argument('--dir_chimerate', help='directory with chimeraTE output tsv files', required=True, type=str, metavar= "")
 parser.parse_args()
 args = parser.parse_args()
 
@@ -25,13 +29,17 @@ def getTPM(df, out_prefix):
                                comment='#')
     stringtie_df['transcriptID'] = stringtie_df['ID'].str.split(';').str[1]
     stringtie_df['transcriptID'] = stringtie_df['transcriptID'].str.replace("\"", '').str.replace("transcript_id", '').str.replace(" ", '')
-    stringtie_transcripts = stringtie_df[stringtie_df["feature"] == "transcript"]
+    stringtie_transcripts = stringtie_df[stringtie_df["feature"] == "transcript"].copy()
 
-    stringtie_transcripts['TPM'] = stringtie_transcripts['ID'].str.extract(r'TPM "([^"]+)"').astype(float)
+    ##stringtie_transcripts['TPM'] = stringtie_transcripts['ID'].str.extract(r'TPM "([^"]+)"').astype(float)
+    stringtie_transcripts.loc[:, 'TPM'] = (
+        stringtie_transcripts['ID'].str.extract(r'TPM "([^"]+)"').astype(float))
+    
     stringtie_transcripts['ref_gene'] = stringtie_transcripts['ID'].str.extract(r'ref_gene_name "([^"]+)"').astype(str)
 
     # Convert string "nan" to real NaN
-    stringtie_transcripts['ref_gene'].replace("nan", pd.NA, inplace=True)
+    # stringtie_transcripts['ref_gene'].replace("nan", pd.NA, inplace=True)
+    stringtie_transcripts['ref_gene'] = stringtie_transcripts['ref_gene'].replace("nan", pd.NA)
 
     # Extract gene_id from transcriptID (STRG.22.1 → STRG.22)
     stringtie_transcripts['gene_id'] = stringtie_transcripts['transcriptID'].str.extract(r'(STRG\.\d+)')
@@ -39,17 +47,17 @@ def getTPM(df, out_prefix):
     # Fill NaNs in ref_gene per gene_id
     stringtie_transcripts['ref_gene'] = (
         stringtie_transcripts.groupby('gene_id')['ref_gene']
-        .transform(lambda x: x.fillna(method='ffill').fillna(method='bfill'))
+        .transform(lambda x: x.ffill().bfill())
     )
 
     # Keep only ref_gene, transcriptID, TPM
     tpm_transcripts = stringtie_transcripts[['ref_gene', 'transcriptID', 'TPM']]
     tpm_transcripts.to_csv(f"{out_prefix}_stringtie_TPM_values.csv", index=False)
 
-
     ## extract bed exons
     stringtie_exons = stringtie_df[stringtie_df["feature"] == "exon"]
-    stringtie_exons['TPM'] = stringtie_exons['ID'].str.extract(r'TPM "([^"]+)"').astype(float)
+    stringtie_exons.loc[:, 'TPM'] = (
+        stringtie_exons['ID'].str.extract(r'TPM "([^"]+)"').astype(float))
     stringtie_exons['transcriptID'] = stringtie_exons['ID'].str.split(';').str[1]
     stringtie_exons['transcriptID'] = stringtie_exons['transcriptID'].str.replace("\"", '').str.replace("transcript_id", '').str.replace(" ", '')
     bed_exons = stringtie_exons[['scaf', 'start', 'end', 'transcriptID', 'dot', 'strand']]
@@ -67,12 +75,12 @@ def overlap_fraction_intersection(a_bed_file, b_bed_file, fraction=1.0):
 
     Equivalent to: bedtools intersect -a A -b B -wa -wb -f <fraction>
     """
+
     # Read BED files
     if isinstance(a_bed_file, pd.DataFrame):
         if len(a_bed_file.columns) == 3:
             a_bed_file.columns = ["Chromosome", "Start", "End"]
-            print(a_bed_file)
-            a_bed_file.to_csv("TEs.bed", sep = "\t", index = False, header=None)
+            # a_bed_file.to_csv("TEs.bed", sep = "\t", index = False, header=None)
         a = pr.PyRanges(a_bed_file)
     else:
         a = pr.read_bed(a_bed_file)
@@ -80,7 +88,7 @@ def overlap_fraction_intersection(a_bed_file, b_bed_file, fraction=1.0):
     if isinstance(b_bed_file, pd.DataFrame):
         if len(b_bed_file.columns) == 6:
             b_bed_file.columns = ["Chromosome", "Start", "End", "Name", "Score", "Strand"]
-            b_bed_file.to_csv("exons.bed", sep = "\t", index = False, header=None)
+            # b_bed_file.to_csv("exons.bed", sep = "\t", index = False, header=None)
         b = pr.PyRanges(b_bed_file)
     else:
         b = pr.read_bed(b_bed_file)
@@ -89,14 +97,13 @@ def overlap_fraction_intersection(a_bed_file, b_bed_file, fraction=1.0):
     joined = a.join(b, suffix="_b", how="left", report_overlap=True)
 
     df = joined.df.copy()
-    df["A_length"] = df["End"] - df["Start"]
-    df["overlap_fraction"] = df["Overlap"] / df["A_length"]
-
+    df["TE_length"] = df["End"] - df["Start"]
+    df["overlap_fraction"] = df["Overlap"] / df["TE_length"]
+    
     # Filter for required fraction
     df = df[df["overlap_fraction"] >= fraction]
-
+    
     return df
-
 
 
 #### Merge replicates
@@ -135,36 +142,49 @@ if not merged_R1_exists and not merged_R2_exists:
     else:
         subprocess.run(["cat"] + R2_files, stdout=open(output_R2, "w"), check=True)
 else:
-    print(f"Merged files have been found!\tSkipping...")
+    print(f"\nMerged files have been found!\tSkipping...")
 
 ### STAR alignment
 if not os.path.exists(f"{args.output}_Aligned.sortedByCoord.out.bam"):
     subprocess.run(f'STAR --genomeDir {args.index} --runThreadN 16 --readFilesCommand zcat --readFilesIn merged_R1.fastq.gz merged_R2.fastq.gz --outSAMtype BAM SortedByCoordinate --outFileNamePrefix {args.output}_ --outTmpDir STARtmp', shell=True)
 else:
-    print("Alignment bam has been found!")
+    print("\nAlignment bam has been found!")
 
 
 ### Stringtie expression
-subprocess.run(f'stringtie {args.output}_Aligned.sortedByCoord.out.bam -G {args.gff} -o {args.output}_gene_sample.gtf -A {args.output}_gene_abundances.tsv -B -p 30', shell=True)
+if not os.path.exists(f'{args.output}_gene_sample.gtf'):
+    subprocess.run(f'stringtie {args.output}_Aligned.sortedByCoord.out.bam -G {args.gff} -o {args.output}_gene_sample.gtf -A {args.output}_gene_abundances.tsv -B -p 8', shell=True)
+else:
+    print("\nstringtie output has been found!\tskipping...")
 
 ## Create bed for exon positions
 bed_exons = getTPM(f"{args.output}_gene_sample.gtf", str(args.output))
+
 ## Import stringtie outputs
 stringtie_TPM_df = pd.read_csv(f"{args.output}_stringtie_TPM_values.csv")
 stringtie_abund = pd.read_csv(f"{args.output}_gene_abundances.tsv", usecols=[0,8], sep ="\t")
 
-### Store the results
-gene_ids = []
-total_gene_TPMs = []
-chimeric_TPMs = []
-contributions = []
+chimTE_outputs = ['TE-initiated_final.tsv',
+                  'TE-exonized_embedded_final.tsv',
+                  'TE-exonized_intronic_final.tsv',
+                  'TE-exonized_overlapped_final.tsv',
+                  'TE-terminated_final.tsv']
 
-### Add contribution to chimTE's output
-chimTE_out_df = pd.read_csv(f"/Users/oliveirads/Documents/projects/chimerate/ChimeraTE_v2/stringtie/dari_head_TE-initiated_final.tsv", sep ="\t")
+for chim_tsv in chimTE_outputs:
+    chim_type = re.sub("_final.tsv", "", chim_tsv)
+    print(f'Analyzing contribution of chimeric transcripts from {chim_type}...', end = "\t", flush=True)
 
-for chim_out in x:
+    ### Store the results
+    gene_ids = []
+    total_gene_TPMs = []
+    chimeric_TPMs = []
+    contributions = []
+
+    ## Import dataframe
+    chim_out = pd.read_csv(f'{args.dir_chimerate}/{chim_tsv}', sep ="\t")
+
     ## Create bed for TE positions
-    chim_transcripts = import_chimeras(chim_out)
+    chim_transcripts = import_chimeras(f'{args.dir_chimerate}/{chim_tsv}')
     chim_transcripts["scaf"] = chim_transcripts["TE_pos"].str.split(":").str[0]
     chim_transcripts["start"] = chim_transcripts["TE_pos"].str.split(":").str[1].str.split("-").str[0]
     chim_transcripts["end"] = chim_transcripts["TE_pos"].str.split(":").str[1].str.split("-").str[1]
@@ -172,8 +192,8 @@ for chim_out in x:
 
     ### Overlap between exons and TEs
     res_overlap = overlap_fraction_intersection(bed_TEs, bed_exons, 0.8)
-    
-    for row in chimTE_out_df.itertuples():
+
+    for row in chim_out.itertuples():
         scaf = row.TE_pos.split(":")[0].strip()
         start_pos = int(row.TE_pos.split(":")[1].split("-")[0].strip())
         end_pos = int(row.TE_pos.split(":")[1].split("-")[1].strip())
@@ -190,24 +210,38 @@ for chim_out in x:
             transcript_ids = matched_rows['Name'].tolist()
 
             ## Get unique gene ID = remove isoform number
-            unique_gene_id = list({tid.rsplit('.', 1)[0] for tid in transcript_ids})
-            ## Extract total gene TPM
-            matched_genes = stringtie_abund[stringtie_abund['Gene ID'].isin(unique_gene_id)]
-            total_gene_TPM = matched_genes['TPM'].iloc[0] if not matched_genes.empty else 0
+            unique_gene_ids = list({tid.rsplit('.', 1)[0] for tid in transcript_ids})
+            
+            for uniq_gene in unique_gene_ids:
+                if uniq_gene in gene_ids:
+                    continue
+                ## Extract total gene TPM
+                matched_genes = stringtie_abund[stringtie_abund['Gene ID'].isin([uniq_gene])]
+                total_gene_TPM = matched_genes['TPM'].iloc[0] if not matched_genes.empty else 0
 
+                # subset transcript ids only for the this specific uniq gene ID
+                specific_transcripts = [item for item in transcript_ids if item.startswith(uniq_gene)]
 
-            # Filter stringtie_TPM_df for matching transcriptIDs
-            matched_TPMs = stringtie_TPM_df[
-                stringtie_TPM_df['transcriptID'].isin(transcript_ids)]
+                # Filter stringtie_TPM_df for matching transcriptIDs
+                matched_TPMs = stringtie_TPM_df[
+                    stringtie_TPM_df['transcriptID'].isin(specific_transcripts)]
 
-            ## Compute chimeric isoform TPM
-            chimeric_TPM = matched_TPMs['TPM'].sum()
+                ## Compute chimeric isoform TPM
+                chimeric_TPM = matched_TPMs['TPM'].sum()
 
-            ## Compute contribution in %
-            contribution = (float(chimeric_TPM) * 100 / total_gene_TPM)
-            # print(f'{unique_gene_id[0]}\t{total_gene_TPM:.4f}\t{chimeric_TPM:.4f}\t{contribution:.4f}')
-            # Store results
-            gene_ids.append(unique_gene_id[0])
+                ## Compute contribution in %
+                contribution = (float(chimeric_TPM) * 100 / total_gene_TPM)
+
+                # if "STRG.11661" in uniq_gene:
+                #     # print(specific_transcripts)
+                #     # print(matched_genes)
+                #     print(f'{uniq_gene}\t{total_gene_TPM}')#\t{chimeric_TPM}\t{contribution}')
+                # elif "STRG.11662" in uniq_gene:
+                #     # print(specific_transcripts)
+                #     print(f'{uniq_gene}\t{total_gene_TPM}')
+
+            ### Store results
+            gene_ids.append(uniq_gene)
             total_gene_TPMs.append(f'{total_gene_TPM:.4f}')
             chimeric_TPMs.append(f'{chimeric_TPM:.4f}')
             contributions.append(f'{contribution:.4f}')
@@ -218,53 +252,11 @@ for chim_out in x:
             chimeric_TPMs.append(0)
             contributions.append(0)
 
+    # ### Export results as tsv
+    chim_out['transcript_id'] = gene_ids
+    chim_out['total_gene_TPM'] = total_gene_TPMs
+    chim_out['chimeric_TPM'] = chimeric_TPMs
+    chim_out['contribution_percent'] = contributions
 
-chimTE_out_df['transcript_id'] = gene_ids
-chimTE_out_df['total_gene_TPM'] = total_gene_TPMs
-chimTE_out_df['chimeric_TPM'] = chimeric_TPMs
-chimTE_out_df['contribution_percent'] = contributions
-
-chimTE_out_df.to_csv("chimTE_out_with_TPM.csv", index=False)
-# chim_transcripts["start"] = chim_transcripts["TE_pos"].str.split(":").str[1].str.split("-").str[0]
-# chim_transcripts["end"] = chim_transcripts["TE_pos"].str.split(":").str[1].str.split("-").str[1]
-
-
-
-# TPM_gene = (
-#     TPM_stringtie
-#     .query('feature == "exon"')
-#     [["scaf", "start", "end", "geneID", "strand", "strand"]]
-#     .drop_duplicates()
-# )
-
-# Dictionary where key = geneID and value = dataframe of that gene
-# TPM_gene_dict = {
-#     gene_id: all_gene_IDs for gene_id, all_gene_IDs in TPM_gene.groupby("geneID")
-# }
-
-# print(TPM_gene_dict)
-# for gene_id in all_gene_IDs:
-#     TPM_gene = TPM_stringtie.query('geneID == @gene_id and feature == "exon"')[["scaf", "start", "end", "geneID", "strand", "strand"]].drop_duplicates()
-    
-    
-    
-#     print(TPM_gene)
-#     if TPM_gene.item() < 1:
-#         print(f'{gene_id}\t{round(TPM_gene.item(), 4)}')
-
-
-
-
-
-
-### Get all geneIDs
-# all_gene_IDs = chim_transcripts["gene_id"]#.drop_duplicates().to_list()
-# gene_ids = all_gene_IDs["gene_id"]
-
-# Filter TPM_stringtie
-# filtered_df = TPM_stringtie[
-#     (TPM_stringtie["feature"] == "exon") &
-#     (TPM_stringtie["geneID"].isin(all_gene_IDs))]
-
-# bed_exons = filtered_df[["scaf", "start", "end", "geneID", "strand", "strand"]]
-# print(bed_exons)
+    chim_out.to_csv(f"{args.output}_TPM_{chim_tsv}", sep="\t", index=False)
+    print("Done!")

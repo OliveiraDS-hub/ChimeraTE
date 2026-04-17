@@ -35,11 +35,12 @@ def prep_embedded(aln_dir):
 
 def intersector_fwd_rev_bed(gene_id, reads_gene_bed, df_emb_exons, TE_bed, reads_TEs_bed, overlap):
     chim_reads_exons = overlap_fraction_intersection_pyranges(reads_gene_bed, df_emb_exons, overlap)
-
+    chim_reads_TE = None
     if isinstance(chim_reads_exons, pd.DataFrame):
         chim_reads_exons = get_IDs_from_bed(chim_reads_exons)
-        chim_reads_exons = chim_reads_exons['Name'].str.replace(r'/[12]$', '', regex=True).drop_duplicates()
-        
+        chim_reads_exons['Name'] = chim_reads_exons['Name'].str.replace(r'/[12]$', '', regex=True)
+        chim_reads_exons = chim_reads_exons[['Name']].drop_duplicates()
+
         chim_reads_TE = overlap_fraction_intersection_pyranges(reads_TEs_bed, TE_bed, overlap)
         if isinstance(chim_reads_TE, pd.DataFrame):
             ### Extract chimeric reads from TE
@@ -51,7 +52,7 @@ def intersector_fwd_rev_bed(gene_id, reads_gene_bed, df_emb_exons, TE_bed, reads
             # Keep only singleton rows (not duplicated)
             chim_reads_TE = chim_reads_TE.loc[~duplicated_mask, ['Name']]
 
-            if not chim_reads_TE.empty:
+            if not chim_reads_TE.empty and not chim_reads_exons.empty:
                 return chim_reads_exons, chim_reads_TE
             else:
                 return None, None
@@ -75,7 +76,6 @@ def embedded_mp(gene_id, embedded_exons_bed, overlap_reads):
     maskTE = embedded_exons_bed["Name_b"] == gene_id
     TEs_specific_gene = embedded_exons_bed.loc[maskTE, ['Chromosome', 'Start', 'End', 'Name', 'Score', 'Strand']].drop_duplicates()
     
-    
     if not TEs_specific_gene.empty:
         for row in TEs_specific_gene.itertuples():
             TE_coord_bed = pd.DataFrame([row._asdict()]).drop(columns='Index', errors='ignore')
@@ -85,9 +85,8 @@ def embedded_mp(gene_id, embedded_exons_bed, overlap_reads):
                 reads_gene, reads_TE = intersector_fwd_rev_bed(gene_id, f'{aln_dir}/gene_reads_fwd.bed', exons_specific_gene, TE_coord_bed, f'{aln_dir}/TE_reads_fwd.bed', overlap_reads)
             elif strand_exon == "-":
                 reads_gene, reads_TE = intersector_fwd_rev_bed(gene_id, f'{aln_dir}/gene_reads_rev.bed', exons_specific_gene, TE_coord_bed, f'{aln_dir}/TE_reads_rev.bed', overlap_reads)
-                
-            if isinstance(reads_gene, pd.DataFrame) and not reads_gene.empty \
-                and isinstance(reads_TE, pd.DataFrame) and not reads_TE.empty:
+            # print(reads_gene)
+            if isinstance(reads_TE, pd.DataFrame) and not reads_TE.empty:
                 cov = reads_gene["Name"].isin(reads_TE["Name"]).sum()
                 if cov > 0:
                     chr_TE = row[1]
@@ -132,11 +131,11 @@ def prep_overlapped(aln_dir, embedded_exons):
 
 def intersector_fwd_rev_bed_overlap(gene_id, reads_gene_bed, df_emb_exons, TE_coord_bed, reads_TEs_bed, overlap):
     chim_reads_exons = overlap_fraction_intersection_pyranges(reads_gene_bed, df_emb_exons, overlap)
-
     chim_reads_TE = None
+
     if isinstance(chim_reads_exons, pd.DataFrame) and not chim_reads_exons.empty:
-        chim_reads_exons = get_IDs_from_bed(chim_reads_exons)
-        chim_reads_exons = chim_reads_exons['Name'].str.replace(r'/[12]$', '', regex=True).drop_duplicates()
+        chim_reads_exons['Name'] = chim_reads_exons['Name'].str.replace(r'/[12]$', '', regex=True)
+        chim_reads_exons = chim_reads_exons[['Name']].drop_duplicates()
         
         if isinstance(TE_coord_bed, pd.DataFrame) and not TE_coord_bed.empty:
             chim_reads_TE = overlap_fraction_intersection_pyranges(reads_TEs_bed, TE_coord_bed, overlap)
@@ -238,23 +237,26 @@ def prep_intronic(aln_dir):
 def intersector_fwd_rev_bed_intron(gene_id, reads_gene_bed, df_emb_exons, TE_coord_bed, reads_TEs_bed, overlap):
     chim_reads_exons = overlap_fraction_intersection_pyranges(reads_gene_bed, df_emb_exons, overlap)
     chim_reads_TE = None
+
     if isinstance(chim_reads_exons, pd.DataFrame):
-        chim_reads_exons = get_IDs_from_bed(chim_reads_exons)
-        chim_reads_exons = chim_reads_exons[['Name']].replace('/1', '', regex=True).replace('/2', '', regex=True).drop_duplicates()
-       
-        chim_reads_TE = overlap_fraction_intersection_pyranges(reads_TEs_bed, TE_coord_bed, overlap)
-        if isinstance(chim_reads_TE, pd.DataFrame):
-            ### Extract chimeric reads from TE
-            chim_reads_TE = get_IDs_from_bed(chim_reads_TE)
-            # Collapse /1 and /2 in-place
-            chim_reads_TE['Name'] = chim_reads_TE['Name'].str.replace(r'/[12]$', '', regex=True)
-            # Find duplicated names (True if appears >1 time)
-            duplicated_mask = chim_reads_TE['Name'].duplicated(keep=False)
-            # Keep only singleton rows (not duplicated)
-            chim_reads_TE = chim_reads_TE.loc[~duplicated_mask, ['Name']]
-        else:
-            return None, None
-    if isinstance(chim_reads_exons, pd.DataFrame):
+        chim_reads_exons = get_IDs_from_bed(chim_reads_exons)       
+        chim_reads_exons['Name'] = chim_reads_exons['Name'].str.replace(r'/[12]$', '', regex=True)
+        chim_reads_exons = chim_reads_exons[['Name']].drop_duplicates()
+        
+        if isinstance(TE_coord_bed, pd.DataFrame) and not TE_coord_bed.empty:
+            chim_reads_TE = overlap_fraction_intersection_pyranges(reads_TEs_bed, TE_coord_bed, overlap)
+            if isinstance(chim_reads_TE, pd.DataFrame):
+                ### Extract chimeric reads from TE
+                chim_reads_TE = get_IDs_from_bed(chim_reads_TE)
+                # Collapse /1 and /2 in-place
+                chim_reads_TE['Name'] = chim_reads_TE['Name'].str.replace(r'/[12]$', '', regex=True)
+                # Find duplicated names (True if appears >1 time)
+                duplicated_mask = chim_reads_TE['Name'].duplicated(keep=False)
+                # Keep only singleton rows (not duplicated)
+                chim_reads_TE = chim_reads_TE.loc[~duplicated_mask, ['Name']]
+            else:
+                return None, None
+    if isinstance(chim_reads_TE, pd.DataFrame) and not chim_reads_TE.empty:
         return chim_reads_exons, chim_reads_TE
     else:
         return None, None

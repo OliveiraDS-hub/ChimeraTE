@@ -1,8 +1,8 @@
-FROM ubuntu:20.04
+FROM --platform=linux/amd64 ubuntu:20.04
 
 LABEL maintainer="Daniel S. Oliveira <daniel.sdo2015@gmail.com>"
-LABEL version="ChimeraTE v1.3"
-LABEL date="May 1st 2025"
+LABEL version="ChimeraTE v2.0beta"
+LABEL date="April 17th 2025"
 
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -141,7 +141,3 @@ RUN chmod +x chimTE_mode*.py
 
 # Add all relevant tools to PATH (same as before)
 ENV PATH="$PATH:/usr/local/STAR_2.7.10b/Linux_x86_64:/usr/local/bowtie2-2.5.1-linux-x86_64:/usr/local/cufflinks-2.2.1.Linux_x86_64:/usr/local/trinity:/usr/local/express-1.5.1-linux_x86_64:/usr/local/ncbi-blast-2.14.1+/bin:/usr/local/salmon/bin:/usr/local/RepeatMasker"
-
-# Default command — defer to argument passed at runtime
-ENTRYPOINT ["python3", "-u"]
-CMD ["chimTE_mode1.py"]

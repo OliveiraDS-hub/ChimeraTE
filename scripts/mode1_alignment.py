@@ -7,7 +7,6 @@ def stranded_reads(strand_option, aln_dir, threads):
         pair_sense = ["fwd", "rev"]
 
     for index, sense in enumerate(pair_sense):
-        print(f"Creating bed file for {sense} reads...")
         if index == 0:
             ### First strand
             subprocess.call(['samtools', 'view', '-@', str(threads), '-b', '-f', '128', '-F', '16', f"{aln_dir}/accepted_hits.bam", '-o', f"{aln_dir}/{sense}1_f.bam"], stderr=subprocess.DEVNULL)
@@ -95,7 +94,9 @@ def alignment_func(out_dir,group,aln_dir,mate1,mate2, threads, strandness, tmp_d
 
     ### Creating bed files per strand
     if not os.path.exists(f'{aln_dir}/rev.bed') and not os.path.exists(f'{aln_dir}/fwd.bed'):
+        print("Converting bam to bed...", end = "\t")
         stranded_reads(strandness, aln_dir, threads)
+        print("✓")
         print(colored("Done!", "green", attrs=['bold']))
     
 

@@ -86,8 +86,6 @@ print(f"First two gene IDs: {n_genes}")
 print(f"\nGTF TE\n{args.te} contains:", end = '\n')
 count_TE_families(str(args.te))
 
-
-
 ### Create STAR index and bed files
 annotation_manager(tmp, args.index, out_dir, args.genome, args.te, args.threads)
 
@@ -102,7 +100,7 @@ for index, row in input.iterrows():
 
     ###Perform STAR alignment and identify chimeric reads
     aln_check = alignment_func(out_dir,group,aln_dir,mate1,mate2, args.threads, args.strand, tmp, args.fpkm)
-    # aln_check = True
+
     if aln_check:
         if args.chimera is None or args.chimera == "TE-initiated":
             ###Search for TE-initiated transcripts
@@ -132,11 +130,6 @@ for index, row in input.iterrows():
             ###Search for TE-exonized transcripts - intronic
             geneids_intron, exons_genes_TEs_intron, genes_TE_intron_mbed = prep_intronic(aln_dir)
             multicore_intron_exon(geneids_intron, exons_genes_TEs_intron, genes_TE_intron_mbed, args.threads , args.overlap)
-
-        # if os.path.exists(f"{out_group}/TE-exonized-{group}.tsv") == True:
-        #     copy(f"{out_group}/TE-exonized-{group}.tsv", tmp)
-        # else:
-        #     print(f"Skipping the identification of TE-exonized transcripts...")
 
 ###Checking for replicability of chimeric transcripts in RNA-seq samples
 replicability(args.replicate, args.coverage)

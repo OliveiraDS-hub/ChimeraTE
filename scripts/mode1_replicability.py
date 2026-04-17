@@ -14,26 +14,27 @@ def merge_dfs(chim_type, rep_n):
     df_replicates = pd.DataFrame()
     clock = time()
     print(f"{clock}\tSearching for {chim_type} transcripts found in at least {rep_n} replicates")
-    df_replicates = pd.concat(
-    [pd.read_csv(f, sep='\t', header=None)
-     for f in Path(tmp).glob(f"{chim_type}*.tsv")
-     if f.stat().st_size > 0],
-    ignore_index=True)
-    # for file in os.listdir(str(tmp)):
-    #     if file.startswith(str(chim_type)):
-    #         if file.endswith(str(".tsv")):
-    #             if os.stat(str(f"{tmp}/{file}")).st_size > 0:
-    #                 data = pd.read_csv(str(f"{tmp}/{file}"), sep = '\t', header = None)
-    #                 df_replicates = df_replicates.append(data, ignore_index=True)
-    return df_replicates
+
+    files = list(Path(tmp).glob(f"{chim_type}*.tsv"))
+    out_dfs = [
+        pd.read_csv(f, sep='\t', header=None)
+        for f in files
+        if f.stat().st_size > 0]
+
+    if out_dfs:  # only concat if there is at least one DataFrame
+        df_replicates = pd.concat(out_dfs, ignore_index=True)
+        return df_replicates
+    else:
+        print(f"No {chim_type} results for at least {rep_n}!")
+        return None
+        
 
 def replicability(rep_n, coverage):
     from __main__ import out_dir
 
     for chimera in ["TE-initiated", "TE-terminated", "TE-exonized_embedded", "TE-exonized_overlapped", "TE-exonized_intronic"]:
-        print(chimera)
         replicated = merge_dfs(chimera, rep_n)
-        if not replicated.empty:
+        if replicated is not None:
             # if chimera == "TE-exonized":
             #     duplicate_mask = replicated.duplicated(subset=[0, 3, 5, 7], keep=False)
             #     # Find rows that are duplicated at least minimum of --replicate based on columns 0 (gene_id), 3 (TE_id), and 5 (TE_position)
@@ -65,8 +66,6 @@ def replicability(rep_n, coverage):
             else:
                 print(f"There is no {chimera} transcript replicated at least {rep_n} times\n")
             print(colored("Done!", "green", attrs=['bold']))
-        else:
-            print(f"There is no {chimera} transcripts detected.\n")
 
 
 
@@ -75,4 +74,3 @@ def replicability(rep_n, coverage):
 
 
 
-#

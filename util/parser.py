@@ -55,6 +55,7 @@ def get_IDs_from_bed(bed_file):
         # Only select the 4th column
         ID_column = bed_file.iloc[:, [3]].copy()
         ID_column.columns = ["Name"]
+        ID_column = ID_column.dropna()
     elif os.path.exists(bed_file):
         # Read only the 4th column from file
         ID_column = pd.read_csv(
@@ -64,6 +65,7 @@ def get_IDs_from_bed(bed_file):
             usecols=[3],         # only load column 4
             names=["Name"]       # assign column name directly
         )
+        ID_column = ID_column.dropna()
     return ID_column
 
 def import_csv(dataframe):

@@ -183,7 +183,7 @@ conda activate chimeraTE
 ````
 ````
 #One-line
-python3 chimTE_mode1.py --genome example_data/mode1/dmel_genome_sample.fa --input example_data/mode1/input_mode1.tsv --project example_mode1 --te example_data/mode1/dmel_TEs_sample.gtf --gene example_data/mode1/dmel_genes_sample.gtf --strand rf-stranded
+python3 chimTE_mode1.py --genome example_data/mode1/dmel_genome_sample.fa --input example_data/mode1/input_mode1.tsv --project example_mode1 --te example_data/mode1/dmel_5TEs_sample.gtf --gene example_data/mode1/dmel_5genes_sample.gtf --strand rf-stranded
 
 #Multi-line
 python3 chimTE_mode1.py --genome example_data/mode1/dmel_genome_sample.fa \
